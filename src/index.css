@@ -13,3 +13,17 @@ main {
   margin: 6rem auto;
   padding: 1.5rem;
 }
+
+a {
+  display: inline-block;
+  margin: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid currentColor;
+  border-radius: 0.25rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+nav {
+  margin-top: 2rem;
+}
