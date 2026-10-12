@@ -27,3 +27,44 @@ a {
 nav {
   margin-top: 2rem;
 }
+
+.lesson-editor select {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  font: inherit;
+}
+
+.lesson-paper {
+  min-height: 65vh;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: white;
+}
+
+.lesson-paper [contenteditable] {
+  min-height: 1.5em;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.lesson-paper [contenteditable]:focus {
+  outline: 1px solid #ddd;
+}
+
+.lesson-paper blockquote {
+  margin: 1rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid #aaa;
+}
+
+.lesson-paper table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.lesson-paper td {
+  height: 2rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+}

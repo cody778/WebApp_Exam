@@ -4,7 +4,7 @@ import BlockEditor from '../components/BlockEditor.jsx'
 export default function EditLesson() {
   return (
     <>
-      <h1>EditLesson.jsx</h1>
+      <h1>Edit lesson</h1>
       <BlockEditor />
       <Link to="/create-roadmap">Back to create roadmap</Link>
     </>

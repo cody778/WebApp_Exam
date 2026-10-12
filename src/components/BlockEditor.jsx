@@ -1,34 +1,35 @@
 ﻿import { useState } from 'react'
-import TextBlock from './TextBlock.jsx'
 
 export default function BlockEditor() {
-  const [blocks, setBlocks] = useState(() => [{ id: crypto.randomUUID(), text: '' }])
-
-  function updateBlock(id, text) {
-    setBlocks(current => current.map(block => block.id === id ? { ...block, text } : block))
-  }
-
-  function removeBlock(id) {
-    setBlocks(current => current.filter(block => block.id !== id))
-  }
-
-  function addBlock() {
-    const block = { id: crypto.randomUUID(), text: '' }
-    setBlocks(current => [...current, block])
-  }
+  const [blocks, setBlocks] = useState(() => [{ id: crypto.randomUUID(), type: 'p' }])
 
   return (
-    <section aria-label="Lesson content">
-      {blocks.map((block, index) => (
-        <TextBlock
-          key={block.id}
-          text={block.text}
-          number={index + 1}
-          onChange={text => updateBlock(block.id, text)}
-          onRemove={() => removeBlock(block.id)}
-        />
-      ))}
-      <button type="button" onClick={addBlock}>Add text block</button>
+    <section className="lesson-editor" aria-label="Lesson content">
+      <select aria-label="Add block" value="" onChange={event => {
+        const block = { id: crypto.randomUUID(), type: event.target.value }
+        setBlocks(current => [...current, block])
+      }}>
+        <option value="" disabled>Add block</option>
+        <option value="h2">Heading</option>
+        <option value="p">Paragraph</option>
+        <option value="blockquote">Quote</option>
+        <option value="table">Table</option>
+      </select>
+      <div className="lesson-paper">
+        {blocks.map(({ id, type }, index) => {
+          if (type === 'table') return (
+            <table key={id} aria-label={`Table ${index + 1}`}><tbody>
+              {Array.from({ length: 3 }, (_, row) => (
+                <tr key={row}>{Array.from({ length: 3 }, (_, column) => (
+                  <td key={column} contentEditable="plaintext-only" suppressContentEditableWarning aria-label={`Row ${row + 1}, column ${column + 1}`} />
+                ))}</tr>
+              ))}
+            </tbody></table>
+          )
+          const Tag = type
+          return <Tag key={id} contentEditable="plaintext-only" suppressContentEditableWarning role="textbox" aria-multiline="true" aria-label={`${type === 'h2' ? 'Heading' : type === 'blockquote' ? 'Quote' : 'Paragraph'} ${index + 1}`} />
+        })}
+      </div>
     </section>
   )
 }
