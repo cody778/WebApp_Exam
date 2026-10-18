@@ -15,6 +15,9 @@ import Roadmap from './pages/Roadmap.jsx'
 import BrowseLessons from './pages/BrowseLessons.jsx'
 import Notifications from './pages/Notifications.jsx'
 import Profile from './pages/Profile.jsx'
+import BrowseProjects from './pages/BrowseProjects.jsx'
+import Project from './pages/Project.jsx'
+import EditProject from './pages/EditProject.jsx'
 
 function Layout() {
   return (
@@ -57,6 +60,14 @@ export default function App() {
             <Route path="/browse-lessons" element={<BrowseLessons />} />
             <Route path="/notifications" element={<Notifications />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/projects">
+              <Route index element={<BrowseProjects />} />
+              <Route path="public" element={<BrowseProjects isPublic />} />
+              <Route path="new" element={<EditProject />} />
+              <Route path=":projectId" element={<Project />} />
+              <Route path=":projectId/edit" element={<EditProject />} />
+              <Route path="public/:projectId" element={<Project isPublic />} />
+            </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
