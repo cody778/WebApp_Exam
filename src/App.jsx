@@ -1,4 +1,4 @@
-import { BrowserRouter, Link, Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { HashRouter, Link, Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import Welcome from './pages/Welcome.jsx'
 import Introduction from './pages/Introduction.jsx'
 import GetStarted from './pages/GetStarted.jsx'
@@ -35,7 +35,7 @@ function Layout() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <main>
         <Routes>
           <Route path="/" element={<Welcome />} />
@@ -72,6 +72,6 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
