@@ -4,7 +4,7 @@ import { supabase } from './client.js'
 
 const AuthContext = createContext(null)
 
-export function AuthProvider({ children }) {
+export function AuthProvider({ children }) { // Provide context to the app - loading state
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(Boolean(supabase))
 
@@ -26,7 +26,7 @@ export function useAuth() {
   return useContext(AuthContext)
 }
 
-export function RequireUser() {
+export function RequireUser() { // This component is used to protect authentication
   const { user, loading } = useAuth()
   const location = useLocation()
 
