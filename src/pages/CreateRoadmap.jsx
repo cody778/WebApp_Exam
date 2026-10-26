@@ -27,3 +27,21 @@ export default function CreateRoadmap() { //form to create a new roadmap
       setBusy(false) // reset the busy state
     }
   }
+
+  return (
+    <>
+      <h1>Create a roadmap</h1>
+      <form onSubmit={submit}>
+        <fieldset className= "userfields" disabled={busy}>
+         <label htmlFor="roadmap-title">Title</label>
+          <input id="roadmap-title" name="title" maxLength={200} required />
+          <label htmlFor="roadmap-description">Description</label>
+          <textarea id="roadmap-description" name="description" maxLength={5000} rows={4} />
+          <button type="submit">{busy ? 'Saving...' : 'Create roadmap'}</button>
+        </fieldset>
+      </form>
+      {error && <p role="alert">{error}</p>}
+      <Link to="/my-roadmap">Back to my roadmaps</Link>
+    </>
+  )
+}
