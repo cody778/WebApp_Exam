@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router'
 import LessonTimeline from '../components/LessonTimeline.jsx'
 import { getRoadmap } from '../user/data.js'
 import useUserData from '../user/useUserData.js'

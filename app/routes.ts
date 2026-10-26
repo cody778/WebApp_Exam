@@ -8,6 +8,10 @@ export default [
   route('sign-in', 'pages/SignIn.jsx'),
   layout('user/RequireUser.jsx', [
     route('home', 'pages/Home.jsx'),
+    route('browse-roadmaps', 'pages/BrowseRoadmaps.jsx'),
+    route('my-roadmap', 'pages/MyRoadmap.jsx'),
+    route('create-roadmap', 'pages/CreateRoadmap.jsx'),
+    route('my-roadmap/:roadmapId', 'pages/Roadmap.jsx'),
   ]),
 ] satisfies RouteConfig
 

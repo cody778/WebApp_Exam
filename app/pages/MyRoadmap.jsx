@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import RoadmapList from '../user/RoadmapList.jsx'
 
 export default function MyRoadmap() { // displays a list of the user's roadmaps
