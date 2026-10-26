@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router'
 
 export default function EditProject() {
   const { projectId } = useParams()
