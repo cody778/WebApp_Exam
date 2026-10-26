@@ -1,11 +1,6 @@
-import { Link } from 'react-router-dom'
+import MyRoadmap from './MyRoadmap.jsx'
 
 export default function BrowseRoadmaps() {
-  return (
-    <>
-      <h1>BrowseRoadmaps.jsx</h1>
-      <Link to="/roadmap">View roadmap</Link>
-    </>
-  )
+  return <MyRoadmap />
 }
 
