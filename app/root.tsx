@@ -1,5 +1,6 @@
 ﻿import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
 import type { Route } from './+types/root'
+import { AuthProvider } from './user/AuthProvider.jsx'
 import './index.css'
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -25,7 +26,7 @@ export function HydrateFallback() {
 }
 
 export default function App() {
-  return <main><Outlet /></main>
+  return <AuthProvider><main><Outlet /></main></AuthProvider>
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
