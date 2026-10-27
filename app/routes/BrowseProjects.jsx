@@ -1,15 +1,26 @@
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
+import { listLessons } from '../user/data.js'
+import useUserData from '../user/useUserData.js'
+import DataState from '../user/DataState.jsx'
 
-export default function BrowseProjects({ isPublic = false }) {
+export default function BrowseLessons() { 
+  const { data, loading, error } = useUserData(listLessons) // gets the user lessons from the backend
+
   return (
     <>
-      <h1>{isPublic ? 'Public projects' : 'My projects'}</h1>
-      <Link to={isPublic ? '/profile/projects/public/example' : '/profile/projects/example'}>View project</Link>
-      {!isPublic && <Link to="/profile/projects/new">Create project</Link>}
-      <Link to={isPublic ? '/profile/projects' : '/profile/projects/public'}>
-        {isPublic ? 'My projects' : 'Browse public projects'}
-      </Link>
-      <Link to="/profile">Back to profile</Link>
+      <h1>My lessons</h1>
+      <DataState loading={loading} error={error} />
+      <Link to="/edit-lesson">Add a lesson</Link>
+      {data?.length === 0 && <p>No lessons yet. Add your first one.</p>}
+      <ul>
+        {data?.map(lesson => (
+          <li key={lesson.id}>
+            <Link to={`/lesson/${lesson.id}`}>{lesson.title}</Link>
+            {lesson.completed ? 'Completed' : 'To do'}
+          </li>
+        ))}
+      </ul>
+      <Link to="/my-roadmap">My roadmaps</Link>
     </>
   )
 }
