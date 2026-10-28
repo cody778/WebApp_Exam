@@ -247,8 +247,9 @@ body::before {
   background: #f7f4ee url("./assets/background.jpg") center / cover no-repeat;
 }
 
-/* The landing frame is full-bleed. Drop the shared page column only on that screen. */
-main:has(.landing-page) {
+/* These frames are full-bleed. Drop the shared page column only on those screens. */
+main:has(.landing-page),
+main:has(.explore-page) {
   max-width: none;
   margin: 0;
   padding: 0;
@@ -256,7 +257,9 @@ main:has(.landing-page) {
 
 /* Tailwind spacing assumes border-box. Keep that scoped here so other screens stay as they are. */
 .landing-page,
-.landing-page * {
+.landing-page *,
+.explore-page,
+.explore-page * {
   box-sizing: border-box;
 }
 

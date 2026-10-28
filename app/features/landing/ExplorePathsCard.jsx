@@ -1,13 +1,12 @@
 import { Link } from 'react-router'
 
 /**
- * Promo for community roadmaps. The browse screen is signed-in only;
- * guests are sent through sign-in and returned to it.
+ * Promo for community roadmaps. Opens the public explore screen.
  */
 export default function ExplorePathsCard() {
   return (
     <Link
-      to="/browse-roadmaps"
+      to="/explore"
       className="relative m-0 flex w-full cursor-pointer flex-col items-start gap-4 rounded-2xl border-0 bg-accent p-4 text-left shadow-raised no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
       <span className="absolute top-4 right-4 text-on-brand" aria-hidden="true">

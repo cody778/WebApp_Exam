@@ -7,12 +7,23 @@ import vector66 from '../assets/landing/logo/vector-66.svg'
 import vector70 from '../assets/landing/logo/vector-70.svg'
 import vector71 from '../assets/landing/logo/vector-71.svg'
 
-/** Hero wordmark: the mark is a fixed arrangement of the Figma strokes, beside the name. */
-export default function Logo() {
+/**
+ * Wordmark. The hero uses the bold 32px name. The explore header uses regular 30px.
+ * @param {object} props
+ * @param {'hero' | 'header'} [props.variant]
+ */
+export default function Logo({ variant = 'hero' }) {
+  const header = variant === 'header'
   return (
-    <div className="flex items-center gap-1 px-0.5">
+    <div className={header ? 'flex items-start gap-1' : 'flex items-center gap-1 px-0.5'}>
       <LogoMark />
-      <p className="m-0 font-logo text-logo leading-heading font-bold tracking-heading whitespace-nowrap text-ink">
+      <p
+        className={
+          header
+            ? 'm-0 font-logo text-[1.875rem] leading-none font-normal tracking-[-0.06em] whitespace-nowrap text-ink'
+            : 'm-0 font-logo text-logo leading-heading font-bold tracking-heading whitespace-nowrap text-ink'
+        }
+      >
         Pathify
       </p>
     </div>
