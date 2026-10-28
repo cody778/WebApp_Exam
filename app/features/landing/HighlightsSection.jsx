@@ -1,5 +1,5 @@
 import HighlightCard from '../../components/HighlightCard.jsx'
-import sectionArrow from '../../assets/landing/section-arrow.svg'
+import jumpArrow from '../../assets/landing/arrow-jump-down.png'
 import iconLink from '../../assets/landing/icon-link.svg'
 import iconLayers from '../../assets/landing/icon-layers.svg'
 import iconCheck from '../../assets/landing/icon-check.svg'
@@ -22,11 +22,24 @@ const highlights = [
   },
 ]
 
+/** One viewport down, so the control reveals the next screen of the page. */
+function skipOneScreen() {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  window.scrollBy({ top: window.innerHeight, behavior: reduceMotion ? 'auto' : 'smooth' })
+}
+
 /** Three product points that sit under the hero. Copy is static marketing text. */
 export default function HighlightsSection() {
   return (
     <section className="flex w-full flex-col items-center gap-8 py-8">
-      <img src={sectionArrow} alt="" width="14.9477" height="32.7613" />
+      <button
+        type="button"
+        onClick={skipOneScreen}
+        aria-label="Skip down one screen"
+        className="landing-arrow-bounce m-0 cursor-pointer border-0 bg-transparent p-0"
+      >
+        <img src={jumpArrow} alt="" width="47" height="38" />
+      </button>
       {highlights.map((item) => (
         <HighlightCard key={item.title} icon={item.icon} title={item.title} body={item.body} />
       ))}
