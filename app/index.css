@@ -5,6 +5,8 @@
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-logo: "OpenDyslexic", sans-serif;
+  --text-logo: 2rem;
   --color-ink: #1e1e1e;
   --color-ink-neutral: #303030;
   --color-on-brand: #f5f5f5;
