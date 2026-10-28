@@ -20,7 +20,7 @@ export default function Logo({ variant = 'hero' }) {
       <p
         className={
           header
-            ? 'm-0 font-logo text-[1.875rem] leading-none font-normal tracking-[-0.06em] whitespace-nowrap text-ink'
+            ? 'm-0 font-logo text-[1.875rem] leading-none font-normal tracking-[-1.8px] whitespace-nowrap text-ink'
             : 'm-0 font-logo text-logo leading-heading font-bold tracking-heading whitespace-nowrap text-ink'
         }
       >
