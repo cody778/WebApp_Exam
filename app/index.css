@@ -2,9 +2,11 @@
 
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
+@import "@fontsource/opendyslexic/400.css";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: Futura, "Futura PT", "Century Gothic", sans-serif;
   --font-logo: "OpenDyslexic", sans-serif;
   --text-logo: 2rem;
   --color-ink: #1e1e1e;
@@ -18,6 +20,79 @@
   --leading-body: 1.4;
   --tracking-heading: -0.02em;
   --shadow-raised: 0 4px 2px rgb(0 0 0 / 0.25);
+}
+
+/* Named text styles. Add a new utility when a frame introduces another variation. */
+@utility text-hero-title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 500;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+@utility text-hero-title-bold {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: var(--leading-heading);
+  letter-spacing: var(--tracking-heading);
+}
+
+@utility text-h1 {
+  font-family: var(--font-logo);
+  font-size: 3rem;
+  font-weight: 400;
+  line-height: var(--leading-heading);
+}
+
+@utility text-h3 {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 400;
+  line-height: var(--leading-heading);
+}
+
+@utility text-h4 {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: var(--leading-body);
+}
+
+@utility text-h5 {
+  font-family: var(--font-display);
+  font-size: 0.625rem;
+  font-weight: 400;
+  line-height: var(--leading-body);
+}
+
+@utility text-button {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1;
+}
+
+@utility text-body {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: var(--leading-body);
+}
+
+@utility text-card-title {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+@utility text-timeline {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: var(--leading-heading);
 }
 
 /* Older screens still rely on these element styles. They sit under utilities so the landing page can override them. */

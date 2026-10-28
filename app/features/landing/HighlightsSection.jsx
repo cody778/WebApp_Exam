@@ -25,7 +25,7 @@ const highlights = [
 /** Three product points that sit under the hero. Copy is static marketing text. */
 export default function HighlightsSection() {
   return (
-    <section className="flex w-full flex-col items-center gap-8 pt-4 pb-8">
+    <section className="flex w-full flex-col items-center gap-8 py-8">
       <img src={sectionArrow} alt="" width="14.9477" height="32.7613" />
       {highlights.map((item) => (
         <HighlightCard key={item.title} icon={item.icon} title={item.title} body={item.body} />
