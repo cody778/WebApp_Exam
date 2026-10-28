@@ -8,7 +8,7 @@ export default function LessonTimeline({ roadmapId, lessons }) {
       <h2>Lessons</h2>
       <p>{completed} of {lessons.length} lessons completed</p>
       <progress aria-label="Roadmap progress" value={completed} max={lessons.length || 1} /> 
-      {!lessons.length && <p>Add your first lesson below.</p>} 
+      {!lessons.length && <p>No lessons linked yet.</p>}
       <ol>
         {lessons.map(lesson => (
           <li key={lesson.id}>

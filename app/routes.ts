@@ -14,6 +14,7 @@ export default [
       route('create-roadmap', 'routes/CreateRoadmap.jsx'),
       route('my-roadmap/:roadmapId', 'routes/Roadmap.jsx'),
       route('my-roadmap/:roadmapId/lesson/:lessonId', 'routes/Lesson.jsx'),
+      route('lesson/:lessonId', 'routes/StandaloneLesson.jsx'),
       route('edit-lesson', 'routes/EditLesson.jsx'),
       route('browse-lessons', 'routes/BrowseLessons.jsx'),
       route('profile', 'routes/Profile.jsx'),

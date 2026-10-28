@@ -28,6 +28,21 @@ nav {
   margin-top: 2rem;
 }
 
+.roadmap-list {
+  display: grid;
+  gap: 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.roadmap-card {
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  background: white;
+  overflow-wrap: anywhere;
+}
+
 .user-fields {
   display: grid;
   gap: 0.75rem;

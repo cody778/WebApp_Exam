@@ -23,7 +23,7 @@ async function withRoadmapLessons(userId, roadmaps) {
   }))
 }
 
-const roadmapFields = 'id, title, description, roadmap_lessons(lesson_id, position, lessons(id, title))'
+const roadmapFields = 'id, owner_id, title, description, roadmap_lessons(lesson_id, position, lessons(id, owner_id, title))'
 
 export async function listRoadmaps(userId) {
   const roadmaps = await result(supabase.from('roadmaps').select(roadmapFields).eq('owner_id', userId).order('created_at', { ascending: false }))
@@ -31,8 +31,13 @@ export async function listRoadmaps(userId) {
 }
 
 export async function getRoadmap(userId, id) {
-  const roadmap = await result(supabase.from('roadmaps').select(roadmapFields).eq('owner_id', userId).eq('id', id).single())
+  const roadmap = await result(supabase.from('roadmaps').select(roadmapFields).eq('id', id).single())
   return (await withRoadmapLessons(userId, [roadmap]))[0]
+}
+
+export async function listPublishedRoadmaps(userId) {
+  const roadmaps = await result(supabase.from('roadmaps').select(roadmapFields).eq('is_published', true).order('created_at', { ascending: false }))
+  return withRoadmapLessons(userId, roadmaps)
 }
 
 export function createRoadmap(userId, id, title, description) {
@@ -46,7 +51,7 @@ export async function listLessons(userId) {
 
 const lessonFields = 'id, owner_id, title, lesson_blocks(id, type, content, position), roadmap_lessons(roadmap_id)' //We do not need the roadmap data, just the roadmap id for the lesson
 
-export async function getLesson(userId, id) { //Lesson editor, ignoring the user ID until the save lesson function 
+export async function getLesson(userId, id) {
   const lesson = await result(supabase.from('lessons').select(lessonFields).eq('id', id).single())
   lesson.blocks = lesson.lesson_blocks.sort((a, b) => a.position - b.position)
   return (await withProgress(userId, [lesson]))[0]
@@ -66,4 +71,15 @@ export function setLessonCompleted(userId, id, completed) {
     ? supabase.from('lesson_progress').upsert({ user_id: userId, lesson_id: id }, { onConflict: 'user_id,lesson_id', ignoreDuplicates: true })
     : supabase.from('lesson_progress').delete().eq('user_id', userId).eq('lesson_id', id)
   return result(query)
+}
+
+export async function linkLesson(userId, roadmapId, lessonId) {
+  const [roadmap] = await Promise.all([
+    getRoadmap(userId, roadmapId),
+    result(supabase.from('lessons').select('id').eq('id', lessonId).eq('owner_id', userId).single()),
+  ])
+  if (roadmap.owner_id !== userId) throw new Error('This roadmap belongs to someone else.')
+  if (roadmap.lessons.some(lesson => lesson.id === lessonId)) return
+  const position = Math.max(-1, ...roadmap.roadmap_lessons.map(link => link.position)) + 1
+  return result(supabase.from('roadmap_lessons').insert({ roadmap_id: roadmapId, lesson_id: lessonId, position }))
 }

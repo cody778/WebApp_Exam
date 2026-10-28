@@ -32,7 +32,7 @@ export default function CreateRoadmap() { //form to create a new roadmap
     <>
       <h1>Create a roadmap</h1>
       <form onSubmit={submit}>
-        <fieldset className= "userfields" disabled={busy}>
+        <fieldset className="user-fields" disabled={busy}>
          <label htmlFor="roadmap-title">Title</label>
           <input id="roadmap-title" name="title" maxLength={200} required />
           <label htmlFor="roadmap-description">Description</label>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router'
 import BlockEditor from '../components/BlockEditor.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { getLesson, setLessonCompleted } from '../user/data.js'
