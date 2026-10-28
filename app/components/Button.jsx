@@ -11,7 +11,7 @@ export default function Button({ to, children, className = '' }) {
   return (
     <Link
       to={to}
-      className={`m-0 flex h-10 items-center justify-center rounded-lg border-0 bg-accent px-4 py-0 text-button text-on-brand no-underline hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${className}`}
+      className={`m-0 flex h-10 items-center justify-center rounded-2xl border-0 bg-accent px-4 py-0 text-button text-on-brand no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent ${className}`}
     >
       {children}
     </Link>

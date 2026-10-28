@@ -1,5 +1,4 @@
 import { Link } from 'react-router'
-import exploreDrawing from '../../assets/landing/explore-drawing.svg'
 
 /**
  * Promo for community roadmaps. The browse screen is signed-in only;
@@ -9,23 +8,28 @@ export default function ExplorePathsCard() {
   return (
     <Link
       to="/browse-roadmaps"
-      className="m-0 flex w-full flex-col items-start gap-4 rounded-lg border-0 bg-surface-muted px-4 pt-4 pb-8 text-left shadow-raised no-underline"
+      className="relative m-0 flex w-full cursor-pointer flex-col items-start gap-4 rounded-2xl border-0 bg-accent p-4 text-left shadow-raised no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
-      <h2 className="m-0 text-2xl leading-heading font-semibold tracking-heading text-ink">
+      <span className="absolute top-4 right-4 text-on-brand" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="block">
+          <circle cx="16" cy="16" r="15.25" stroke="currentColor" strokeWidth="1.5" />
+          <path
+            d="M10 16h12M17 11l5 5-5 5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+      <h2 className="m-0 pr-12 text-h3 text-on-brand">
         Explore paths from the
         <br />
         community
       </h2>
-      <p className="m-0 text-base leading-body text-black">
+      <p className="m-0 text-body text-accent-muted">
         Start learning right ready-to-follow paths created by Pathify’s amazing community.
       </p>
-      <img
-        src={exploreDrawing}
-        alt=""
-        width="375.641"
-        height="187.63"
-        className="h-auto w-full"
-      />
     </Link>
   )
 }

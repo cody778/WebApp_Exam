@@ -11,9 +11,9 @@ export default function HighlightCard({ icon, title, body }) {
       <span className="flex size-8 shrink-0 items-center justify-center rounded-2xl bg-accent">
         <img src={icon} alt="" width="16" height="16" />
       </span>
-      <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <h3 className="m-0 text-base leading-normal font-semibold text-black">{title}</h3>
-        <p className="m-0 text-base leading-normal font-normal text-black">{body}</p>
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <h3 className="m-0 text-card-title tracking-widest text-ink">{title}</h3>
+        <p className="m-0 text-h4 text-ink-neutral">{body}</p>
       </div>
     </article>
   )
