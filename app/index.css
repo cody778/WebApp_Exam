@@ -33,6 +33,14 @@
   letter-spacing: var(--tracking-heading);
 }
 
+@utility text-welcome {
+  font-family: var(--font-sans);
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 2.5rem;
+  letter-spacing: var(--tracking-heading);
+}
+
 @utility text-hero-title {
   font-family: var(--font-display);
   font-size: 3rem;
@@ -260,8 +268,8 @@ body::before {
 /* These frames are full-bleed. Drop the shared page column only on those screens. */
 main:has(.landing-page),
 main:has(.explore-page),
-main:has(.public-path),
-main:has(.register-page) {
+main:has(.register-page),
+main:has(.sign-in-page) {
   max-width: none;
   margin: 0;
   padding: 0;
@@ -275,7 +283,9 @@ main:has(.register-page) {
 .public-path,
 .public-path *,
 .register-page,
-.register-page * {
+.register-page *,
+.sign-in-page,
+.sign-in-page * {
   box-sizing: border-box;
 }
 
