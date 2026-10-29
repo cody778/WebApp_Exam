@@ -5,6 +5,7 @@ import { useAuth } from '../user/AuthProvider.jsx'
 import { supabase } from '../user/client.js'
 import { createRoadmap, saveLesson } from '../user/data.js'
 import { saveGeneratedPath } from '../user/generatedPath.js'
+import { generationRequestTimeoutMs } from '../ai/generationLimits.js'
 
 const buttonClass = 'min-w-0 cursor-pointer rounded-lg border-0 bg-accent px-4 py-3 font-sans text-base text-white disabled:cursor-wait disabled:opacity-60'
 
@@ -32,7 +33,7 @@ export default function YouTubePath() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.session.access_token}` },
         body: JSON.stringify({ youtubeUrl: form.get('youtubeUrl').trim(), transcript: form.get('transcript').trim() }),
-        signal: AbortSignal.timeout(60000),
+        signal: AbortSignal.timeout(generationRequestTimeoutMs),
       })
       if (!response.headers.get('content-type')?.includes('application/json')) {
         throw new Error('YouTube path creation is unavailable right now. Please try again later.')
@@ -41,7 +42,7 @@ export default function YouTubePath() {
       if (!response.ok) throw new Error(result.error || 'Could not generate the lessons. Please try again.')
       setDraft(result)
     } catch (error) {
-      setError(error.name === 'TimeoutError' ? 'This video took too long. Try a shorter video or paste its transcript.' : error.message)
+      setError(error.name === 'TimeoutError' ? 'The server did not respond in time. Please try again or paste the video transcript.' : error.message)
     } finally {
       working.current = false
       setBusy('')
@@ -107,7 +108,7 @@ export default function YouTubePath() {
         </button>
         {!saveStarted && <button type="button" disabled={Boolean(busy)} className="cursor-pointer border-0 bg-transparent p-0 text-sm text-accent underline" onClick={() => { setDraft(null); setError('') }}>Use a different video</button>}
       </>}
-      {busy === 'generating' && <p role="status" className="m-0 text-sm text-quiet">Reading the video and preparing your lessons. This can take a little while.</p>}
+      {busy === 'generating' && <p role="status" className="m-0 text-sm text-quiet">Reading the video and preparing your lessons. Longer videos can take a few minutes. Keep this page open while we finish.</p>}
       {error && <p role="alert" className="m-0 text-sm text-[#9e2020]">{error}</p>}
       <Link to="/create-path" className="text-sm text-accent underline">Back to create a path</Link>
     </section>
