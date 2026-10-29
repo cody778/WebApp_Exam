@@ -10,17 +10,17 @@ export default function BrowseLessons() {
     <>
       <h1>My lessons</h1>
       <DataState loading={loading} error={error} />
-      <Link to="/edit-lesson">Add a lesson</Link>
+      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to="/edit-lesson">Add a lesson</Link>
       {data?.length === 0 && <p>No lessons yet. Add your first one.</p>}
       <ul>
         {data?.map(lesson => (
           <li key={lesson.id}>
-            <Link to={`/lesson/${lesson.id}`}>{lesson.title}</Link>
+            <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={`/lesson/${lesson.id}`}>{lesson.title}</Link>
             {lesson.completed ? 'Completed' : 'To do'}
           </li>
         ))}
       </ul>
-      <Link to="/my-roadmap">My roadmaps</Link>
+      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to="/my-roadmap">My roadmaps</Link>
     </>
   )
 }

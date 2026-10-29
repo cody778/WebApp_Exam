@@ -59,7 +59,7 @@ export default function Explore() {
   )
 
   return (
-    <div className="explore-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 p-4 font-sans text-ink">
+    <div className="explore-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 p-4 font-sans text-ink">
       {user ? (
         <AppNav />
       ) : (

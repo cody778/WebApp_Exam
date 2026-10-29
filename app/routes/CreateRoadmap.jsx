@@ -32,16 +32,16 @@ export default function CreateRoadmap() { //form to create a new roadmap
     <>
       <h1>Create a roadmap</h1>
       <form onSubmit={submit}>
-        <fieldset className="user-fields" disabled={busy}>
+        <fieldset className="grid min-w-0 gap-3 m-0 mb-4 border-0 p-0 [&_input]:min-w-0 [&_input]:p-3 [&_input]:[font:inherit] [&_textarea]:min-w-0 [&_textarea]:p-3 [&_textarea]:[font:inherit]" disabled={busy}>
          <label htmlFor="roadmap-title">Title</label>
           <input id="roadmap-title" name="title" maxLength={200} required />
           <label htmlFor="roadmap-description">Description</label>
           <textarea id="roadmap-description" name="description" maxLength={5000} rows={4} />
-          <button type="submit">{busy ? 'Saving...' : 'Create roadmap'}</button>
+          <button className="min-w-0 p-3 [font:inherit] cursor-pointer disabled:cursor-wait" type="submit">{busy ? 'Saving...' : 'Create roadmap'}</button>
         </fieldset>
       </form>
-      {error && <p role="alert">{error}</p>}
-      <Link to="/my-roadmap">Back to my roadmaps</Link>
+      {error && <p className="text-[#9e2020]" role="alert">{error}</p>}
+      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to="/my-roadmap">Back to my roadmaps</Link>
     </>
   )
 }

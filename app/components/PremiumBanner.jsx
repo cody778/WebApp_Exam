@@ -14,7 +14,7 @@ export default function PremiumBanner() {
         <p className="m-0 font-sans text-sm font-semibold whitespace-nowrap text-ink">€5/month</p>
         <button
           type="button"
-          className="m-0 inline-flex h-10 shrink-0 cursor-pointer items-center rounded-full border-0 bg-ink px-4 font-sans text-sm font-semibold whitespace-nowrap text-white"
+          className="min-w-0 disabled:cursor-wait py-3 m-0 inline-flex h-10 shrink-0 cursor-pointer items-center rounded-full border-0 bg-ink px-4 font-sans text-sm font-semibold whitespace-nowrap text-white"
         >
           Upgrade to Premium
         </button>

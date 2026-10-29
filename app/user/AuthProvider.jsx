@@ -30,7 +30,7 @@ export function RequireUser() { // This component is used to protect authenticat
   const { user, loading } = useAuth()
   const location = useLocation()
 
-  if (!supabase) return <p role="alert">Sign in is not configured yet.</p>
+  if (!supabase) return <p className="text-[#9e2020]" role="alert">Sign in is not configured yet.</p>
   if (loading) return <p role="status">Loading your account...</p>
   if (!user) return <Navigate to="/sign-in" state={{ from: location.pathname + location.search }} replace />
 

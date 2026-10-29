@@ -61,7 +61,7 @@ export default function PathCard({
             event.stopPropagation()
             onToggleSave?.()
           }}
-          className="relative z-20 m-0 border-0 bg-transparent p-0 leading-none"
+          className="min-w-0 cursor-pointer disabled:cursor-wait [font:inherit] relative z-20 m-0 border-0 bg-transparent p-0 leading-none"
         >
           <svg
             width="24"

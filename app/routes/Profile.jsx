@@ -26,11 +26,11 @@ export default function Profile() { //Placeholder
     <>
       <h1>Profile</h1>
       <p>{user.email}</p>
-      <button type="button" onClick={signOut} disabled={busy}>{busy ? 'Signing out...' : 'Sign out'}</button>
-      {error && <p role="alert">{error}</p>}
-      <Link to="/profile/projects">My projects</Link>
-      <Link to="/profile/projects/public">Browse public projects</Link>
-      <Link to="/">Back to welcome</Link>
+      <button className="min-w-0 p-3 [font:inherit] cursor-pointer disabled:cursor-wait" type="button" onClick={signOut} disabled={busy}>{busy ? 'Signing out...' : 'Sign out'}</button>
+      {error && <p className="text-[#9e2020]" role="alert">{error}</p>}
+      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to="/profile/projects">My projects</Link>
+      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to="/profile/projects/public">Browse public projects</Link>
+      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to="/">Back to welcome</Link>
     </>
   )
 }

@@ -21,7 +21,7 @@ const steps = [
 /** Public path opened from the knitting card on explore. */
 export default function PublicPath() {
   return (
-    <div className="public-path mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-white font-sans text-ink">
+    <div className="public-path box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-white font-sans text-ink">
       <div className="relative flex h-40 shrink-0 items-start justify-end overflow-hidden p-4">
         <img
           src={cover}
@@ -31,16 +31,16 @@ export default function PublicPath() {
           className="pointer-events-none absolute inset-0 h-full w-full max-w-none object-cover"
         />
         <div className="relative z-10 flex w-6 flex-col gap-2">
-          <button type="button" aria-label="Save Knitting" className="m-0 h-6 w-full cursor-pointer border-0 bg-transparent p-0">
+          <button type="button" aria-label="Save Knitting" className="min-w-0 disabled:cursor-wait [font:inherit] m-0 h-6 w-full cursor-pointer border-0 bg-transparent p-0">
             <img src={iconSave} alt="" width="24" height="24" className="block max-w-none" />
           </button>
-          <button type="button" aria-label="Fork Knitting" className="m-0 h-6 w-full cursor-pointer border-0 bg-transparent p-0">
+          <button type="button" aria-label="Fork Knitting" className="min-w-0 disabled:cursor-wait [font:inherit] m-0 h-6 w-full cursor-pointer border-0 bg-transparent p-0">
             <img src={iconFork} alt="" width="24" height="24" className="block max-w-none" />
           </button>
           <button
             type="button"
             aria-label="Share Knitting"
-            className="m-0 flex h-6 w-full -scale-y-100 rotate-180 cursor-pointer items-center justify-center border-0 bg-transparent p-0"
+            className="min-w-0 disabled:cursor-wait [font:inherit] m-0 flex h-6 w-full -scale-y-100 rotate-180 cursor-pointer items-center justify-center border-0 bg-transparent p-0"
           >
             <img src={iconShare} alt="" width="24" height="24" className="block max-w-none" />
           </button>

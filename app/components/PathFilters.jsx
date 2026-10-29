@@ -65,7 +65,7 @@ export default function PathFilters({ value, onChange, query, onQuery }) {
               type="button"
               aria-pressed={selected}
               onClick={() => onChange(filter.id)}
-              className={`m-0 inline-flex h-10 shrink-0 cursor-pointer items-center rounded-full border-0 px-4 font-sans text-sm whitespace-nowrap ${
+              className={`min-w-0 disabled:cursor-wait py-3 m-0 inline-flex h-10 shrink-0 cursor-pointer items-center rounded-full border-0 px-4 font-sans text-sm whitespace-nowrap ${
                 selected ? 'bg-accent font-medium text-on-brand' : 'bg-accent-muted font-normal text-ink'
               }`}
             >
@@ -108,7 +108,7 @@ export default function PathFilters({ value, onChange, query, onQuery }) {
             event.stopPropagation()
             closeSearch()
           }}
-          className="relative m-0 size-4 shrink-0 border-0 bg-transparent p-0"
+          className="min-w-0 cursor-pointer disabled:cursor-wait [font:inherit] relative m-0 size-4 shrink-0 border-0 bg-transparent p-0"
         >
           <img
             src={searchIcon}
