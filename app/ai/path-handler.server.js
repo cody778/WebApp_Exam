@@ -50,10 +50,39 @@ export async function handlePathRequest(request, {
     return json({ error: error instanceof SyntaxError ? 'The request could not be read.' : error.message }, 400)
   }
 
+  const generationOptions = { apiKey: env.GEMINI_API_KEY, model: env.GEMINI_MODEL, signal: request.signal }
+  if (request.headers.get('accept')?.includes('application/x-ndjson')) {
+    const encoder = new TextEncoder()
+    const abort = new AbortController()
+    let closed = false
+    const stream = new ReadableStream({
+      start(controller) {
+        const send = value => { if (!closed) controller.enqueue(encoder.encode(JSON.stringify(value) + '\n')) }
+        send({ type: 'progress', title: '', description: '', lessons: [] })
+        async function run() {
+          try {
+            const draft = await generate({ youtubeUrl: input.youtubeUrl, transcript: input.transcript }, {
+              ...generationOptions,
+              signal: AbortSignal.any([request.signal, abort.signal]),
+              onProgress: preview => send({ ...preview, type: 'progress' }),
+            })
+            send({ type: 'complete', draft })
+          } catch (error) {
+            send({ type: 'error', error: error.message || 'Could not create lessons from this video.' })
+          } finally {
+            if (!closed) { closed = true; controller.close() }
+          }
+        }
+        run()
+      },
+      cancel() { closed = true; abort.abort() },
+    })
+    return new Response(stream, { headers: { 'Content-Type': 'application/x-ndjson', 'Cache-Control': 'no-store', 'X-Accel-Buffering': 'no' } })
+  }
+
   try {
     const draft = await generate({ youtubeUrl: input.youtubeUrl, transcript: input.transcript }, {
-      apiKey: env.GEMINI_API_KEY,
-      model: env.GEMINI_MODEL,
+      ...generationOptions,
     })
     return json(draft)
   } catch (error) {
