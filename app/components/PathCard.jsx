@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import saveCount from '../assets/explore/save-count.svg'
 import forkCount from '../assets/explore/fork-count.svg'
 
@@ -14,6 +15,7 @@ import forkCount from '../assets/explore/fork-count.svg'
  * @param {boolean} [props.cropped] Use the frame’s offset crop instead of a centered cover.
  * @param {boolean} [props.saved] Whether this path is marked saved.
  * @param {() => void} [props.onToggleSave] Called when the corner save control is pressed.
+ * @param {string} [props.to] Path opened when the card is clicked. The save control stays separate.
  */
 export default function PathCard({
   title,
@@ -26,9 +28,10 @@ export default function PathCard({
   cropped = false,
   saved = false,
   onToggleSave,
+  to,
 }) {
   return (
-    <article className="flex h-[141px] flex-col gap-2 overflow-hidden border border-[#bcbcbc] bg-white">
+    <article className="relative flex h-[141px] flex-col gap-2 overflow-hidden border border-[#bcbcbc] bg-white">
       <div className="relative flex min-h-0 w-full flex-1 flex-col items-end bg-[#dad6cd] px-[3px] py-[5px]">
         {cropped ? (
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -53,8 +56,12 @@ export default function PathCard({
           type="button"
           aria-pressed={saved}
           aria-label={saved ? `Unsave ${title}` : `Save ${title}`}
-          onClick={onToggleSave}
-          className="relative z-10 m-0 border-0 bg-transparent p-0 leading-none"
+          onClick={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+            onToggleSave?.()
+          }}
+          className="relative z-20 m-0 border-0 bg-transparent p-0 leading-none"
         >
           <svg
             width="24"
@@ -76,7 +83,18 @@ export default function PathCard({
         </button>
       </div>
       <div className="flex flex-col gap-1 p-2">
-        <h2 className="m-0 text-card-title whitespace-nowrap text-black">{title}</h2>
+        <h2 className="m-0 text-card-title whitespace-nowrap text-black">
+          {to ? (
+            <Link
+              to={to}
+              className="m-0 border-0 p-0 text-inherit no-underline before:absolute before:inset-0 before:z-10 before:content-[''] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              {title}
+            </Link>
+          ) : (
+            title
+          )}
+        </h2>
         <div className="flex items-center justify-between">
           <p className="m-0 text-h5 whitespace-nowrap text-ink">By {author}</p>
           <div className="flex items-center gap-1">

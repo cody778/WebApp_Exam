@@ -260,6 +260,7 @@ body::before {
 /* These frames are full-bleed. Drop the shared page column only on those screens. */
 main:has(.landing-page),
 main:has(.explore-page),
+main:has(.public-path),
 main:has(.register-page) {
   max-width: none;
   margin: 0;
@@ -271,6 +272,8 @@ main:has(.register-page) {
 .landing-page *,
 .explore-page,
 .explore-page *,
+.public-path,
+.public-path *,
 .register-page,
 .register-page * {
   box-sizing: border-box;
