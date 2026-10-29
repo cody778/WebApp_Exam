@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import Logo from '../components/Logo.jsx'
 import PathCard from '../components/PathCard.jsx'
+import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
 import searchIcon from '../assets/explore/search.svg'
 import knitting from '../assets/explore/knitting.png'
 import crochet from '../assets/explore/crochet.png'
@@ -38,6 +39,7 @@ const paths = [
 export default function Explore() {
   const [query, setQuery] = useState('')
   const [savedTitles, setSavedTitles] = useState(() => new Set())
+  const { saveOrPrompt, prompt } = useSavePrompt()
   const needle = query.trim().toLowerCase()
 
   function toggleSave(title) {
@@ -107,13 +109,14 @@ export default function Explore() {
                 saves="1.5 k"
                 forks="208"
                 saved={savedTitles.has(path.title)}
-                onToggleSave={() => toggleSave(path.title)}
+                onToggleSave={() => saveOrPrompt(() => toggleSave(path.title))}
                 to={path.title === 'Knitting' ? '/public-path' : undefined}
               />
             </li>
           ))}
         </ul>
       )}
+      {prompt}
     </div>
   )
 }
