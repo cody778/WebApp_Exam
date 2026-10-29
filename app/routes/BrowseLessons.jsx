@@ -18,7 +18,7 @@ export default function BrowseLessons() {
           </li>
         ))}
       </ul>
-      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to="/my-roadmap">My roadmaps</Link>
+      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to="/my-path">My paths</Link>
     </>
   )
 }

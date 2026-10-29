@@ -18,7 +18,7 @@ const highlights = [
   {
     icon: iconCheck,
     title: 'Track and share progress',
-    body: 'Create your own path, copy community roadmaps, or share what you’ve built.',
+    body: 'Create your own path, copy community paths, or share what you’ve built.',
   },
 ]
 

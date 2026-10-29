@@ -1,0 +1,115 @@
+import { useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router'
+import BlockEditor from '../components/BlockEditor.jsx'
+import { useAuth } from '../user/AuthProvider.jsx'
+import { supabase } from '../user/client.js'
+import { createRoadmap, saveLesson } from '../user/data.js'
+import { saveGeneratedPath } from '../user/generatedPath.js'
+
+const buttonClass = 'min-w-0 cursor-pointer rounded-lg border-0 bg-accent px-4 py-3 font-sans text-base text-white disabled:cursor-wait disabled:opacity-60'
+
+export default function YouTubePath() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const working = useRef(false)
+  const [draft, setDraft] = useState(null)
+  const [busy, setBusy] = useState('')
+  const [error, setError] = useState('')
+  const [saved, setSaved] = useState(0)
+  const [saveStarted, setSaveStarted] = useState(false)
+
+  async function generate(event) {
+    event.preventDefault()
+    if (working.current) return
+    const form = new FormData(event.currentTarget)
+    working.current = true
+    setBusy('generating')
+    setError('')
+    try {
+      const { data, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError || !data.session) throw new Error('Please sign in again to create a path.')
+      const response = await fetch('/api/generate-path', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${data.session.access_token}` },
+        body: JSON.stringify({ youtubeUrl: form.get('youtubeUrl').trim(), transcript: form.get('transcript').trim() }),
+        signal: AbortSignal.timeout(60000),
+      })
+      if (!response.headers.get('content-type')?.includes('application/json')) {
+        throw new Error('YouTube path creation is unavailable right now. Please try again later.')
+      }
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || 'Could not generate the lessons. Please try again.')
+      setDraft(result)
+    } catch (error) {
+      setError(error.name === 'TimeoutError' ? 'This video took too long. Try a shorter video or paste its transcript.' : error.message)
+    } finally {
+      working.current = false
+      setBusy('')
+    }
+  }
+
+  async function save() {
+    if (working.current) return
+    working.current = true
+    setBusy('saving')
+    setError('')
+    setSaveStarted(true)
+    try {
+      const id = await saveGeneratedPath(user.id, draft, {
+        createPath: createRoadmap,
+        saveLesson,
+        onProgress: setSaved,
+      })
+      navigate(`/my-path/${id}`)
+    } catch {
+      setError('Could not save the whole path. Some lessons may already be saved. Retry to finish saving this same path.')
+    } finally {
+      working.current = false
+      setBusy('')
+    }
+  }
+
+  return (
+    <section className="flex min-w-0 flex-col gap-5" aria-busy={Boolean(busy)}>
+      <h1 className="m-0 text-page-title text-ink">Create a path from YouTube</h1>
+      {!draft ? <>
+        <p className="m-0 text-sm leading-body text-quiet">Paste a public YouTube video link. Gemini will turn it into a short path with lessons you can review before saving.</p>
+        <form onSubmit={generate}>
+          <fieldset disabled={Boolean(busy)} className="m-0 grid min-w-0 gap-3 border-0 p-0">
+            <label htmlFor="youtube-url" className="text-sm font-semibold">YouTube link</label>
+            <input id="youtube-url" name="youtubeUrl" type="url" required maxLength={2048} placeholder="https://www.youtube.com/watch?v=..."
+              className="min-w-0 rounded-lg border border-accent-muted bg-white p-3 font-sans text-base" />
+            <details className="rounded-lg border border-accent-muted p-3">
+              <summary className="cursor-pointer text-sm">Add a transcript (optional)</summary>
+              <label htmlFor="video-transcript" className="my-3 block text-sm leading-body">If the video cannot be read, paste its transcript here.</label>
+              <textarea id="video-transcript" name="transcript" maxLength={60000} rows={6}
+                className="w-full min-w-0 rounded-lg border border-accent-muted bg-white p-3 font-sans text-sm" />
+            </details>
+            <button type="submit" className={buttonClass}>{busy ? 'Creating lessons...' : 'Generate lessons'}</button>
+          </fieldset>
+        </form>
+      </> : <>
+        <div className="rounded-lg border border-accent-muted bg-white p-4">
+          <h2 className="mt-0 text-xl font-semibold">{draft.title}</h2>
+          <p className="mb-0 text-sm leading-body">{draft.description}</p>
+        </div>
+        <p className="m-0 text-sm text-quiet">Review these {draft.lessons.length} lessons. You can edit them after saving.</p>
+        <ol className="m-0 grid list-none gap-3 p-0">
+          {draft.lessons.map((lesson, index) => <li key={lesson.id}>
+            <details className="overflow-hidden rounded-lg border border-accent-muted bg-white">
+              <summary className="cursor-pointer p-4 font-semibold">{index + 1}. {lesson.title}</summary>
+              <BlockEditor blocks={lesson.blocks} readOnly />
+            </details>
+          </li>)}
+        </ol>
+        <button type="button" disabled={Boolean(busy)} onClick={save} className={buttonClass}>
+          {busy === 'saving' ? `Saving ${saved} of ${draft.lessons.length} lessons...` : saveStarted ? 'Retry saving path' : 'Save path'}
+        </button>
+        {!saveStarted && <button type="button" disabled={Boolean(busy)} className="cursor-pointer border-0 bg-transparent p-0 text-sm text-accent underline" onClick={() => { setDraft(null); setError('') }}>Use a different video</button>}
+      </>}
+      {busy === 'generating' && <p role="status" className="m-0 text-sm text-quiet">Reading the video and preparing your lessons. This can take a little while.</p>}
+      {error && <p role="alert" className="m-0 text-sm text-[#9e2020]">{error}</p>}
+      <Link to="/create-path" className="text-sm text-accent underline">Back to create a path</Link>
+    </section>
+  )
+}

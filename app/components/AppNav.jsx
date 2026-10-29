@@ -62,7 +62,7 @@ export default function AppNav({ notification = null }) {
           <span className="font-sans text-sm font-normal whitespace-nowrap">Explore</span>
         </NavLink>
         <NavLink
-          to="/create-roadmap"
+          to="/create-path"
           className={({ isActive }) =>
             `${idleChip} gap-2 px-4 text-white ${isActive ? 'bg-accent' : 'bg-ink'}`
           }

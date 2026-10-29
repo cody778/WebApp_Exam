@@ -44,7 +44,7 @@ export default function Home() {
             {shortcuts.map(({ roadmap, lesson, label }) => (
               <li key={roadmap.id}>
                 <JumpBackCard
-                  to={`/my-roadmap/${roadmap.id}/lesson/${lesson.id}`}
+                  to={`/my-path/${roadmap.id}/lesson/${lesson.id}`}
                   lessonTitle={lesson.title}
                   pathTitle={roadmap.title}
                   progress={label}
@@ -64,7 +64,7 @@ export default function Home() {
               {visible.map((roadmap) => (
                 <li key={roadmap.id}>
                   <LibraryPathCard
-                    to={`/my-roadmap/${roadmap.id}`}
+                    to={`/my-path/${roadmap.id}`}
                     title={roadmap.title}
                     progress={pathProgress(roadmap).label}
                   />

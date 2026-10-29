@@ -7,13 +7,13 @@ export default function LessonTimeline({ roadmapId, lessons }) {
     <section>
       <h2>Lessons</h2>
       <p>{completed} of {lessons.length} lessons completed</p>
-      <progress aria-label="Roadmap progress" value={completed} max={lessons.length || 1} />
+      <progress aria-label="Path progress" value={completed} max={lessons.length || 1} />
       {!lessons.length && <p>No lessons linked yet.</p>}
       <ol>
         {lessons.map(lesson => (
           <li key={lesson.id}>
             {lesson.unavailable ? 'Lesson unavailable' : <>
-              <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={`/my-roadmap/${roadmapId}/lesson/${lesson.id}`}>{lesson.title}</Link>
+              <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={`/my-path/${roadmapId}/lesson/${lesson.id}`}>{lesson.title}</Link>
               {lesson.completed ? 'Completed' : 'To do'}
             </>}
           </li>

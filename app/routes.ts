@@ -11,11 +11,12 @@ export default [
   layout('user/RequireUser.jsx', [
     layout('routes/AppLayout.jsx', [
       route('home', 'routes/Home.jsx'),
-      route('browse-roadmaps', 'routes/BrowseRoadmaps.jsx'),
-      route('my-roadmap', 'routes/MyRoadmap.jsx'),
-      route('create-roadmap', 'routes/CreateRoadmap.jsx'),
-      route('my-roadmap/:roadmapId', 'routes/Roadmap.jsx'),
-      route('my-roadmap/:roadmapId/lesson/:lessonId', 'routes/Lesson.jsx'),
+      route('browse-paths', 'routes/BrowseRoadmaps.jsx'),
+      route('my-path', 'routes/MyRoadmap.jsx'),
+      route('create-path', 'routes/CreateRoadmap.jsx'),
+      route('create-path/youtube', 'routes/YouTubePath.jsx'),
+      route('my-path/:roadmapId', 'routes/Roadmap.jsx'),
+      route('my-path/:roadmapId/lesson/:lessonId', 'routes/Lesson.jsx'),
       route('lesson/:lessonId', 'routes/StandaloneLesson.jsx'),
       route('edit-lesson/:lessonId?', 'routes/EditLesson.jsx'),
       route('browse-lessons', 'routes/BrowseLessons.jsx'),
