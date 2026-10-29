@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, Navigate, useSearchParams } from 'react-router'
 import AppNav from '../components/AppNav.jsx'
 import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
@@ -83,16 +83,21 @@ function SaveMark({ saved, title, onToggleSave }) {
 function ShortcutCard({ title, path, step, to }) {
   const body = (
     <>
-      <p className="m-0 flex h-11 items-center font-sans text-base leading-[1.4] font-semibold text-quiet">{title}</p>
-      <p className="m-0 font-sans text-base leading-[1.4] text-placeholder">{path}</p>
+      <p className="m-0 flex min-h-11 items-start font-display text-base leading-[1.4] font-medium text-quiet">{title}</p>
+      <p className="m-0 font-display text-base leading-[1.4] font-normal text-placeholder">{path}</p>
       <p className="m-0 text-h5 text-placeholder">{step}</p>
     </>
   )
-  const className = 'flex h-[102px] w-[140px] shrink-0 snap-start flex-col border border-[#bcbcbc] bg-white p-2 no-underline'
+  const className =
+    'm-0 flex h-[102px] w-[140px] shrink-0 snap-start flex-col rounded-none border border-[#bcbcbc] bg-white p-2 no-underline'
 
   if (to) {
     return (
-      <Link to={to} className={className}>
+      <Link
+        to={to}
+        draggable={false}
+        className="!m-0 !flex !h-[102px] !w-[140px] shrink-0 snap-start !flex-col !rounded-none !border !border-[#bcbcbc] !bg-white !p-2 !text-inherit !no-underline"
+      >
         {body}
       </Link>
     )
@@ -152,6 +157,9 @@ export default function Profile() {
   const initialFilter = searchParams.get('filter')
   const [filter, setFilter] = useState(initialFilter === 'saved' || initialFilter === 'mine' ? initialFilter : 'all')
   const [query, setQuery] = useState('')
+  const jumpBackRef = useRef(null)
+  const jumpDragRef = useRef(null)
+  const jumpDraggedRef = useRef(false)
   const savedTitles = useSavedTitles(user?.id ?? null)
   const { saveOrPrompt, prompt } = useSavePrompt()
   const premium = usePremiumUnlocked()
@@ -173,6 +181,54 @@ export default function Profile() {
     toggleSavedTitle(user?.id ?? null, title)
   }
 
+  function onJumpPointerDown(event) {
+    if (event.pointerType !== 'mouse' || event.button !== 0) return
+    const scroller = jumpBackRef.current
+    jumpDragRef.current = { pointerId: event.pointerId, startX: event.clientX, startScroll: scroller.scrollLeft, moved: false }
+  }
+
+  function onJumpPointerMove(event) {
+    const drag = jumpDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    const distance = event.clientX - drag.startX
+    if (!drag.moved && Math.abs(distance) < 16) return
+    if (!drag.moved) {
+      drag.moved = true
+      jumpDraggedRef.current = true
+      const scroller = jumpBackRef.current
+      try {
+        scroller.setPointerCapture(event.pointerId)
+      } catch {
+        // Capture is only available while a real pointer is active.
+      }
+      scroller.style.scrollSnapType = 'none'
+    }
+    jumpBackRef.current.scrollLeft = drag.startScroll - distance
+  }
+
+  function onJumpPointerEnd(event) {
+    const drag = jumpDragRef.current
+    if (!drag || drag.pointerId !== event.pointerId) return
+    jumpDragRef.current = null
+    const scroller = jumpBackRef.current
+    if (scroller.hasPointerCapture?.(event.pointerId)) scroller.releasePointerCapture(event.pointerId)
+    if (!drag.moved) return
+    const first = scroller.firstElementChild
+    const gap = Number.parseFloat(getComputedStyle(scroller).columnGap) || 0
+    const step = (first?.getBoundingClientRect().width ?? 0) + gap
+    const max = scroller.scrollWidth - scroller.clientWidth
+    const left = step > 0 ? Math.max(0, Math.min(max, Math.round(scroller.scrollLeft / step) * step)) : scroller.scrollLeft
+    scroller.style.scrollSnapType = ''
+    scroller.scrollTo({ left, behavior: 'smooth' })
+  }
+
+  function onJumpClickCapture(event) {
+    if (!jumpDraggedRef.current) return
+    jumpDraggedRef.current = false
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
   return (
     <div className="profile-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-8 p-4 font-sans text-ink">
       {authPending ? <header className="flex h-10 items-center" aria-busy="true" /> : <AppNav />}
@@ -181,7 +237,15 @@ export default function Profile() {
         <h1 id="jump-back" className="m-0 font-display text-[15px] leading-none font-normal">
           Jump back in
         </h1>
-        <div className="flex gap-2.5 overflow-x-auto overscroll-x-contain snap-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div
+          ref={jumpBackRef}
+          onPointerDown={onJumpPointerDown}
+          onPointerMove={onJumpPointerMove}
+          onPointerUp={onJumpPointerEnd}
+          onPointerCancel={onJumpPointerEnd}
+          onClickCapture={onJumpClickCapture}
+          className="flex cursor-grab gap-2.5 snap-x overflow-x-auto overscroll-x-contain select-none [-ms-overflow-style:none] [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
+        >
           {shortcuts.map((shortcut) => (
             <ShortcutCard
               key={shortcut.title}

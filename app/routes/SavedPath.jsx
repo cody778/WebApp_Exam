@@ -59,7 +59,7 @@ export default function SavedPath() {
         </Link>
 
         <div className="flex flex-col gap-2">
-          <h1 className="m-0 font-sans text-[48px] leading-[1.2] font-bold tracking-[-0.96px] text-ink">Knitting</h1>
+          <h1 className="m-0 font-logo text-[48px] leading-none font-normal tracking-[-2.88px] whitespace-nowrap text-ink">Knitting</h1>
           <div className="flex items-center justify-between">
             <p className="m-0 font-sans text-[10px] leading-[1.4] font-normal whitespace-nowrap text-[#444]">By Pathify</p>
             <div className="flex items-center gap-1">
@@ -76,12 +76,12 @@ export default function SavedPath() {
         </div>
 
         <section className="flex flex-1 flex-col gap-4" aria-label="Overview">
-          <div className="flex items-center gap-2 font-sans text-2xl leading-[1.2] font-normal text-ink">
-            <p className="m-0 min-w-0 flex-1">| Overview</p>
-            <p className="m-0 shrink-0 whitespace-nowrap">|</p>
-            <p className="m-0 shrink-0 whitespace-nowrap">|</p>
+          <div className="flex items-center gap-2 text-ink">
+            <p className="m-0 min-w-0 flex-1 font-sans text-[32px] leading-[1.2] font-normal">| Overview</p>
+            <p className="m-0 shrink-0 font-sans text-2xl leading-[1.2] font-normal whitespace-nowrap">|</p>
+            <p className="m-0 shrink-0 font-sans text-2xl leading-[1.2] font-normal whitespace-nowrap">|</p>
           </div>
-          <p className="m-0 font-sans text-sm leading-[1.4] font-normal text-quiet">
+          <p className="m-0 text-sm leading-[1.4] font-medium text-quiet">
             Learn all the essential techniques to be a able to complete a knitting project from start to finish.
           </p>
           <p className="m-0 font-sans text-sm leading-[1.4] font-normal text-quiet">8 steps, 0 completed</p>
@@ -103,7 +103,7 @@ export default function SavedPath() {
                   ) : (
                     <img src={stepDot} alt="" width="8" height="8" className="block max-w-none shrink-0" />
                   )}
-                  <span className={`font-sans text-base leading-[1.4] ${current ? 'text-on-brand' : 'text-ink'}`}>{step}</span>
+                  <span className={`font-display text-[20px] leading-[1.4] font-medium ${current ? 'text-on-brand' : 'text-ink'}`}>{step}</span>
                 </li>
               )
             })}

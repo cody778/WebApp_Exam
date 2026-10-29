@@ -22,7 +22,7 @@ import blender from '../assets/explore/blender.jpg'
 const paths = [
   { title: 'Knitting', author: 'Pathify', image: knitting, imageWidth: 1860, imageHeight: 850 },
   { title: 'Crochet', author: 'Pathify', image: crochet, imageWidth: 1860, imageHeight: 850 },
-  { title: 'Oleo Painting', author: 'Pathify', image: oleo, imageWidth: 1860, imageHeight: 850 },
+  { title: 'Oil painting', author: 'Pathify', image: oleo, imageWidth: 1860, imageHeight: 850 },
   { title: 'Sewing for begginers', author: 'Pathify', image: sewing, imageWidth: 1860, imageHeight: 850 },
   { title: 'Digital drawing', author: 'Pathify', image: digital, imageWidth: 1860, imageHeight: 850 },
   { title: 'Watercolors', author: 'Omar Caloca', image: watercolors, imageWidth: 748, imageHeight: 512 },
@@ -60,11 +60,11 @@ export default function Explore() {
   )
 
   return (
-    <div className="explore-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 p-4 font-sans text-ink">
+    <div className="explore-page mx-auto flex min-h-screen w-full max-w-[440px] flex-col gap-4 px-6 py-4 font-sans text-ink">
       {authPending ? (
-        <header className="flex h-8 items-center justify-between gap-3" aria-busy="true" />
+        <header className="flex h-10 items-center justify-between gap-3" aria-busy="true" />
       ) : signedIn ? (
-        <AppNav />
+        <AppNav showHome={false} />
       ) : (
         <header className="flex items-center justify-between gap-3">
           <Link to="/" className="m-0 inline-flex border-0 p-0 no-underline">
@@ -86,7 +86,7 @@ export default function Explore() {
           </div>
         </header>
       )}
-      <h1 className="m-0 mt-4 font-display text-xl leading-heading font-medium tracking-heading whitespace-nowrap text-ink">
+      <h1 className="m-0 font-display text-xl leading-heading font-medium tracking-heading text-ink">
         Explore paths from the community
       </h1>
       <form

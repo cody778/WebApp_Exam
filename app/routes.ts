@@ -11,6 +11,8 @@ export default [
   route('saved-path', 'routes/SavedPath.jsx'),
   route('sashiko', 'routes/SashikoPath.jsx'),
   route('profile', 'routes/Profile.jsx'),
+  route('account', 'routes/Account.jsx'),
+  route('appearance', 'routes/Appearance.jsx'),
   route('premium', 'routes/Premium.jsx'),
   layout('user/RequireUser.jsx', [
     layout('routes/AppLayout.jsx', [

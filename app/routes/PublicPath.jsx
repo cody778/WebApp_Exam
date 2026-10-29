@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import Button from '../components/Button.jsx'
+import EditLesson from './EditLesson.jsx'
 import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { supabase } from '../user/client.js'
 import iconFork from '../assets/public-path/icon-fork.svg'
 import iconShare from '../assets/public-path/icon-share.svg'
+import iconSave from '../assets/public-path/icon-save.svg'
 import countSave from '../assets/public-path/count-save.svg'
 import countFork from '../assets/public-path/count-fork.svg'
 import knittingDrawing from '../assets/public-path/knitting-drawing.svg'
@@ -59,6 +61,7 @@ export default function PublicPath() {
   const { user, loading } = useAuth()
   const userId = user?.id ?? null
   const [saved, setSaved] = useState(false)
+  const [editing, setEditing] = useState(false)
   const [visitedBefore, setVisitedBefore] = useState(false)
   const [completed, setCompleted] = useState(() => new Set())
   const { saveOrPrompt, prompt } = useSavePrompt()
@@ -110,8 +113,9 @@ export default function PublicPath() {
     })
   }
 
+  const signedIn = Boolean(user) || !supabase
   let pathAction = 'Sign in to start your path'
-  if (user) pathAction = visitedBefore || completed.size > 0 ? 'Continue your path' : 'Welcome, start your path'
+  if (signedIn) pathAction = visitedBefore || completed.size > 0 ? 'Continue your path' : 'Welcome, start your path'
 
   function onScrollerPointerDown(event) {
     if (event.pointerType !== 'mouse' || event.button !== 0) return
@@ -147,6 +151,8 @@ export default function PublicPath() {
     scroller.style.scrollSnapType = ''
     scroller.scrollTo({ left: index * scroller.clientWidth, behavior: 'smooth' })
   }
+
+  if (editing) return <EditLesson />
 
   return (
     <div className="public-path box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-white font-sans text-ink">
@@ -189,7 +195,14 @@ export default function PublicPath() {
           <h1 className="m-0 font-logo text-[48px] leading-none font-normal tracking-[-2.88px] whitespace-nowrap text-ink">
             Knitting
           </h1>
-          <img src={iconLock} alt="" width="20" height="20" className="block max-w-none shrink-0" />
+          <button
+            type="button"
+            aria-label="Edit Knitting"
+            onClick={() => setEditing(true)}
+            className="!m-0 !h-5 !w-5 shrink-0 cursor-pointer !border-0 !bg-transparent !p-0"
+          >
+            <img src={iconLock} alt="" width="20" height="20" className="block max-w-none" />
+          </button>
         </div>
         <div
           ref={scrollerRef}
@@ -217,23 +230,25 @@ export default function PublicPath() {
                   ) : null}
                   <img src={stepDot} alt="" width="8" height="8" className="relative z-10 block max-w-none shrink-0" />
                   <span className="min-w-0 flex-1 font-display text-[20px] leading-[1.4] font-medium text-ink">{step}</span>
-                  <button
-                    type="button"
-                    aria-pressed={completed.has(step)}
-                    aria-label={completed.has(step) ? `Mark ${step} incomplete` : `Mark ${step} completed`}
-                    onClick={() => toggleStep(step)}
-                    className={`m-0 flex size-4 shrink-0 items-center justify-center rounded border border-brand p-0 ${completed.has(step) ? 'bg-brand' : 'bg-transparent'}`}
-                  >
-                    {completed.has(step) ? (
-                      <img src={iconCheck} alt="" width="12.2667" height="8.93333" className="block max-w-none" />
-                    ) : null}
-                  </button>
+                  {user ? (
+                    <button
+                      type="button"
+                      aria-pressed={completed.has(step)}
+                      aria-label={completed.has(step) ? `Mark ${step} incomplete` : `Mark ${step} completed`}
+                      onClick={() => toggleStep(step)}
+                      className={`m-0 flex size-4 shrink-0 items-center justify-center rounded border border-brand p-0 ${completed.has(step) ? 'bg-brand' : 'bg-transparent'}`}
+                    >
+                      {completed.has(step) ? (
+                        <img src={iconCheck} alt="" width="12.2667" height="8.93333" className="block max-w-none" />
+                      ) : null}
+                    </button>
+                  ) : null}
                 </li>
               ))}
             </ol>
             {authPending ? (
               <button type="button" disabled aria-busy="true" className={pathButtonClass} />
-            ) : user ? (
+            ) : signedIn ? (
               <button type="button" onClick={startPath} className={pathButtonClass}>
                 {pathAction}
               </button>

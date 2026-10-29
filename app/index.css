@@ -4,6 +4,8 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "@fontsource/opendyslexic/400.css";
 
+@source inline("!bg-[#9e2020] bg-[#efe6dd] text-[#6c5b5b] bg-[#756e66] text-[#efe6dd] bg-[#0088ff] text-[22px] !h-[51px] !border-black");
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: Futura, "Futura PT", "Century Gothic", sans-serif;
@@ -289,6 +291,8 @@ body::before {
 main:has(.landing-page),
 main:has(.explore-page),
 main:has(.profile-page),
+main:has(.account-page),
+main:has(.appearance-page),
 main:has(.premium-page),
 main:has(.saved-path),
 main:has(.sashiko-path),
@@ -306,6 +310,10 @@ main:has(.sign-in-page) {
 .explore-page *,
 .profile-page,
 .profile-page *,
+.account-page,
+.account-page *,
+.appearance-page,
+.appearance-page *,
 .premium-page,
 .premium-page *,
 .saved-path,
