@@ -74,7 +74,7 @@ export default function Home() {
           )}
         </section>
       )}
-      <PremiumBanner />
+      <PremiumBanner className="mt-auto" />
     </div>
   )
 }

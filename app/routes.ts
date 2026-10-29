@@ -8,6 +8,10 @@ export default [
   route('sign-in', 'routes/SignIn.jsx'),
   route('explore', 'routes/Explore.jsx'),
   route('public-path', 'routes/PublicPath.jsx'),
+  route('saved-path', 'routes/SavedPath.jsx'),
+  route('sashiko', 'routes/SashikoPath.jsx'),
+  route('profile', 'routes/Profile.jsx'),
+  route('premium', 'routes/Premium.jsx'),
   layout('user/RequireUser.jsx', [
     layout('routes/AppLayout.jsx', [
       route('home', 'routes/Home.jsx'),
@@ -20,7 +24,6 @@ export default [
       route('lesson/:lessonId', 'routes/StandaloneLesson.jsx'),
       route('edit-lesson/:lessonId?', 'routes/EditLesson.jsx'),
       route('browse-lessons', 'routes/BrowseLessons.jsx'),
-      route('profile', 'routes/Profile.jsx'),
       route('my-skills', 'routes/MySkills.jsx'),
       route('notifications', 'routes/Notifications.jsx'),
       route('profile/projects', 'routes/BrowseProjects.jsx'),
