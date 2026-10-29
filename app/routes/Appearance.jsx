@@ -28,7 +28,7 @@ const bodyFonts = [
 ]
 
 const themeGrid = { display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '16px' }
-const typeGrid = { display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', columnGap: '20px', rowGap: '16px' }
+const typeGrid = { display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr) minmax(0, 1fr)', columnGap: '12px', rowGap: '16px', alignItems: 'center' }
 
 const spacingStops = [42.5, 99.5, 143.5, 195.5, 247.5]
 
@@ -154,7 +154,8 @@ function FontChoice({ label, font, family, selected, onClick }) {
       type="button"
       aria-pressed={selected}
       onClick={onClick}
-      className={`!m-0 flex !h-10 !min-w-0 !items-center !justify-center !rounded-2xl !border !border-black !px-2 !py-0 ${selected ? '!bg-ink' : '!bg-transparent'}`}
+      className={`!m-0 flex !h-10 !min-w-0 !items-center !justify-center !rounded-2xl !border !border-black !py-0 ${selected ? '!bg-ink' : '!bg-transparent'}`}
+      style={{ paddingLeft: 6, paddingRight: 6 }}
     >
       <span className={`${font || ''} text-base leading-normal whitespace-nowrap ${selected ? 'text-on-brand' : 'text-ink'}`} style={family ? { fontFamily: family } : undefined}>{label}</span>
     </button>
