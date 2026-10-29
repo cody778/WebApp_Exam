@@ -268,6 +268,8 @@ body::before {
 /* These frames are full-bleed. Drop the shared page column only on those screens. */
 main:has(.landing-page),
 main:has(.explore-page),
+main:has(.profile-page),
+main:has(.premium-page),
 main:has(.register-page),
 main:has(.sign-in-page) {
   max-width: none;
@@ -280,6 +282,10 @@ main:has(.sign-in-page) {
 .landing-page *,
 .explore-page,
 .explore-page *,
+.profile-page,
+.profile-page *,
+.premium-page,
+.premium-page *,
 .public-path,
 .public-path *,
 .register-page,
