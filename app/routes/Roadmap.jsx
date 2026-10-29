@@ -20,9 +20,9 @@ export default function Roadmap() { // displays a specific roadmap and its lesso
       <LessonTimeline roadmapId={data.id} lessons={data.lessons} />
       {data.owner_id === user.id && <>
         <RoadmapLessons roadmap={data} onLinked={reload} />
-        <Link to={`/edit-lesson?roadmap=${data.id}`}>Add a lesson</Link>
+        <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={`/edit-lesson?roadmap=${data.id}`}>Add a lesson</Link>
       </>}
-      <Link to={data.owner_id === user.id ? '/my-roadmap' : '/browse-roadmaps'}>Back to roadmaps</Link>
+      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={data.owner_id === user.id ? '/my-roadmap' : '/browse-roadmaps'}>Back to roadmaps</Link>
     </>
   )
 }

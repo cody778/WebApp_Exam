@@ -8,5 +8,5 @@ export default function DataState({ loading, error }) { //takes loading error an
       ? 'Your learning data is not available yet.' // Check for specific error codes
       : 'Could not load your data. Please try again.' // Default error message 2
 
-  return <p role="alert">{message}</p>
+  return <p className="text-[#9e2020]" role="alert">{message}</p>
 }

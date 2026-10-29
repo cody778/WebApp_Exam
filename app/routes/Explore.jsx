@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
+import AppNav from '../components/AppNav.jsx'
 import Logo from '../components/Logo.jsx'
+import { useAuth } from '../user/AuthProvider.jsx'
 import PathCard from '../components/PathCard.jsx'
 import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'

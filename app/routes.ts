@@ -19,7 +19,7 @@ export default [
       route('my-roadmap/:roadmapId', 'routes/Roadmap.jsx'),
       route('my-roadmap/:roadmapId/lesson/:lessonId', 'routes/Lesson.jsx'),
       route('lesson/:lessonId', 'routes/StandaloneLesson.jsx'),
-      route('edit-lesson', 'routes/EditLesson.jsx'),
+      route('edit-lesson/:lessonId?', 'routes/EditLesson.jsx'),
       route('browse-lessons', 'routes/BrowseLessons.jsx'),
       route('my-skills', 'routes/MySkills.jsx'),
       route('notifications', 'routes/Notifications.jsx'),
