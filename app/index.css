@@ -16,6 +16,8 @@
   --color-accent: #5e7b8a;
   --color-accent-muted: #d6d2c9;
   --color-surface-muted: #d9d9d9;
+  --color-quiet: #757575;
+  --color-placeholder: #b3b3b3;
   --leading-heading: 1.2;
   --leading-body: 1.4;
   --tracking-heading: -0.02em;
@@ -23,6 +25,14 @@
 }
 
 /* Named text styles. Add a new utility when a frame introduces another variation. */
+@utility text-page-title {
+  font-family: var(--font-sans);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: var(--tracking-heading);
+}
+
 @utility text-hero-title {
   font-family: var(--font-display);
   font-size: 3rem;
@@ -249,7 +259,8 @@ body::before {
 
 /* These frames are full-bleed. Drop the shared page column only on those screens. */
 main:has(.landing-page),
-main:has(.explore-page) {
+main:has(.explore-page),
+main:has(.register-page) {
   max-width: none;
   margin: 0;
   padding: 0;
@@ -259,7 +270,9 @@ main:has(.explore-page) {
 .landing-page,
 .landing-page *,
 .explore-page,
-.explore-page * {
+.explore-page *,
+.register-page,
+.register-page * {
   box-sizing: border-box;
 }
 
