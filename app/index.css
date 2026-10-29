@@ -16,6 +16,10 @@
   --color-accent: #5e7b8a;
   --color-accent-muted: #d6d2c9;
   --color-surface-muted: #d9d9d9;
+  --color-quiet: #757575;
+  --color-placeholder: #b3b3b3;
+  --color-step: #9ca3af;
+  --color-pill: #f0f0f0;
   --leading-heading: 1.2;
   --leading-body: 1.4;
   --tracking-heading: -0.02em;
@@ -23,6 +27,34 @@
 }
 
 /* Named text styles. Add a new utility when a frame introduces another variation. */
+@utility text-page-title {
+  font-family: var(--font-sans);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: var(--tracking-heading);
+}
+
+@utility text-welcome {
+  font-family: var(--font-sans);
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 2.5rem;
+  letter-spacing: var(--tracking-heading);
+}
+
+@utility text-label {
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+
+@utility text-micro {
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  line-height: 1.4;
+}
+
 @utility text-hero-title {
   font-family: var(--font-display);
   font-size: 3rem;
@@ -249,7 +281,10 @@ body::before {
 
 /* These frames are full-bleed. Drop the shared page column only on those screens. */
 main:has(.landing-page),
-main:has(.explore-page) {
+main:has(.explore-page),
+main:has(.register-page),
+main:has(.sign-in-page),
+main:has(.app-frame) {
   max-width: none;
   margin: 0;
   padding: 0;
@@ -259,7 +294,15 @@ main:has(.explore-page) {
 .landing-page,
 .landing-page *,
 .explore-page,
-.explore-page * {
+.explore-page *,
+.public-path,
+.public-path *,
+.register-page,
+.register-page *,
+.sign-in-page,
+.sign-in-page *,
+.app-frame,
+.app-frame * {
   box-sizing: border-box;
 }
 

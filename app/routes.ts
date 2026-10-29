@@ -7,6 +7,7 @@ export default [
   route('sign-up', 'routes/SignUp.jsx'),
   route('sign-in', 'routes/SignIn.jsx'),
   route('explore', 'routes/Explore.jsx'),
+  route('public-path', 'routes/PublicPath.jsx'),
   layout('user/RequireUser.jsx', [
     layout('routes/AppLayout.jsx', [
       route('home', 'routes/Home.jsx'),
