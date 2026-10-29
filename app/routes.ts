@@ -8,6 +8,8 @@ export default [
   route('sign-in', 'routes/SignIn.jsx'),
   route('explore', 'routes/Explore.jsx'),
   route('public-path', 'routes/PublicPath.jsx'),
+  route('saved-path', 'routes/SavedPath.jsx'),
+  route('sashiko', 'routes/SashikoPath.jsx'),
   route('profile', 'routes/Profile.jsx'),
   route('premium', 'routes/Premium.jsx'),
   layout('user/RequireUser.jsx', [

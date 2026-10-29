@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import Button from './Button.jsx'
 import iconClose from '../assets/public-path/icon-close.svg'
 import { useAuth } from '../user/AuthProvider.jsx'
+import { supabase } from '../user/client.js'
 
 /**
  * Sign-in prompt shown when a signed-out visitor tries to save a path.
@@ -76,7 +77,7 @@ export function useSavePrompt() {
   const close = useCallback(() => setOpen(false), [])
 
   function saveOrPrompt(toggle) {
-    if (!user) {
+    if (!user && supabase) {
       setOpen(true)
       return
     }

@@ -87,7 +87,7 @@ export default function PathCard({
           {to ? (
             <Link
               to={to}
-              className="m-0 border-0 p-0 text-inherit no-underline before:absolute before:inset-0 before:z-10 before:content-[''] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="!m-0 !inline !rounded-none !border-0 !bg-transparent !p-0 font-[inherit] text-inherit no-underline before:absolute before:inset-0 before:z-10 before:content-[''] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {title}
             </Link>

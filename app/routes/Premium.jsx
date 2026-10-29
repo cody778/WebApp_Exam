@@ -1,5 +1,8 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { useNavigate, useSearchParams } from 'react-router'
+import AppNav from '../components/AppNav.jsx'
+import SubmitButton from '../components/SubmitButton.jsx'
+import TextField from '../components/TextField.jsx'
 import { emmaPayment, savePaymentMethod, unlockPremium } from '../user/paymentMethods.js'
 
 const methods = [
@@ -9,10 +12,7 @@ const methods = [
 ]
 
 const choiceClass =
-  'm-0 flex h-8 items-center justify-center rounded-lg border px-3 font-display text-base leading-none font-medium whitespace-nowrap'
-
-const fieldClass =
-  'm-0 h-10 w-full rounded-lg border border-surface-muted bg-white px-3 font-sans text-base leading-none text-ink'
+  'm-0 inline-flex h-10 shrink-0 cursor-pointer items-center rounded-full border-0 px-4 font-sans text-sm whitespace-nowrap'
 
 function detailsFor(method) {
   if (method === 'paypal') {
@@ -81,47 +81,42 @@ function SaveDetailsPrompt({ method, onSave, onSkip, onDismiss }) {
   )
 }
 
-/** Mock checkout reached from the premium banner. */
+/** Mock checkout. Only a purchase started from the AI upgrade banner unlocks the assistant. */
 export default function Premium() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const unlockAi = searchParams.get('unlock') === 'ai'
   const [method, setMethod] = useState('card')
   const [promptOpen, setPromptOpen] = useState(false)
 
   function finish(save) {
     if (save) savePaymentMethod(detailsFor(method))
-    unlockPremium()
+    if (unlockAi) unlockPremium()
     navigate('/profile')
   }
 
   return (
     <div className="premium-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-8 p-4 font-sans text-ink">
-      <header className="flex flex-col items-start gap-4">
-        <Link
-          to="/profile"
-          className="m-0 inline-flex h-8 items-center rounded-lg bg-accent-muted px-3 font-display text-base leading-none font-medium text-ink no-underline"
-        >
-          Profile
-        </Link>
-        <h1 className="m-0 font-display text-xl leading-heading font-medium tracking-heading">Payment details</h1>
-      </header>
+      <AppNav />
+      <h1 className="m-0 font-display text-xl leading-heading font-medium tracking-heading">Payment details</h1>
 
       <section className="flex items-center justify-between gap-3 rounded-2xl bg-accent-muted p-4">
         <div>
-          <p className="m-0 font-sans text-sm leading-[1.4] text-accent">Premium AI assistant</p>
+          <p className="m-0 font-sans text-sm leading-body text-accent">Premium AI assistant</p>
           <p className="m-0 mt-1 font-sans text-sm font-semibold text-ink">€5/month</p>
         </div>
-        <p className="m-0 font-sans text-sm text-quiet">Paying as {emmaPayment.holder}</p>
+        <p className="m-0 font-sans text-sm leading-body text-quiet">Paying as {emmaPayment.holder}</p>
       </section>
 
       <form
-        className="m-0 flex flex-col gap-6"
+        className="m-0 flex flex-col gap-4 rounded-lg border border-accent-muted bg-white p-6"
         onSubmit={(event) => {
           event.preventDefault()
           setPromptOpen(true)
         }}
       >
-        <fieldset className="m-0 flex flex-col gap-3 border-0 p-0">
-          <legend className="mb-3 font-sans text-sm font-semibold text-ink">Payment method</legend>
+        <fieldset className="m-0 flex flex-col gap-4 border-0 p-0">
+          <p className="m-0 font-sans text-base leading-body text-ink">Payment method</p>
           <div role="radiogroup" aria-label="Payment method" className="flex flex-wrap gap-2">
             {methods.map((item) => {
               const selected = method === item.id
@@ -134,8 +129,8 @@ export default function Premium() {
                   onClick={() => setMethod(item.id)}
                   className={
                     selected
-                      ? `${choiceClass} border-brand bg-accent text-on-brand`
-                      : `${choiceClass} border-transparent bg-accent-muted text-ink`
+                      ? `${choiceClass} bg-accent font-medium text-on-brand`
+                      : `${choiceClass} bg-accent-muted font-normal text-ink`
                   }
                 >
                   {item.label}
@@ -143,51 +138,52 @@ export default function Premium() {
               )
             })}
           </div>
+
+          {method === 'card' ? (
+            <>
+              <TextField id="card-name" name="card-name" label="Name on card" value={emmaPayment.holder} readOnly />
+              <TextField
+                id="card-number"
+                name="card-number"
+                label="Card number"
+                autoComplete="off"
+                value={emmaPayment.card.number}
+                readOnly
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <TextField id="card-expiry" name="card-expiry" label="Expiry" autoComplete="off" value={emmaPayment.card.expiry} readOnly />
+                <TextField id="card-cvc" name="card-cvc" label="CVC" autoComplete="off" value={emmaPayment.card.cvc} readOnly />
+              </div>
+            </>
+          ) : null}
+
+          {method === 'paypal' ? (
+            <TextField
+              id="paypal-email"
+              name="paypal-email"
+              label="PayPal email"
+              type="email"
+              autoComplete="off"
+              value={emmaPayment.paypal.email}
+              readOnly
+            />
+          ) : null}
+
+          {method === 'mobilepay' ? (
+            <TextField
+              id="mobilepay-phone"
+              name="mobilepay-phone"
+              label="MobilePay number"
+              type="tel"
+              autoComplete="off"
+              value={emmaPayment.mobilepay.phone}
+              readOnly
+            />
+          ) : null}
+
+          <p className="m-0 font-sans text-sm leading-body text-quiet">This is a mock purchase. Nothing is charged.</p>
+          <SubmitButton>Confirm purchase</SubmitButton>
         </fieldset>
-
-        {method === 'card' ? (
-          <div className="grid grid-cols-2 gap-3">
-            <label className="col-span-2 flex flex-col gap-1 font-sans text-sm text-quiet">
-              Name on card
-              <input readOnly value={emmaPayment.holder} className={fieldClass} />
-            </label>
-            <label className="col-span-2 flex flex-col gap-1 font-sans text-sm text-quiet">
-              Card number
-              <input readOnly value={emmaPayment.card.number} autoComplete="off" className={fieldClass} />
-            </label>
-            <label className="flex flex-col gap-1 font-sans text-sm text-quiet">
-              Expiry
-              <input readOnly value={emmaPayment.card.expiry} autoComplete="off" className={fieldClass} />
-            </label>
-            <label className="flex flex-col gap-1 font-sans text-sm text-quiet">
-              CVC
-              <input readOnly value={emmaPayment.card.cvc} autoComplete="off" className={fieldClass} />
-            </label>
-          </div>
-        ) : null}
-
-        {method === 'paypal' ? (
-          <label className="flex flex-col gap-1 font-sans text-sm text-quiet">
-            PayPal email
-            <input readOnly type="email" value={emmaPayment.paypal.email} autoComplete="off" className={fieldClass} />
-          </label>
-        ) : null}
-
-        {method === 'mobilepay' ? (
-          <label className="flex flex-col gap-1 font-sans text-sm text-quiet">
-            MobilePay number
-            <input readOnly type="tel" value={emmaPayment.mobilepay.phone} autoComplete="off" className={fieldClass} />
-          </label>
-        ) : null}
-
-        <p className="m-0 font-sans text-sm leading-[1.4] text-quiet">This is a mock purchase. Nothing is charged.</p>
-
-        <button
-          type="submit"
-          className="m-0 flex h-10 items-center justify-center rounded-2xl border-0 bg-accent px-4 text-button text-on-brand"
-        >
-          Confirm purchase
-        </button>
       </form>
 
       {promptOpen ? (

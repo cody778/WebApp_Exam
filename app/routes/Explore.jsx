@@ -3,13 +3,11 @@ import { Link } from 'react-router'
 import AppNav from '../components/AppNav.jsx'
 import Logo from '../components/Logo.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
+import { toggleSavedTitle, useSavedTitles } from '../user/savedTitles.js'
 import PathCard from '../components/PathCard.jsx'
 import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
 import { supabase } from '../user/client.js'
 import searchIcon from '../assets/explore/search.svg'
-import iconExplore from '../assets/explore/icon-explore.svg'
-import iconNewPath from '../assets/explore/icon-new-path.svg'
-import avatarAnna from '../assets/explore/avatar-anna.png'
 import knitting from '../assets/explore/knitting.png'
 import crochet from '../assets/explore/crochet.png'
 import oleo from '../assets/explore/oleo.png'
@@ -20,56 +18,6 @@ import robotics from '../assets/explore/robotics.png'
 import plants from '../assets/explore/plants.jpg'
 import landscape from '../assets/explore/landscape.jpg'
 import blender from '../assets/explore/blender.jpg'
-
-const headerButton =
-  'm-0 flex h-8 items-center justify-center gap-2 rounded-lg border p-2 font-display text-base leading-none font-medium whitespace-nowrap no-underline'
-
-function accountName(user) {
-  const fullName = String(user.user_metadata?.full_name || '').trim()
-  if (fullName) return fullName.split(/\s+/)[0]
-  const local = String(user.email || '').split('@')[0]
-  return local || 'You'
-}
-
-function accountPhoto(user) {
-  return user.user_metadata?.avatar_url || user.user_metadata?.picture || ''
-}
-
-/** Shown only while Supabase is not configured, so the signed-in layout can be reviewed. */
-const previewAccount = {
-  user_metadata: { full_name: 'Emma', avatar_url: avatarAnna },
-}
-
-/** Header shown while a Supabase session is active. */
-function SignedInHeader({ user }) {
-  const name = accountName(user)
-  const photo = accountPhoto(user)
-
-  return (
-    <header className="flex items-center justify-between gap-3">
-      <Link to="/profile" className="m-0 flex h-8 min-w-0 items-center gap-2 rounded-lg bg-accent-muted pr-3 no-underline">
-        {photo ? (
-          <img src={photo} alt="" width="32" height="32" className="size-8 shrink-0 rounded-full object-cover" />
-        ) : (
-          <span aria-hidden="true" className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white font-display text-base leading-none font-medium text-ink">
-            {name.slice(0, 1).toUpperCase()}
-          </span>
-        )}
-        <span className="truncate font-display text-base leading-none font-medium text-ink">{name}</span>
-      </Link>
-      <div className="flex shrink-0 items-center gap-3">
-        <Link to="/explore" aria-current="page" className={`${headerButton} border-brand bg-accent text-on-brand`}>
-          <img src={iconExplore} alt="" width="16" height="16" className="block max-w-none shrink-0" />
-          Explore
-        </Link>
-        <Link to="/create-roadmap" className={`${headerButton} border-ink bg-ink text-on-brand`}>
-          <img src={iconNewPath} alt="" width="16" height="16" className="block max-w-none shrink-0" />
-          New Path
-        </Link>
-      </div>
-    </header>
-  )
-}
 
 const paths = [
   { title: 'Knitting', author: 'Pathify', image: knitting, imageWidth: 1860, imageHeight: 850 },
@@ -95,19 +43,14 @@ const paths = [
 export default function Explore() {
   const { user, loading } = useAuth()
   const [query, setQuery] = useState('')
-  const [savedTitles, setSavedTitles] = useState(() => new Set())
+  const savedTitles = useSavedTitles(user?.id ?? null)
   const { saveOrPrompt, prompt } = useSavePrompt()
   const authPending = Boolean(supabase) && loading && !user
-  const viewer = user ?? (supabase ? null : previewAccount)
+  const signedIn = !supabase || Boolean(user)
   const needle = query.trim().toLowerCase()
 
   function toggleSave(title) {
-    setSavedTitles((current) => {
-      const next = new Set(current)
-      if (next.has(title)) next.delete(title)
-      else next.add(title)
-      return next
-    })
+    toggleSavedTitle(user?.id ?? null, title)
   }
   const visible = paths.filter(
     (path) =>
@@ -120,8 +63,8 @@ export default function Explore() {
     <div className="explore-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 p-4 font-sans text-ink">
       {authPending ? (
         <header className="flex h-8 items-center justify-between gap-3" aria-busy="true" />
-      ) : viewer ? (
-        <SignedInHeader user={viewer} />
+      ) : signedIn ? (
+        <AppNav />
       ) : (
         <header className="flex items-center justify-between gap-3">
           <Link to="/" className="m-0 inline-flex border-0 p-0 no-underline">
@@ -175,7 +118,13 @@ export default function Explore() {
                 forks="208"
                 saved={savedTitles.has(path.title)}
                 onToggleSave={() => saveOrPrompt(() => toggleSave(path.title))}
-                to={path.title === 'Knitting' ? '/public-path' : undefined}
+                to={
+                  path.title === 'Knitting'
+                    ? signedIn && savedTitles.has('Knitting')
+                      ? '/saved-path'
+                      : '/public-path'
+                    : undefined
+                }
               />
             </li>
           ))}
