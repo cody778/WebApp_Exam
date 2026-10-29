@@ -9,6 +9,7 @@
  * @param {string} [props.placeholder] Gray hint shown while the field is empty.
  * @param {number} [props.minLength] Minimum characters the browser should accept.
  * @param {boolean} [props.required] Block submit until the field has a value.
+ * @param {import('react').ReactNode} [props.icon] Optional mark shown before the label.
  */
 export default function TextField({
   id,
@@ -19,10 +20,12 @@ export default function TextField({
   placeholder = '',
   minLength,
   required = false,
+  icon = null,
 }) {
   return (
     <div className="flex w-full flex-col gap-2">
-      <label htmlFor={id} className="font-sans text-base leading-body font-normal text-ink">
+      <label htmlFor={id} className="flex items-center gap-1 font-sans text-base leading-body font-normal text-ink">
+        {icon}
         {label}
       </label>
       <input
