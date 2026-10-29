@@ -1,6 +1,6 @@
-import saveIcon from '../../assets/explore/save-icon.svg'
-import saveCount from '../../assets/explore/save-count.svg'
-import forkCount from '../../assets/explore/fork-count.svg'
+import saveIcon from '../assets/explore/save-icon.svg'
+import saveCount from '../assets/explore/save-count.svg'
+import forkCount from '../assets/explore/fork-count.svg'
 
 /**
  * One community path in the explore grid.

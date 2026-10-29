@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
-import Button from '../../components/Button.jsx'
-import Logo from '../../components/Logo.jsx'
-import heroDrawing from '../../assets/landing/hero-drawing.svg'
+import Button from './Button.jsx'
+import Logo from './Logo.jsx'
+import heroDrawing from '../assets/landing/hero-drawing.svg'
 
 /** Opening pitch: logo, headline, illustration, and the account actions. */
 export default function HeroSection() {

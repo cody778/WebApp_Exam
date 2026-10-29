@@ -1,8 +1,8 @@
-import HighlightCard from '../../components/HighlightCard.jsx'
-import jumpArrow from '../../assets/landing/arrow-jump-down.png'
-import iconLink from '../../assets/landing/icon-link.svg'
-import iconLayers from '../../assets/landing/icon-layers.svg'
-import iconCheck from '../../assets/landing/icon-check.svg'
+import HighlightCard from './HighlightCard.jsx'
+import jumpArrow from '../assets/landing/arrow-jump-down.png'
+import iconLink from '../assets/landing/icon-link.svg'
+import iconLayers from '../assets/landing/icon-layers.svg'
+import iconCheck from '../assets/landing/icon-check.svg'
 
 const highlights = [
   {
