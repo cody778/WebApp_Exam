@@ -14,7 +14,7 @@ export default function HeroSection() {
           <span className="block text-[2.75rem]"><span className="font-bold">learning paths</span><span>.</span></span>
         </h1>
         <p className="m-0 w-full text-body text-black">
-          Stop getting lost in open tabs, saved videos, and bookmarks, start learning now.
+          Stop getting lost in open tabs, saved videos, and bookmarks, start learning nooooooow.
         </p>
       </div>
       <img
