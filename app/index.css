@@ -295,6 +295,8 @@ main:has(.app-frame) {
 .landing-page *,
 .explore-page,
 .explore-page *,
+.public-path,
+.public-path *,
 .register-page,
 .register-page *,
 .sign-in-page,

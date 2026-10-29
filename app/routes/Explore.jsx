@@ -115,6 +115,7 @@ export default function Explore() {
                 forks="208"
                 saved={savedTitles.has(path.title)}
                 onToggleSave={() => toggleSave(path.title)}
+                to={path.title === 'Knitting' ? '/public-path' : undefined}
               />
             </li>
           ))}
