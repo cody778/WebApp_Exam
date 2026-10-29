@@ -37,7 +37,17 @@ const paths = [
 /** Public catalog reached from the landing explore card. */
 export default function Explore() {
   const [query, setQuery] = useState('')
+  const [savedTitles, setSavedTitles] = useState(() => new Set())
   const needle = query.trim().toLowerCase()
+
+  function toggleSave(title) {
+    setSavedTitles((current) => {
+      const next = new Set(current)
+      if (next.has(title)) next.delete(title)
+      else next.add(title)
+      return next
+    })
+  }
   const visible = paths.filter(
     (path) =>
       needle === '' ||
@@ -92,7 +102,13 @@ export default function Explore() {
         <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 pt-2 pb-12">
           {visible.map((path) => (
             <li key={path.title}>
-              <PathCard {...path} saves="1.5 k" forks="208" />
+              <PathCard
+                {...path}
+                saves="1.5 k"
+                forks="208"
+                saved={savedTitles.has(path.title)}
+                onToggleSave={() => toggleSave(path.title)}
+              />
             </li>
           ))}
         </ul>
