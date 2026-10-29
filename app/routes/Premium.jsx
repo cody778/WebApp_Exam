@@ -12,7 +12,7 @@ const methods = [
 ]
 
 const choiceClass =
-  'm-0 inline-flex h-10 shrink-0 cursor-pointer items-center rounded-full border-0 px-4 font-sans text-sm whitespace-nowrap'
+  'm-0 inline-flex h-10 min-w-0 shrink-0 disabled:cursor-wait py-3 cursor-pointer items-center rounded-full border-0 px-4 font-sans text-sm whitespace-nowrap'
 
 function detailsFor(method) {
   if (method === 'paypal') {
@@ -63,7 +63,7 @@ function SaveDetailsPrompt({ method, onSave, onSkip, onDismiss }) {
           <button
             type="button"
             onClick={onSkip}
-            className="m-0 h-[30px] min-w-0 flex-1 rounded-lg border-0 bg-[#e3e3e3] px-2 font-sans text-sm leading-none text-ink"
+            className="m-0 h-[30px] min-w-0 flex-1 cursor-pointer py-3 font-[weight:inherit] disabled:cursor-wait rounded-lg border-0 bg-[#e3e3e3] px-2 font-sans text-sm leading-none text-ink"
           >
             Skip
           </button>
@@ -71,7 +71,7 @@ function SaveDetailsPrompt({ method, onSave, onSkip, onDismiss }) {
             type="button"
             autoFocus
             onClick={onSave}
-            className="m-0 h-[30px] min-w-0 flex-1 rounded-lg border-0 bg-accent px-2 font-sans text-sm leading-none text-on-brand"
+            className="m-0 h-[30px] min-w-0 flex-1 cursor-pointer py-3 font-[weight:inherit] disabled:cursor-wait rounded-lg border-0 bg-accent px-2 font-sans text-sm leading-none text-on-brand"
           >
             Save
           </button>
@@ -92,11 +92,11 @@ export default function Premium() {
   function finish(save) {
     if (save) savePaymentMethod(detailsFor(method))
     if (unlockAi) unlockPremium()
-    navigate('/profile')
+    navigate('/home')
   }
 
   return (
-    <div className="premium-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-8 p-4 font-sans text-ink">
+    <div className="premium-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col gap-8 p-4 font-sans text-ink">
       <AppNav />
       <h1 className="m-0 font-display text-xl leading-heading font-medium tracking-heading">Payment details</h1>
 

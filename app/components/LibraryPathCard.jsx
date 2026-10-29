@@ -14,7 +14,7 @@ export default function LibraryPathCard({ to, title, progress, image, saved = fa
   return (
     <Link
       to={to}
-      className="m-0 flex h-[152px] flex-col overflow-hidden rounded-sm border border-accent-muted bg-white p-0 no-underline"
+      className="m-0 flex h-[152px] flex-col overflow-hidden rounded-sm border border-accent-muted bg-white p-0 text-inherit no-underline"
     >
       <span className="relative block h-24 w-full bg-accent-muted">
         {image ? (

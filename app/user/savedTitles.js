@@ -9,7 +9,7 @@ function storageKey(userId) {
   return `pathify-saved-titles:${userId ?? 'preview'}`
 }
 
-/** Titles bookmarked on the knitting cards. Shared across Explore and Profile. */
+/** Titles bookmarked on the sample cards. Shared across Explore and Home. */
 export function readSavedTitles(userId) {
   const key = storageKey(userId)
   const raw = typeof localStorage === 'undefined' ? '[]' : (localStorage.getItem(key) ?? '[]')

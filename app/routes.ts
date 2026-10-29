@@ -10,11 +10,11 @@ export default [
   route('public-path', 'routes/PublicPath.jsx'),
   route('saved-path', 'routes/SavedPath.jsx'),
   route('sashiko', 'routes/SashikoPath.jsx'),
-  route('profile', 'routes/Profile.jsx'),
   route('premium', 'routes/Premium.jsx'),
   layout('user/RequireUser.jsx', [
     layout('routes/AppLayout.jsx', [
       route('home', 'routes/Home.jsx'),
+      route('profile', 'routes/Profile.jsx'),
       route('browse-paths', 'routes/BrowseRoadmaps.jsx'),
       route('my-path', 'routes/MyRoadmap.jsx'),
       route('create-path', 'routes/CreateRoadmap.jsx'),

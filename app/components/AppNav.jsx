@@ -38,13 +38,15 @@ export default function AppNav({ notification = null }) {
         to="/home"
         aria-label="Home"
         className={({ isActive }) =>
-          `${idleChip} justify-center px-4 ${isActive ? `${selectedChip} ${lightIcon}` : restingChip}`
+          `${idleChip} justify-center px-4 py-2 ${isActive ? `${selectedChip} ${lightIcon}` : restingChip}`
         }
       >
         <img src={homeIcon} alt="" width="16" height="16" className="block max-w-none shrink-0" />
       </NavLink>
       <NavLink
         to="/profile"
+        aria-label="Profile"
+        title="Profile"
         className={({ isActive }) => `${idleChip} gap-2 overflow-hidden py-0 pr-4 pl-0 ${isActive ? selectedChip : restingChip}`}
       >
         <img src={avatar} alt="" width="40" height="40" className="size-10 rounded-full object-cover" />
@@ -55,7 +57,7 @@ export default function AppNav({ notification = null }) {
         <NavLink
           to="/explore"
           className={({ isActive }) =>
-            `${idleChip} gap-2 px-4 ${isActive ? `${selectedChip} ${lightIcon}` : restingChip}`
+            `${idleChip} gap-2 px-4 py-2 ${isActive ? `${selectedChip} ${lightIcon}` : restingChip}`
           }
         >
           <img src={exploreIcon} alt="" width="16" height="16" className="block max-w-none shrink-0" />
@@ -64,7 +66,7 @@ export default function AppNav({ notification = null }) {
         <NavLink
           to="/create-path"
           className={({ isActive }) =>
-            `${idleChip} gap-2 px-4 text-white ${isActive ? 'bg-accent' : 'bg-ink'}`
+            `${idleChip} gap-2 px-4 py-2 text-white ${isActive ? 'bg-accent' : 'bg-ink'}`
           }
         >
           <img src={plusIcon} alt="" width="16" height="16" className="block max-w-none shrink-0" />

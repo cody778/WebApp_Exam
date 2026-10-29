@@ -144,10 +144,10 @@ export default function YouTubePath() {
         <button type="button" disabled={Boolean(busy)} onClick={save} className={buttonClass}>
           {busy === 'saving' ? `Saving ${saved} of ${draft.lessons.length} lessons...` : saveStarted ? 'Retry saving path' : 'Save path'}
         </button>
-        {!saveStarted && <button type="button" disabled={Boolean(busy)} className="cursor-pointer border-0 bg-transparent p-0 text-sm text-accent underline" onClick={() => { setDraft(null); setError('') }}>Use a different video</button>}
+        {!saveStarted && <button type="button" disabled={Boolean(busy)} className="min-w-0 cursor-pointer border-0 bg-transparent p-0 font-[inherit] text-sm font-[weight:inherit] text-accent underline disabled:cursor-wait" onClick={() => { setDraft(null); setError('') }}>Use a different video</button>}
       </>}
       {error && <p role="alert" className="m-0 text-sm text-[#9e2020]">{error}</p>}
-      <Link to="/create-path" className="text-sm text-accent underline">Back to create a path</Link>
+      <Link to="/create-path" className="m-1 inline-block rounded border border-current px-3 py-2 text-sm text-accent underline">Back to create a path</Link>
     </section>
   )
 }

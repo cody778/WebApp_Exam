@@ -23,7 +23,7 @@ export default function SavedPath() {
   }
 
   return (
-    <div className="saved-path mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-white font-sans text-ink">
+    <div className="saved-path box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-[440px] flex-col bg-white font-sans text-ink">
       <div className="relative h-40 shrink-0 bg-[#dad6cd]">
         <img
           src={knitting}
@@ -33,16 +33,16 @@ export default function SavedPath() {
           className="pointer-events-none absolute inset-0 h-full w-full max-w-none object-cover"
         />
         <div className="absolute top-4 right-4 z-10 flex w-6 flex-col gap-2">
-          <button type="button" aria-label="Save Knitting" className="m-0 h-6 w-full cursor-pointer border-0 bg-transparent p-0">
+          <button type="button" aria-label="Save Knitting" className="min-w-0 disabled:cursor-wait [font:inherit] m-0 h-6 w-full cursor-pointer border-0 bg-transparent p-0">
             <img src={iconSave} alt="" width="24" height="24" className="block max-w-none" />
           </button>
-          <button type="button" aria-label="Fork Knitting" className="m-0 h-6 w-full cursor-pointer border-0 bg-transparent p-0">
+          <button type="button" aria-label="Fork Knitting" className="min-w-0 disabled:cursor-wait [font:inherit] m-0 h-6 w-full cursor-pointer border-0 bg-transparent p-0">
             <img src={iconFork} alt="" width="24" height="24" className="block max-w-none" />
           </button>
           <button
             type="button"
             aria-label="Share Knitting"
-            className="m-0 flex h-6 w-full -scale-y-100 rotate-180 cursor-pointer items-center justify-center border-0 bg-transparent p-0"
+            className="min-w-0 disabled:cursor-wait [font:inherit] m-0 flex h-6 w-full -scale-y-100 rotate-180 cursor-pointer items-center justify-center border-0 bg-transparent p-0"
           >
             <img src={iconShare} alt="" width="24" height="24" className="block max-w-none" />
           </button>
@@ -51,8 +51,8 @@ export default function SavedPath() {
 
       <div className="flex flex-1 flex-col gap-4 px-6 py-4 pb-12">
         <Link
-          to="/profile?filter=saved"
-          className="!m-0 w-fit !border-0 !p-0 font-sans text-sm leading-[1.4] font-normal !text-quiet no-underline"
+          to="/home?filter=saved"
+          className="!m-0 inline-block w-fit rounded !border-0 !p-0 font-sans text-sm leading-[1.4] font-normal !text-quiet no-underline"
         >
           <span className="underline">Saved paths</span>
           <span>{` >`}</span>

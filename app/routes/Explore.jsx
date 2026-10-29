@@ -60,14 +60,14 @@ export default function Explore() {
   )
 
   return (
-    <div className="explore-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 p-4 font-sans text-ink">
+    <div className="explore-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 p-4 font-sans text-ink">
       {authPending ? (
         <header className="flex h-8 items-center justify-between gap-3" aria-busy="true" />
       ) : signedIn ? (
         <AppNav />
       ) : (
         <header className="flex items-center justify-between gap-3">
-          <Link to="/" className="m-0 inline-flex border-0 p-0 no-underline">
+          <Link to="/" className="m-0 inline-flex rounded border-0 p-0 text-inherit no-underline">
             <Logo variant="header" />
           </Link>
           <div className="flex shrink-0 items-center gap-3">

@@ -31,7 +31,7 @@ export default function HeroSection() {
         </Button>
         <p className="m-0 text-center text-body text-ink">
           Already have an account?{' '}
-          <Link to="/sign-in" className="m-0 inline border-0 p-0 text-body text-ink underline">
+          <Link to="/sign-in" className="m-0 inline rounded border-0 p-0 text-body text-ink underline">
             Sign In.
           </Link>
         </p>

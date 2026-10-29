@@ -40,7 +40,7 @@ export default function CreateRoadmap() { //form to create a new roadmap
           <button className="min-w-0 p-3 [font:inherit] cursor-pointer disabled:cursor-wait" type="submit">{busy ? 'Saving...' : 'Create path'}</button>
         </fieldset>
       </form>
-      <Link to="/create-path/youtube" className="mb-4 block rounded-lg border border-accent bg-white px-4 py-3 text-center text-base text-accent no-underline">Create a path from YouTube</Link>
+      <Link to="/create-path/youtube" className="mx-1 mt-1 mb-4 block rounded-lg border border-accent bg-white px-4 py-3 text-center text-base text-accent no-underline">Create a path from YouTube</Link>
       {error && <p className="text-[#9e2020]" role="alert">{error}</p>}
       <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to="/my-path">Back to my paths</Link>
     </>

@@ -40,7 +40,7 @@ export default function SaveSignInPrompt({ onClose }) {
             type="button"
             aria-label="Close"
             onClick={onClose}
-            className="m-0 flex size-5 items-center justify-center border-0 bg-transparent p-0"
+            className="min-w-0 cursor-pointer disabled:cursor-wait [font:inherit] m-0 flex size-5 items-center justify-center border-0 bg-transparent p-0"
           >
             <img src={iconClose} alt="" width="12" height="12" className="block max-w-none" />
           </button>

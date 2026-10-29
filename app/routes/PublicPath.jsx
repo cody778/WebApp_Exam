@@ -3,6 +3,7 @@ import Button from '../components/Button.jsx'
 import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { supabase } from '../user/client.js'
+import iconSave from '../assets/public-path/icon-save.svg'
 import iconFork from '../assets/public-path/icon-fork.svg'
 import iconShare from '../assets/public-path/icon-share.svg'
 import countSave from '../assets/public-path/count-save.svg'
@@ -34,7 +35,7 @@ const materials = [
 const sectionLabel = 'm-0 min-w-0 flex-1 font-sans text-[32px] leading-[1.2] font-normal'
 const sectionPipe = 'm-0 shrink-0 font-sans text-2xl leading-[1.2] font-normal whitespace-nowrap'
 const pathButtonClass =
-  'm-0 flex h-10 w-full cursor-pointer items-center justify-center rounded-2xl border-0 bg-accent px-4 py-0 font-sans text-base leading-none font-normal text-on-brand no-underline'
+  'm-0 flex h-10 w-full min-w-0 cursor-pointer disabled:cursor-wait items-center justify-center rounded-2xl border-0 bg-accent px-4 py-0 font-sans text-base leading-none font-normal text-on-brand no-underline'
 
 function pathRecordKey(userId) {
   return `pathify-public-path:${userId}`
@@ -222,7 +223,7 @@ export default function PublicPath() {
                     aria-pressed={completed.has(step)}
                     aria-label={completed.has(step) ? `Mark ${step} incomplete` : `Mark ${step} completed`}
                     onClick={() => toggleStep(step)}
-                    className={`m-0 flex size-4 shrink-0 items-center justify-center rounded border border-brand p-0 ${completed.has(step) ? 'bg-brand' : 'bg-transparent'}`}
+                    className={`min-w-0 cursor-pointer disabled:cursor-wait [font:inherit] m-0 flex size-4 shrink-0 items-center justify-center rounded border border-brand p-0 ${completed.has(step) ? 'bg-brand' : 'bg-transparent'}`}
                   >
                     {completed.has(step) ? (
                       <img src={iconCheck} alt="" width="12.2667" height="8.93333" className="block max-w-none" />
