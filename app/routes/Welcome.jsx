@@ -1,3 +1,4 @@
+import { Link } from 'react-router'
 import ExplorePathsCard from '../components/ExplorePathsCard.jsx'
 import HeroSection from '../components/HeroSection.jsx'
 import HighlightsSection from '../components/HighlightsSection.jsx'
@@ -9,6 +10,12 @@ export default function Welcome() {
       <HeroSection />
       <HighlightsSection />
       <ExplorePathsCard />
+      <Link
+        to="/about"
+        className="!m-0 self-center !inline !border-0 !bg-transparent !p-0 text-center font-display text-base leading-body text-ink !underline"
+      >
+        Our Mission
+      </Link>
     </div>
   )
 }

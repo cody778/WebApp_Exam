@@ -79,6 +79,30 @@ export default function Account() {
           </button>
         </div>
 
+        <div className="overflow-hidden rounded-2xl border border-accent-muted bg-white">
+          <div className="border-b border-accent-muted">
+            <Link
+              to="/commissions"
+              className="!m-0 !flex !items-center !justify-between gap-3 !border-0 !bg-transparent !p-4 !text-inherit !no-underline"
+            >
+              <h2 className="m-0 font-display text-body">My commissions</h2>
+              <img src={iconChevron} alt="" width="24" height="24" className="block max-w-none shrink-0" />
+            </Link>
+          </div>
+          <Link
+            to="/payment-methods"
+            className="!m-0 !flex !items-center !justify-between gap-3 !border-0 !bg-transparent !p-4 !text-inherit !no-underline"
+          >
+            <span className="flex min-w-0 flex-col gap-0.5">
+              <h2 className="m-0 font-display text-body">Payment methods</h2>
+              <p className="m-0 font-sans text-sm leading-body font-normal text-quiet">
+                Add your preferred payment methods to pay and get paid for your paths
+              </p>
+            </span>
+            <img src={iconChevron} alt="" width="24" height="24" className="block max-w-none shrink-0" />
+          </Link>
+        </div>
+
         <div className="flex flex-col gap-3 rounded-2xl bg-ink p-4 text-on-brand">
           <div className="flex items-center justify-between gap-3">
             <div className="flex flex-col gap-1">
@@ -152,21 +176,6 @@ export default function Account() {
             className="!m-0 !flex !items-center !justify-between gap-3 !border-0 !bg-transparent !p-0 !text-inherit !no-underline"
           >
             <h2 className="m-0 font-display text-body">Appearance</h2>
-            <img src={iconChevron} alt="" width="24" height="24" className="block max-w-none shrink-0" />
-          </Link>
-        </div>
-
-        <div className="rounded-2xl border border-accent-muted bg-white p-4">
-          <Link
-            to="/payment-methods"
-            className="!m-0 !flex !items-center !justify-between gap-3 !border-0 !bg-transparent !p-0 !text-inherit !no-underline"
-          >
-            <span className="flex min-w-0 flex-col gap-0.5">
-              <h2 className="m-0 font-display text-body">Payment methods</h2>
-              <p className="m-0 font-sans text-sm leading-body font-normal text-quiet">
-                Add your preferred payment methods to pay and get paid for your paths
-              </p>
-            </span>
             <img src={iconChevron} alt="" width="24" height="24" className="block max-w-none shrink-0" />
           </Link>
         </div>

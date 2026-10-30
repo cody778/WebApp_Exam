@@ -2,6 +2,7 @@ import { index, layout, route, type RouteConfig } from '@react-router/dev/routes
 
 export default [
   index('routes/Welcome.jsx'),
+  route('about', 'routes/About.jsx'),
   route('introduction', 'routes/Introduction.jsx'),
   route('get-started', 'routes/GetStarted.jsx'),
   route('sign-up', 'routes/SignUp.jsx'),
@@ -13,6 +14,7 @@ export default [
   route('profile', 'routes/Profile.jsx'),
   route('account', 'routes/Account.jsx'),
   route('appearance', 'routes/Appearance.jsx'),
+  route('commissions', 'routes/Commissions.jsx'),
   route('payment-methods', 'routes/PaymentMethods.jsx'),
   route('premium', 'routes/Premium.jsx'),
   layout('user/RequireUser.jsx', [
