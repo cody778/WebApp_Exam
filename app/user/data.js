@@ -149,6 +149,30 @@ export function setLessonCompleted(userId, id, completed) {
   return result(query)
 }
 
+/** Counts are supplementary; a statistics outage should not make the path itself unavailable. */
+async function getRoadmapStats(id) {
+  const { data, error } = await supabase.rpc('roadmap_stats', { p_roadmap_id: id })
+  if (error) {
+    console.warn('Could not load path statistics.', { code: error.code, message: error.message })
+    return { saves: 0, forks: 0 }
+  }
+
+  const stats = Array.isArray(data) ? data[0] : data
+  return stats ?? { saves: 0, forks: 0 }
+}
+
+/** Counts are supplementary; a statistics outage should not make the path itself unavailable. */
+async function getRoadmapStats(id) {
+  const { data, error } = await supabase.rpc('roadmap_stats', { p_roadmap_id: id })
+  if (error) {
+    console.warn('Could not load path statistics.', { code: error.code, message: error.message })
+    return { saves: 0, forks: 0 }
+  }
+
+  const stats = Array.isArray(data) ? data[0] : data
+  return stats ?? { saves: 0, forks: 0 }
+}
+
 /** A path with each step's blocks, its author and counts, and whether the user saved or bought it, for the path page. */
 export async function getPath(userId, id) {
   const [roadmap, saved, purchased, counts] = await Promise.all([
