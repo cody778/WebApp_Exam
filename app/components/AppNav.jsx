@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router'
+import { Link, NavLink } from 'react-router'
+import Logo from './Logo.jsx'
 import avatar from '../assets/home/avatar.jpg'
 import exploreIcon from '../assets/home/explore.svg'
 import homeIcon from '../assets/home/home.svg'
@@ -80,6 +81,33 @@ export default function AppNav({ notification = null }) {
               <img src={plusIcon} alt="" width="16" height="16" className="block max-w-none shrink-0" />
               New Path
             </NavLink>
+          </div>
+        </div>
+      </header>
+      <div className="h-[4.5rem] shrink-0" aria-hidden="true" />
+    </>
+  )
+}
+
+/** Top bar for signed-out visitors, matching AppNav: the logo leads home, then sign in and sign up. */
+export function GuestNav() {
+  return (
+    <>
+      <header
+        className="fixed inset-x-0 top-0 z-50 bg-[#f7f4ee]/95"
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50 }}
+      >
+        <div className="mx-auto flex h-[4.5rem] w-full min-w-0 max-w-6xl items-center gap-1.5 px-4 sm:gap-2 lg:px-8">
+          <Link to="/" aria-label="Pathify home" className="!m-0 !inline-flex shrink-0 !border-0 !bg-transparent !p-0 !no-underline">
+            <Logo variant="header" />
+          </Link>
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <Link to="/sign-in" className={`${chip} !px-3 sm:!px-4 ${restingChip}`}>
+              Sign in
+            </Link>
+            <Link to="/sign-up" className={`${chip} !bg-ink !px-3 !text-on-brand sm:!px-4`}>
+              Sign up
+            </Link>
           </div>
         </div>
       </header>

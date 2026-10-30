@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router'
 import Button from './Button.jsx'
 import iconClose from '../assets/public-path/icon-close.svg'
 import { useAuth } from '../user/AuthProvider.jsx'
@@ -11,6 +12,8 @@ import { supabase } from '../user/client.js'
  */
 export default function SaveSignInPrompt({ onClose }) {
   const closeRef = useRef(null)
+  const location = useLocation()
+  const returnTo = { from: location.pathname + location.search }
 
   useEffect(() => {
     closeRef.current?.focus()
@@ -51,12 +54,14 @@ export default function SaveSignInPrompt({ onClose }) {
         <div className="flex gap-3">
           <Button
             to="/sign-in"
+            state={returnTo}
             className="h-[30px]! min-w-0 flex-1 rounded-lg! bg-[#e3e3e3]! px-2! font-sans! text-sm! leading-none! font-normal! text-ink!"
           >
             Sign in
           </Button>
           <Button
             to="/sign-up"
+            state={returnTo}
             className="h-[30px]! min-w-0 flex-1 rounded-lg! bg-accent! px-2! font-sans! text-sm! leading-none! font-normal!"
           >
             Start your path

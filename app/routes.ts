@@ -13,6 +13,9 @@ export default [
   route('commissions', 'routes/Commissions.jsx'),
   route('payment-methods', 'routes/PaymentMethods.jsx'),
   route('premium', 'routes/Premium.jsx'),
+  layout('routes/AppLayout.jsx', { id: 'public-layout' }, [
+    route('path/:roadmapId', 'routes/Roadmap.jsx', { id: 'path-detail' }),
+  ]),
   layout('user/RequireUser.jsx', [
     layout('routes/AppLayout.jsx', [
       route('home', 'routes/Home.jsx'),
@@ -25,7 +28,6 @@ export default [
       route('create-path/youtube', 'routes/YouTubePath.jsx'),
       route('my-roadmap/:roadmapId', 'routes/Roadmap.jsx'),
       route('my-path/:roadmapId', 'routes/Roadmap.jsx', { id: 'my-path-detail' }),
-      route('path/:roadmapId', 'routes/Roadmap.jsx', { id: 'path-detail' }),
       route('my-roadmap/:roadmapId/lesson/:lessonId', 'routes/Lesson.jsx'),
       route('my-path/:roadmapId/lesson/:lessonId', 'routes/Lesson.jsx', { id: 'my-path-lesson' }),
       route('lesson/:lessonId', 'routes/StandaloneLesson.jsx'),

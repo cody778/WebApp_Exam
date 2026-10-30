@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router'
-import AppNav from '../components/AppNav.jsx'
-import Logo from '../components/Logo.jsx'
+import { useNavigate } from 'react-router'
+import AppNav, { GuestNav } from '../components/AppNav.jsx'
 import { useNotice } from '../components/Notice.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import PathCard from '../components/PathCard.jsx'
@@ -79,29 +78,11 @@ export default function Explore() {
   return (
     <div className="explore-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 px-4 pt-0 pb-4 font-sans text-ink lg:max-w-6xl lg:px-8">
       {authPending ? (
-        <header className="flex h-16 items-center justify-between gap-3" aria-busy="true" />
+        <header className="h-[4.5rem] shrink-0" aria-busy="true" />
       ) : signedIn ? (
         <AppNav />
       ) : (
-        <header className="flex items-center justify-between gap-3">
-          <Link to="/" className="m-0 inline-flex border-0 p-0 no-underline">
-            <Logo variant="header" />
-          </Link>
-          <div className="flex shrink-0 items-center gap-3">
-            <Link
-              to="/sign-in"
-              className="m-0 flex h-8 items-center justify-center rounded-lg border border-black bg-[#e3e3e3] p-2 font-display text-base leading-none font-medium whitespace-nowrap text-ink no-underline"
-            >
-              Sign in
-            </Link>
-            <Link
-              to="/sign-up"
-              className="m-0 flex h-8 items-center justify-center rounded-lg border border-brand bg-accent p-2 font-display text-base leading-none font-medium whitespace-nowrap text-on-brand no-underline"
-            >
-              Start your path
-            </Link>
-          </div>
-        </header>
+        <GuestNav />
       )}
       <h1 className="m-0 font-display text-xl leading-heading font-medium tracking-heading text-ink">
         Explore paths from the community
