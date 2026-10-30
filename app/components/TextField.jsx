@@ -9,6 +9,8 @@
  * @param {string} [props.placeholder] Gray hint shown while the field is empty.
  * @param {number} [props.minLength] Minimum characters the browser should accept.
  * @param {boolean} [props.required] Block submit until the field has a value.
+ * @param {string} [props.value] Current value. Omit it to leave the field uncontrolled.
+ * @param {boolean} [props.readOnly] Keep a preset value from being edited.
  * @param {import('react').ReactNode} [props.icon] Optional mark shown before the label.
  */
 export default function TextField({
@@ -20,6 +22,8 @@ export default function TextField({
   placeholder = '',
   minLength,
   required = false,
+  value,
+  readOnly = false,
   icon = null,
 }) {
   return (
@@ -36,6 +40,8 @@ export default function TextField({
         placeholder={placeholder}
         minLength={minLength}
         required={required}
+        value={value}
+        readOnly={readOnly}
         className="m-0 h-10 w-full rounded-lg border border-surface-muted bg-white px-4 font-sans text-base leading-none font-normal text-ink outline-none placeholder:text-placeholder focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
       />
     </div>

@@ -9,7 +9,7 @@ export default function SubmitButton({ children, busy = false }) {
     <button
       type="submit"
       disabled={busy}
-      className="m-0 flex h-10 w-full cursor-pointer items-center justify-center rounded-lg border-0 bg-accent px-6 font-sans text-base leading-none font-semibold text-on-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-wait disabled:opacity-70"
+      className="min-w-0 py-3 m-0 flex h-10 w-full cursor-pointer items-center justify-center rounded-lg border-0 bg-accent px-6 font-sans text-base leading-none font-semibold text-on-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-wait disabled:opacity-70"
     >
       {children}
     </button>

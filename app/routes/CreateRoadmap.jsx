@@ -48,7 +48,7 @@ export default function CreateRoadmap() {
     const title = String(form.get('title') || '').trim()
     const description = String(form.get('description') || '').trim()
     if (!title) {
-      setError('Give your roadmap a title.')
+      setError('Give your path a title.')
       titleRef.current?.focus()
       return
     }
@@ -66,9 +66,9 @@ export default function CreateRoadmap() {
         ])
         savedStepIds.current.add(step.id)
       }
-      navigate(`/my-roadmap/${roadmap.id}`)
+      navigate(`/my-path/${roadmap.id}`)
     } catch {
-      setError('Could not save your roadmap. Please try again.')
+      setError('Could not save your path. Please try again.')
     } finally {
       setBusy(false)
     }
@@ -177,6 +177,9 @@ export default function CreateRoadmap() {
             Add step
           </button>
           {error && <p role="alert" className="m-0 text-sm leading-[1.4]">{error}</p>}
+          <Link to="/create-path/youtube" className="m-0 border-0 p-0 text-center text-sm leading-[1.4] text-accent underline">
+            Create a path from YouTube
+          </Link>
           <div className="mt-auto pt-4">
             <button
               type="submit"

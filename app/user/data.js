@@ -78,7 +78,7 @@ export async function linkLesson(userId, roadmapId, lessonId) {
     getRoadmap(userId, roadmapId),
     result(supabase.from('lessons').select('id').eq('id', lessonId).eq('owner_id', userId).single()),
   ])
-  if (roadmap.owner_id !== userId) throw new Error('This roadmap belongs to someone else.')
+  if (roadmap.owner_id !== userId) throw new Error('This path belongs to someone else.')
   if (roadmap.lessons.some(lesson => lesson.id === lessonId)) return
   const position = Math.max(-1, ...roadmap.roadmap_lessons.map(link => link.position)) + 1
   return result(supabase.from('roadmap_lessons').insert({ roadmap_id: roadmapId, lesson_id: lessonId, position }))

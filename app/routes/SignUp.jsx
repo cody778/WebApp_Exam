@@ -6,6 +6,7 @@ import TextField from '../components/TextField.jsx'
 import VerifyEmailNotice from '../components/VerifyEmailNotice.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import useSignUp from '../user/useSignUp.js'
+import { supabase } from '../user/client.js'
 
 /** Create-account screen: collects a new profile and asks the user to confirm their email. */
 export default function SignUp() {
@@ -36,16 +37,17 @@ export default function SignUp() {
 
   if (loading) return <p role="status">Loading your account...</p>
   if (user) return <Navigate to={destination} replace />
+  const signedIn = Boolean(user) || !supabase
 
   return (
-    <div className="register-page mx-auto flex min-h-screen w-full max-w-md flex-col items-center px-6 py-12 font-sans text-ink">
+    <div className="register-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col items-center px-6 py-12 font-sans text-ink">
       <div className="flex w-full flex-col items-center gap-8">
         <Link to="/" className="m-0 inline-flex border-0 p-0 no-underline">
           <Logo />
         </Link>
         <h1 className="m-0 text-center text-page-title text-ink">Start your path.</h1>
         {sentTo && <VerifyEmailNotice email={sentTo} />}
-        {!configured && <p role="alert" className="m-0 text-center text-sm leading-body">Sign in is not configured yet.</p>}
+        {!configured && <p role="alert" className="text-[#9e2020] m-0 text-center text-sm leading-body">Sign in is not configured yet.</p>}
         <form
           className="flex w-full flex-col gap-4 rounded-lg border border-accent-muted bg-white p-6"
           onSubmit={submit}
@@ -75,20 +77,22 @@ export default function SignUp() {
           </fieldset>
         </form>
         {alertMessage && (
-          <p role="alert" className="m-0 text-center text-sm leading-body">
+          <p role="alert" className="text-[#9e2020] m-0 text-center text-sm leading-body">
             {alertMessage}
           </p>
         )}
-        <p className="m-0 text-center font-sans text-sm leading-body font-normal text-quiet">
-          Already have an account?{' '}
-          <Link
-            to="/sign-in"
-            state={location.state}
-            className="m-0 inline border-0 p-0 text-sm leading-body font-normal text-accent underline"
-          >
-            Sign In.
-          </Link>
-        </p>
+        {signedIn ? null : (
+          <p className="m-0 text-center font-sans text-sm leading-body font-normal text-quiet">
+            Already have an account?{' '}
+            <Link
+              to="/sign-in"
+              state={location.state}
+              className="m-0 inline border-0 p-0 text-sm leading-body font-normal text-accent underline"
+            >
+              Sign In.
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   )

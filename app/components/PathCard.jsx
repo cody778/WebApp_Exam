@@ -16,6 +16,8 @@ import forkCount from '../assets/explore/fork-count.svg'
  * @param {boolean} [props.saved] Whether this path is marked saved.
  * @param {() => void} [props.onToggleSave] Called when the corner save control is pressed.
  * @param {string} [props.to] Path opened when the card is clicked. The save control stays separate.
+ * @param {string} [props.status] Progress label, such as “Not started”. Replaces the author row.
+ * @param {number} [props.soldCount] Times this path has sold. Shown as a button on the cover.
  */
 export default function PathCard({
   title,
@@ -29,6 +31,8 @@ export default function PathCard({
   saved = false,
   onToggleSave,
   to,
+  status,
+  soldCount,
 }) {
   return (
     <article className="relative flex h-[141px] flex-col gap-2 overflow-hidden border border-[#bcbcbc] bg-white">
@@ -61,7 +65,7 @@ export default function PathCard({
             event.stopPropagation()
             onToggleSave?.()
           }}
-          className="relative z-20 m-0 border-0 bg-transparent p-0 leading-none"
+          className="min-w-0 cursor-pointer disabled:cursor-wait [font:inherit] relative z-20 m-0 border-0 bg-transparent p-0 leading-none"
         >
           <svg
             width="24"
@@ -87,7 +91,7 @@ export default function PathCard({
           {to ? (
             <Link
               to={to}
-              className="m-0 border-0 p-0 text-inherit no-underline before:absolute before:inset-0 before:z-10 before:content-[''] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="!m-0 !inline !rounded-none !border-0 !bg-transparent !p-0 font-[inherit] text-inherit no-underline before:absolute before:inset-0 before:z-10 before:content-[''] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               {title}
             </Link>
@@ -95,20 +99,39 @@ export default function PathCard({
             title
           )}
         </h2>
-        <div className="flex items-center justify-between">
-          <p className="m-0 text-h5 whitespace-nowrap text-ink">By {author}</p>
-          <div className="flex items-center gap-1">
-            <span className="flex items-center gap-0.5">
-              <img src={saveCount} alt="" width="12" height="12" className="block" />
-              <span className="text-h5 whitespace-nowrap text-ink">{saves}</span>
-            </span>
-            <span className="flex items-center gap-0.5">
-              <img src={forkCount} alt="" width="12" height="12" className="block" />
-              <span className="text-h5 whitespace-nowrap text-ink">{forks}</span>
-            </span>
+        {status ? (
+          <p className="m-0">
+            <span className="inline-flex items-center rounded-lg bg-accent-muted px-2 py-1 text-h5 text-quiet">{status}</span>
+          </p>
+        ) : (
+          <div className="flex items-center justify-between">
+            <p className="m-0 text-h5 whitespace-nowrap text-ink">By {author}</p>
+            <div className="flex items-center gap-1">
+              <span className="flex items-center gap-0.5">
+                <img src={saveCount} alt="" width="12" height="12" className="block" />
+                <span className="text-h5 whitespace-nowrap text-ink">{saves}</span>
+              </span>
+              <span className="flex items-center gap-0.5">
+                <img src={forkCount} alt="" width="12" height="12" className="block" />
+                <span className="text-h5 whitespace-nowrap text-ink">{forks}</span>
+              </span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
+      {soldCount != null ? (
+        <button
+          type="button"
+          aria-label={`Sold ${soldCount} ${soldCount === 1 ? 'time' : 'times'}`}
+          onClick={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+          }}
+          className="absolute right-2 bottom-2 z-20 !m-0 !inline-flex !items-center !rounded-full !border-0 !bg-accent !px-2 !py-0.5 text-h5 !text-on-brand"
+        >
+          {soldCount} sold
+        </button>
+      ) : null}
     </article>
   )
 }

@@ -44,7 +44,7 @@ export default function PathFilters({ value, onChange, query, onQuery }) {
   }
 
   return (
-    <div className="relative h-10 w-full">
+    <div className="relative h-10 w-full" style={{ '--search-chip-width': chipWidth ? `${chipWidth}px` : undefined }}>
       <div
         ref={probeRef}
         aria-hidden="true"
@@ -54,8 +54,7 @@ export default function PathFilters({ value, onChange, query, onQuery }) {
         <span className="size-4 shrink-0" />
       </div>
       <div
-        className={`flex h-10 items-center gap-2 overflow-x-auto ${open ? 'pointer-events-none' : ''}`}
-        style={{ paddingRight: chipWidth + 8 }}
+        className={`flex h-10 items-center gap-2 overflow-x-auto pr-[calc(var(--search-chip-width,0px)+0.5rem)] ${open ? 'pointer-events-none' : ''}`}
       >
         {filters.map((filter) => {
           const selected = filter.id === value
@@ -65,7 +64,7 @@ export default function PathFilters({ value, onChange, query, onQuery }) {
               type="button"
               aria-pressed={selected}
               onClick={() => onChange(filter.id)}
-              className={`m-0 inline-flex h-10 shrink-0 cursor-pointer items-center rounded-full border-0 px-4 font-sans text-sm whitespace-nowrap ${
+              className={`min-w-0 disabled:cursor-wait py-3 m-0 inline-flex h-10 shrink-0 cursor-pointer items-center rounded-full border-0 px-4 font-sans text-sm whitespace-nowrap ${
                 selected ? 'bg-accent font-medium text-on-brand' : 'bg-accent-muted font-normal text-ink'
               }`}
             >
@@ -75,8 +74,7 @@ export default function PathFilters({ value, onChange, query, onQuery }) {
         })}
       </div>
       <form
-        className="absolute inset-y-0 right-0 z-10 m-0 flex cursor-text items-center gap-2 overflow-hidden rounded-full border border-surface-muted bg-white px-4 transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-        style={{ width: open ? '100%' : chipWidth || undefined }}
+        className={`absolute inset-y-0 right-0 z-10 m-0 flex cursor-text items-center gap-2 overflow-hidden rounded-full border border-surface-muted bg-white px-4 transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${open ? 'w-full' : 'w-[var(--search-chip-width,auto)]'}`}
         onSubmit={(event) => event.preventDefault()}
         onClick={() => {
           if (!open) setOpen(true)
@@ -108,7 +106,7 @@ export default function PathFilters({ value, onChange, query, onQuery }) {
             event.stopPropagation()
             closeSearch()
           }}
-          className="relative m-0 size-4 shrink-0 border-0 bg-transparent p-0"
+          className="min-w-0 cursor-pointer disabled:cursor-wait [font:inherit] relative m-0 size-4 shrink-0 border-0 bg-transparent p-0"
         >
           <img
             src={searchIcon}

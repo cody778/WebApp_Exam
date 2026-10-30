@@ -18,7 +18,7 @@ const highlights = [
   {
     icon: iconCheck,
     title: 'Track and share progress',
-    body: 'Create your own path, copy community roadmaps, or share what you’ve built.',
+    body: 'Create your own path, copy community paths, or share what you’ve built.',
   },
 ]
 
@@ -36,7 +36,7 @@ export default function HighlightsSection() {
         type="button"
         onClick={skipOneScreen}
         aria-label="Skip down one screen"
-        className="landing-arrow-bounce m-0 cursor-pointer border-0 bg-transparent p-0"
+        className="min-w-0 disabled:cursor-wait [font:inherit] motion-safe:animate-arrow-bounce m-0 cursor-pointer border-0 bg-transparent p-0"
       >
         <img src={jumpArrow} alt="" width="47" height="38" />
       </button>

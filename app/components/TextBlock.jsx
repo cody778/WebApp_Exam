@@ -7,7 +7,7 @@
         value={text}
         onChange={event => onChange(event.target.value)}
       />
-      <button type="button" onClick={onRemove} aria-label={`Remove text block ${number}`}>
+      <button className="min-w-0 p-3 [font:inherit] cursor-pointer disabled:cursor-wait" type="button" onClick={onRemove} aria-label={`Remove text block ${number}`}>
         Remove
       </button>
     </div>

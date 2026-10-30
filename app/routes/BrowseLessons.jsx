@@ -13,12 +13,12 @@ export default function BrowseLessons() {
       <ul>
         {data?.map(lesson => (
           <li key={lesson.id}>
-            <Link to={`/lesson/${lesson.id}`}>{lesson.title}</Link>
+            <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={`/lesson/${lesson.id}`}>{lesson.title}</Link>
             {lesson.completed ? 'Completed' : 'To do'}
           </li>
         ))}
       </ul>
-      <Link to="/my-roadmap">My roadmaps</Link>
+      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to="/my-path">My paths</Link>
     </>
   )
 }

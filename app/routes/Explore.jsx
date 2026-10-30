@@ -3,7 +3,10 @@ import { Link } from 'react-router'
 import AppNav from '../components/AppNav.jsx'
 import Logo from '../components/Logo.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
+import { toggleSavedTitle, useSavedTitles } from '../user/savedTitles.js'
 import PathCard from '../components/PathCard.jsx'
+import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
+import { supabase } from '../user/client.js'
 import searchIcon from '../assets/explore/search.svg'
 import knitting from '../assets/explore/knitting.png'
 import crochet from '../assets/explore/crochet.png'
@@ -19,7 +22,7 @@ import blender from '../assets/explore/blender.jpg'
 const paths = [
   { title: 'Knitting', author: 'Pathify', image: knitting, imageWidth: 1860, imageHeight: 850 },
   { title: 'Crochet', author: 'Pathify', image: crochet, imageWidth: 1860, imageHeight: 850 },
-  { title: 'Oleo Painting', author: 'Pathify', image: oleo, imageWidth: 1860, imageHeight: 850 },
+  { title: 'Oil painting', author: 'Pathify', image: oleo, imageWidth: 1860, imageHeight: 850 },
   { title: 'Sewing for begginers', author: 'Pathify', image: sewing, imageWidth: 1860, imageHeight: 850 },
   { title: 'Digital drawing', author: 'Pathify', image: digital, imageWidth: 1860, imageHeight: 850 },
   { title: 'Watercolors', author: 'Omar Caloca', image: watercolors, imageWidth: 748, imageHeight: 512 },
@@ -38,18 +41,16 @@ const paths = [
 
 /** Public catalog reached from the landing explore card. */
 export default function Explore() {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
   const [query, setQuery] = useState('')
-  const [savedTitles, setSavedTitles] = useState(() => new Set())
+  const savedTitles = useSavedTitles(user?.id ?? null)
+  const { saveOrPrompt, prompt } = useSavePrompt()
+  const authPending = Boolean(supabase) && loading && !user
+  const signedIn = !supabase || Boolean(user)
   const needle = query.trim().toLowerCase()
 
   function toggleSave(title) {
-    setSavedTitles((current) => {
-      const next = new Set(current)
-      if (next.has(title)) next.delete(title)
-      else next.add(title)
-      return next
-    })
+    toggleSavedTitle(user?.id ?? null, title)
   }
   const visible = paths.filter(
     (path) =>
@@ -59,9 +60,11 @@ export default function Explore() {
   )
 
   return (
-    <div className="explore-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 p-4 font-sans text-ink">
-      {user ? (
-        <AppNav />
+    <div className="explore-page mx-auto flex min-h-screen w-full max-w-[440px] flex-col gap-4 px-6 py-4 font-sans text-ink">
+      {authPending ? (
+        <header className="flex h-10 items-center justify-between gap-3" aria-busy="true" />
+      ) : signedIn ? (
+        <AppNav showHome={false} />
       ) : (
         <header className="flex items-center justify-between gap-3">
           <Link to="/" className="m-0 inline-flex border-0 p-0 no-underline">
@@ -83,7 +86,7 @@ export default function Explore() {
           </div>
         </header>
       )}
-      <h1 className="m-0 mt-4 font-display text-xl leading-heading font-medium tracking-heading whitespace-nowrap text-ink">
+      <h1 className="m-0 font-display text-xl leading-heading font-medium tracking-heading text-ink">
         Explore paths from the community
       </h1>
       <form
@@ -114,13 +117,20 @@ export default function Explore() {
                 saves="1.5 k"
                 forks="208"
                 saved={savedTitles.has(path.title)}
-                onToggleSave={() => toggleSave(path.title)}
-                to={path.title === 'Knitting' ? '/public-path' : undefined}
+                onToggleSave={() => saveOrPrompt(() => toggleSave(path.title))}
+                to={
+                  path.title === 'Knitting'
+                    ? signedIn && savedTitles.has('Knitting')
+                      ? '/saved-path'
+                      : '/public-path'
+                    : undefined
+                }
               />
             </li>
           ))}
         </ul>
       )}
+      {prompt}
     </div>
   )
 }

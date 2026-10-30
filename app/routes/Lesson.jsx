@@ -28,17 +28,17 @@ export default function Lesson() { // displays lesson and allows user to mark as
   }
 
   if (loading || error) return <DataState loading={loading} error={error} /> // shows loading or error state
-  if (roadmapId && !data.roadmap_lessons.some(link => link.roadmap_id === roadmapId)) return <p role="alert">This lesson is not in this roadmap.</p> // checks if lesson is part of the roadmap
+  if (roadmapId && !data.roadmap_lessons.some(link => link.roadmap_id === roadmapId)) return <p className="text-[#9e2020]" role="alert">This lesson is not in this path.</p> // checks if lesson is part of the roadmap
 
   return (
     <>
       <h1>{data.title}</h1>
       <p>{data.completed ? 'Completed' : 'To do'}</p>
       <BlockEditor blocks={data.blocks} readOnly />
-      <button type="button" disabled={busy} onClick={toggleCompleted}>{busy ? 'Saving...' : data.completed ? 'Mark as incomplete' : 'Mark as completed'}</button>
-      {message && <p role="alert">{message}</p>}
-      {data.owner_id === user.id && <Link to={`/edit-lesson/${data.id}${roadmapId ? `?roadmap=${roadmapId}` : ''}`}>Edit lesson</Link>}
-      <Link to={roadmapId ? `/my-roadmap/${roadmapId}` : '/browse-lessons'}>{roadmapId ? 'Back to roadmap' : 'Back to lessons'}</Link>
+      <button className="min-w-0 p-3 [font:inherit] cursor-pointer disabled:cursor-wait" type="button" disabled={busy} onClick={toggleCompleted}>{busy ? 'Saving...' : data.completed ? 'Mark as incomplete' : 'Mark as completed'}</button>
+      {message && <p className="text-[#9e2020]" role="alert">{message}</p>}
+      {data.owner_id === user.id && <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={`/edit-lesson/${data.id}${roadmapId ? `?path=${roadmapId}` : ''}`}>Edit lesson</Link>}
+      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={roadmapId ? `/my-path/${roadmapId}` : '/browse-lessons'}>{roadmapId ? 'Back to path' : 'Back to lessons'}</Link>
     </>
   )
 }
