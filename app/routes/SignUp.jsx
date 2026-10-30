@@ -42,7 +42,7 @@ export default function SignUp() {
   return (
     <div className="register-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col items-center px-6 py-12 font-sans text-ink">
       <div className="flex w-full flex-col items-center gap-8">
-        <Link to="/" className="m-0 inline-flex border-0 p-0 no-underline">
+        <Link to="/" aria-label="Pathify home" className="!m-0 !inline-flex !border-0 !bg-transparent !p-0 !text-inherit !no-underline">
           <Logo />
         </Link>
         <h1 className="m-0 text-center text-page-title text-ink">Start your path.</h1>
