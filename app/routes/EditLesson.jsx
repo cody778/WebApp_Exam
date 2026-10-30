@@ -15,7 +15,7 @@ function ExistingLesson({ lessonId, roadmapId }) {
 export default function EditLesson() {
   const { lessonId } = useParams()
   const [searchParams] = useSearchParams()
-  const roadmapId = searchParams.get('roadmap') || undefined
+  const roadmapId = (searchParams.get('path') || searchParams.get('roadmap')) || undefined
 
   return lessonId
     ? <ExistingLesson lessonId={lessonId} roadmapId={roadmapId} />

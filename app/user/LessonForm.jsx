@@ -20,7 +20,7 @@ export default function LessonForm({ lesson, roadmapId }) { //creating or editin
 
     try { // saves the lesson and navigates to the correct page
       await saveLesson(id, roadmapId, title, blocks)
-      navigate(roadmapId ? `/my-roadmap/${roadmapId}/lesson/${id}` : `/lesson/${id}`)
+      navigate(roadmapId ? `/my-path/${roadmapId}/lesson/${id}` : `/lesson/${id}`)
     } catch {
       setError('Could not save your lesson. Please try again.')
     } finally {
@@ -40,7 +40,7 @@ export default function LessonForm({ lesson, roadmapId }) { //creating or editin
         </fieldset>
       </form>
       {error && <p className="text-[#9e2020]" role="alert">{error}</p>}
-      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={roadmapId ? `/my-roadmap/${roadmapId}` : '/browse-lessons'}>{roadmapId ? 'Back to roadmap' : 'Back to lessons'}</Link>
+      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={roadmapId ? `/my-path/${roadmapId}` : '/browse-lessons'}>{roadmapId ? 'Back to path' : 'Back to lessons'}</Link>
     </>
   )
 }

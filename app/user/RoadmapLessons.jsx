@@ -39,7 +39,7 @@ export default function RoadmapLessons({ roadmap, onLinked }) {
           <option value="" disabled>Choose a lesson</option>
           {available.map(lesson => <option key={lesson.id} value={lesson.id}>{lesson.title}</option>)}
         </select>
-        <button className="min-w-0 p-3 [font:inherit] cursor-pointer disabled:cursor-wait" type="submit">{busy ? 'Adding...' : 'Add to roadmap'}</button>
+        <button className="min-w-0 p-3 [font:inherit] cursor-pointer disabled:cursor-wait" type="submit">{busy ? 'Adding...' : 'Add to path'}</button>
       </fieldset>
       {message && <p className="text-[#9e2020]" role="alert">{message}</p>}
     </form>

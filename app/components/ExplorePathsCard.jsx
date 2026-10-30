@@ -7,7 +7,7 @@ export default function ExplorePathsCard() {
   return (
     <Link
       to="/explore"
-      className="relative m-0 flex w-full cursor-pointer flex-col items-start gap-4 rounded-2xl border-0 bg-accent p-4 text-left shadow-raised no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+      className="relative m-0 flex w-full cursor-pointer flex-col items-start gap-4 rounded-2xl border-0 bg-accent p-4 text-left text-inherit shadow-raised no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
     >
       <span className="absolute top-4 right-4 text-on-brand" aria-hidden="true">
         <svg width="32" height="32" viewBox="0 0 32 32" fill="none" className="block">
