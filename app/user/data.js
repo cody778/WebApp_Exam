@@ -23,7 +23,62 @@ async function withRoadmapLessons(userId, roadmaps) {
   }))
 }
 
-const roadmapFields = 'id, owner_id, title, description, materials, roadmap_lessons(lesson_id, position, lessons(id, owner_id, title))'
+const roadmapFields = 'id, owner_id, title, description, materials, cover_url, price, is_published, roadmap_lessons(lesson_id, position, lessons(id, owner_id, title))'
+
+async function pathCounts(ids) {
+  if (!ids.length) return new Map()
+  const rows = await result(supabase.rpc('path_counts', { p_ids: ids }))
+  return new Map(rows.map(row => [row.roadmap_id, { saves: Number(row.saves), forks: Number(row.forks), sales: Number(row.sales) }]))
+}
+
+async function authorNames(ownerIds) {
+  const ids = [...new Set(ownerIds)]
+  if (!ids.length) return new Map()
+  const rows = await result(supabase.from('profiles').select('id, full_name, user_name').in('id', ids))
+  return new Map(rows.map(row => [row.id, row.full_name || row.user_name || 'a Pathify member']))
+}
+
+async function idsFor(table, userId) {
+  if (!userId) return new Set()
+  const rows = await result(supabase.from(table).select('roadmap_id').eq('user_id', userId))
+  return new Set(rows.map(row => row.roadmap_id))
+}
+
+/** Public paths for Explore, with author, counts, and whether the user saved or bought each one. */
+export async function listExplorePaths(userId) {
+  const roadmaps = await result(supabase.from('roadmaps').select('id, owner_id, title, description, cover_url, price').eq('is_published', true).order('created_at', { ascending: true }))
+  const [counts, authors, saved, purchased] = await Promise.all([
+    pathCounts(roadmaps.map(roadmap => roadmap.id)),
+    authorNames(roadmaps.map(roadmap => roadmap.owner_id)),
+    idsFor('saved_roadmaps', userId),
+    idsFor('purchased_roadmaps', userId),
+  ])
+  return roadmaps.map(roadmap => ({
+    ...roadmap,
+    author: authors.get(roadmap.owner_id) ?? 'a Pathify member',
+    saves: 0, forks: 0, sales: 0,
+    ...counts.get(roadmap.id),
+    saved: saved.has(roadmap.id),
+    purchased: purchased.has(roadmap.id),
+  }))
+}
+
+/** The user's listed paid paths, how often each sold, and the paths the user bought. */
+export async function listCommissions(userId) {
+  const [listed, bought] = await Promise.all([
+    result(supabase.from('roadmaps').select(roadmapFields).eq('owner_id', userId).not('price', 'is', null).order('created_at', { ascending: false })),
+    result(supabase.from('purchased_roadmaps').select(`roadmaps(${roadmapFields})`).eq('user_id', userId).order('created_at', { ascending: false })),
+  ])
+  const [own, purchased, counts] = await Promise.all([
+    withRoadmapLessons(userId, listed),
+    withRoadmapLessons(userId, bought.map(row => row.roadmaps).filter(Boolean)),
+    pathCounts(listed.map(roadmap => roadmap.id)),
+  ])
+  return {
+    listed: own.map(roadmap => ({ ...roadmap, sales: counts.get(roadmap.id)?.sales ?? 0 })),
+    purchased,
+  }
+}
 
 export async function listRoadmaps(userId) {
   const roadmaps = await result(supabase.from('roadmaps').select(roadmapFields).eq('owner_id', userId).order('created_at', { ascending: false }))
@@ -93,23 +148,44 @@ export function setLessonCompleted(userId, id, completed) {
   return result(query)
 }
 
-/** A path with each step's blocks, whether the user saved it, and its save and fork counts, for the path page. */
+/** A path with each step's blocks, its author and counts, and whether the user saved or bought it, for the path page. */
 export async function getPath(userId, id) {
-  const [roadmap, saves, [stats]] = await Promise.all([
+  const [roadmap, saves, purchases, counts] = await Promise.all([
     getRoadmap(userId, id),
     result(supabase.from('saved_roadmaps').select('roadmap_id').eq('user_id', userId).eq('roadmap_id', id)),
-    result(supabase.rpc('roadmap_stats', { p_roadmap_id: id })),
+    result(supabase.from('purchased_roadmaps').select('roadmap_id').eq('user_id', userId).eq('roadmap_id', id)),
+    pathCounts([id]),
   ])
   const ids = roadmap.lessons.filter(lesson => !lesson.unavailable).map(lesson => lesson.id)
-  const rows = ids.length ? await result(supabase.from('lessons').select('id, lesson_blocks(id, type, content, position)').in('id', ids)) : []
+  const [rows, authors] = await Promise.all([
+    ids.length ? result(supabase.from('lessons').select('id, lesson_blocks(id, type, content, position)').in('id', ids)) : [],
+    authorNames([roadmap.owner_id]),
+  ])
   const blocks = new Map(rows.map(row => [row.id, [...row.lesson_blocks].sort((a, b) => a.position - b.position).map(({ id, type, content }) => ({ id, type, content }))]))
   return {
     ...roadmap,
+    author: authors.get(roadmap.owner_id) ?? 'a Pathify member',
     saved: saves.length > 0,
-    saves: Number(stats?.saves ?? 0),
-    forks: Number(stats?.forks ?? 0),
+    purchased: purchases.length > 0,
+    saves: 0, forks: 0, sales: 0,
+    ...counts.get(id),
     lessons: roadmap.lessons.map(lesson => ({ ...lesson, blocks: blocks.get(lesson.id) ?? [] })),
   }
+}
+
+export function setPathPublished(id, published) {
+  return result(supabase.from('roadmaps').update({ is_published: published }).eq('id', id))
+}
+
+/** Records a mock purchase and saves the path so it shows on Home. */
+export async function buyPath(userId, id) {
+  await result(supabase.from('purchased_roadmaps').upsert({ user_id: userId, roadmap_id: id }, { onConflict: 'user_id,roadmap_id', ignoreDuplicates: true }))
+  await setPathSaved(userId, id, true)
+}
+
+/** Forks a path from its id, for cards that do not have the steps loaded. */
+export async function forkPathById(userId, id) {
+  return forkPath(userId, await getPath(userId, id))
 }
 
 export function setPathSaved(userId, id, saved) {
@@ -136,8 +212,9 @@ export async function updatePath(userId, roadmap, { title, description, material
 
 /** Copies a path and its steps to the user's own paths. Returns the new path id. */
 export async function forkPath(userId, path) {
+  if (path.price && !path.purchased && path.owner_id !== userId) throw new Error('Buy this path before forking it.')
   const id = crypto.randomUUID()
-  await result(supabase.from('roadmaps').insert({ id, owner_id: userId, title: path.title, description: path.description ?? '', materials: path.materials ?? [], forked_from: path.id }))
+  await result(supabase.from('roadmaps').insert({ id, owner_id: userId, title: path.title, description: path.description ?? '', materials: path.materials ?? [], cover_url: path.cover_url ?? null, forked_from: path.id }))
   for (const lesson of path.lessons) {
     if (lesson.unavailable) continue
     const blocks = lesson.blocks.length ? lesson.blocks : [{ type: 'paragraph', content: { text: '' } }]

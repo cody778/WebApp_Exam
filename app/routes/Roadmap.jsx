@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router'
+import { useState } from 'react'
+import { Link, useLocation, useNavigate, useParams } from 'react-router'
+import { useNotice } from '../components/Notice.jsx'
+import { formatCount, formatPrice } from '../components/PathCard.jsx'
 import PathEditor from '../components/PathEditor.jsx'
 import PathSections from '../components/PathSections.jsx'
 import PathShell, { authorName } from '../components/PathShell.jsx'
@@ -9,13 +11,14 @@ import iconSave from '../assets/public-path/icon-save.svg'
 import iconSaveFilled from '../assets/public-path/icon-save-filled.svg'
 import iconFork from '../assets/public-path/icon-fork.svg'
 import iconShare from '../assets/public-path/icon-share.svg'
+import iconPublic from '../assets/public-path/icon-public.svg'
 import iconLock from '../assets/public-path/icon-lock.svg'
 import iconEdit from '../assets/create-path/edit.svg'
 import stepDot from '../assets/public-path/step-dot.svg'
-import { useAuth } from '../user/AuthProvider.jsx'
 import saveCount from '../assets/explore/save-count.svg'
 import forkCount from '../assets/explore/fork-count.svg'
-import { forkPath, getPath, setLessonCompleted, setPathSaved, updatePath } from '../user/data.js'
+import { useAuth } from '../user/AuthProvider.jsx'
+import { forkPath, getPath, setLessonCompleted, setPathPublished, setPathSaved, updatePath } from '../user/data.js'
 import DataState from '../user/DataState.jsx'
 import useUserData from '../user/useUserData.js'
 
@@ -24,14 +27,9 @@ const coverButton =
 const headerButton =
   '!m-0 flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent !p-0 hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-accent'
 const mainButton =
-  '!m-0 flex h-12 w-full cursor-pointer items-center justify-center rounded-lg border-0 !px-4 !py-0 font-sans text-base leading-none font-normal disabled:cursor-wait disabled:opacity-70'
+  '!m-0 !flex h-12 w-full cursor-pointer items-center justify-center rounded-lg border-0 !px-4 !py-0 font-sans text-base leading-none font-normal !no-underline disabled:cursor-wait disabled:opacity-70'
 
-/** 1500 becomes "1.5 k", like the counts on path cards. */
-function formatCount(count) {
-  return count >= 1000 ? `${Number((count / 1000).toFixed(1))} k` : String(count)
-}
-
-/** Path page. Owners can unlock it to edit; other people can save, fork, and share it. */
+/** Path page. Owners can unlock it to edit and make it public; other people can save, fork, buy, and share it. */
 export default function Roadmap() {
   const { roadmapId } = useParams()
   const { data, loading, error, reload } = useUserData(getPath, roadmapId)
@@ -54,24 +52,24 @@ function PathPage({ path, onSaved }) {
   const navigate = useNavigate()
   const location = useLocation()
   const owned = path.owner_id === user.id
+  const locked = Boolean(path.price) && !path.purchased && !owned
+  const buyTo = `/premium?path=${path.id}`
   const steps = path.lessons.filter((lesson) => !lesson.unavailable)
+  const linkedStep = new URLSearchParams(location.search).get('step')
+  const startsOnStep = steps.some((step) => step.id === linkedStep)
 
   const [editing, setEditing] = useState(false)
+  const [published, setPublished] = useState(path.is_published)
+  const [publishing, setPublishing] = useState(false)
   const [saved, setSaved] = useState(path.saved)
   const [saves, setSaves] = useState(path.saves)
   const [saving, setSaving] = useState(false)
   const [completed, setCompleted] = useState(() => new Set(steps.filter((step) => step.completed).map((step) => step.id)))
-  const [openId, setOpenId] = useState(null)
+  const [openId, setOpenId] = useState(startsOnStep ? linkedStep : null)
   const [busyStep, setBusyStep] = useState(null)
   const [forking, setForking] = useState(false)
   const [confirmUnsave, setConfirmUnsave] = useState(false)
-  const [notice, setNotice] = useState(location.state?.notice ?? '')
-
-  useEffect(() => {
-    if (!notice) return
-    const timer = setTimeout(() => setNotice(''), 2800)
-    return () => clearTimeout(timer)
-  }, [notice])
+  const { notice, show } = useNotice(location.state?.notice ?? '')
 
   const currentIndex = steps.findIndex((step) => !completed.has(step.id))
   const openStep = steps.find((step) => step.id === openId) ?? steps[currentIndex] ?? steps[0]
@@ -81,14 +79,28 @@ function PathPage({ path, onSaved }) {
     ? { to: '/home?filter=mine', label: 'My paths' }
     : saved
       ? { to: '/home?filter=saved', label: 'Saved paths' }
-      : { to: '/browse-paths', label: 'Paths' }
+      : { to: '/explore', label: 'Explore' }
 
   async function share() {
     try {
-      await navigator.clipboard.writeText(`${window.location.origin}/my-path/${path.id}`)
-      setNotice('Link copied')
+      await navigator.clipboard.writeText(`${window.location.origin}/path/${path.id}`)
+      show(owned && !published ? 'Link copied. Make the path public so others can open it.' : 'Link copied')
     } catch {
-      setNotice('Could not copy the link')
+      show('Could not copy the link')
+    }
+  }
+
+  async function togglePublished() {
+    if (publishing) return
+    setPublishing(true)
+    try {
+      await setPathPublished(path.id, !published)
+      setPublished(!published)
+      show(published ? 'Your path is private' : 'Your path is public. Anyone can find it in Explore.')
+    } catch {
+      show('Could not change who can see this path')
+    } finally {
+      setPublishing(false)
     }
   }
 
@@ -99,9 +111,9 @@ function PathPage({ path, onSaved }) {
       await setPathSaved(user.id, path.id, value)
       setSaved(value)
       setSaves((count) => count + (value ? 1 : -1))
-      setNotice(value ? 'Saved to your paths' : 'Removed from saved paths')
+      show(value ? 'Saved to your paths' : 'Removed from saved paths')
     } catch {
-      setNotice(value ? 'Could not save this path' : 'Could not unsave this path')
+      show(value ? 'Could not save this path' : 'Could not unsave this path')
     } finally {
       setSaving(false)
     }
@@ -114,12 +126,16 @@ function PathPage({ path, onSaved }) {
 
   async function fork() {
     if (forking) return
+    if (locked) {
+      show('Buy this path to fork it')
+      return
+    }
     setForking(true)
     try {
       const id = await forkPath(user.id, path)
       navigate(`/my-path/${id}`, { state: { notice: 'This is your copy. Unlock it to edit.' } })
     } catch {
-      setNotice('Could not copy this path')
+      show('Could not copy this path')
       setForking(false)
     }
   }
@@ -138,7 +154,7 @@ function PathPage({ path, onSaved }) {
       const index = steps.indexOf(step)
       if (done && steps[index + 1]) setOpenId(steps[index + 1].id)
     } catch {
-      setNotice('Could not save your progress')
+      show('Could not save your progress')
     } finally {
       setBusyStep(null)
     }
@@ -146,7 +162,19 @@ function PathPage({ path, onSaved }) {
 
   const coverActions = (
     <>
-      {!owned && (
+      {owned ? (
+        <button
+          type="button"
+          aria-label={published ? 'Make path private' : 'Make path public'}
+          title={published ? 'Public. Click to make it private' : 'Private. Click to make it public'}
+          aria-pressed={published}
+          disabled={publishing}
+          onClick={togglePublished}
+          className={`${coverButton} ${published ? '!bg-white/30' : ''}`}
+        >
+          <img src={iconPublic} alt="" width="24" height="24" className={`block max-w-none ${published ? '' : 'opacity-60'}`} />
+        </button>
+      ) : (
         <>
           <button type="button" aria-label={saved ? 'Unsave path' : 'Save path'} aria-pressed={saved} disabled={saving} onClick={save} className={coverButton}>
             <img src={saved ? iconSaveFilled : iconSave} alt="" width="24" height="24" className="block max-w-none" />
@@ -203,18 +231,9 @@ function PathPage({ path, onSaved }) {
     )
   ) : null
 
-  const toast = notice ? (
-    <p
-      role="status"
-      className="fixed bottom-6 left-1/2 z-[60] m-0 -translate-x-1/2 rounded-full bg-ink px-4 py-2 text-sm leading-[1.4] whitespace-nowrap text-on-brand shadow-[0_8px_24px_rgba(30,30,30,0.25)]"
-    >
-      {notice}
-    </p>
-  ) : null
-
   if (editing) {
     return (
-      <PathShell crumb={crumb} current={path.title} coverActions={coverActions} headerAction={headerAction}>
+      <PathShell crumb={crumb} current={path.title} cover={path.cover_url} coverActions={coverActions} headerAction={headerAction}>
         <PathEditor
           initial={{
             title: path.title,
@@ -238,10 +257,16 @@ function PathPage({ path, onSaved }) {
             </button>
           }
         />
-        {toast}
+        {notice}
       </PathShell>
     )
   }
+
+  const buyButton = (
+    <Link to={buyTo} className={`${mainButton} !bg-accent !text-on-brand`}>
+      Buy this path for {formatPrice(path.price)}
+    </Link>
+  )
 
   function renderSection(label, showSection) {
     if (label === 'Overview') {
@@ -289,6 +314,8 @@ function PathPage({ path, onSaved }) {
           )}
           {steps.length === 0 ? (
             <p className="m-0 text-sm leading-[1.4] text-quiet">This path has no steps yet.</p>
+          ) : locked ? (
+            buyButton
           ) : currentIndex === -1 ? (
             <p className="m-0 text-sm leading-[1.4] text-ink">You completed every step of this path.</p>
           ) : (
@@ -314,19 +341,27 @@ function PathPage({ path, onSaved }) {
         <>
           <h2 className="m-0 font-sans text-2xl leading-[1.2] font-semibold tracking-[-0.48px] text-ink [overflow-wrap:anywhere]">{openStep.title}</h2>
           <StepProgress count={steps.length} index={openIndex} filled={(index) => completed.has(steps[index].id)} />
-          <StepBlocks blocks={openStep.blocks} />
+          {locked ? (
+            <p className="m-0 text-sm leading-[1.4] text-quiet">The steps of this path open once you buy it.</p>
+          ) : (
+            <StepBlocks blocks={openStep.blocks} />
+          )}
           <StepNav
             previous={openIndex > 0 ? { title: steps[openIndex - 1].title, onClick: () => setOpenId(steps[openIndex - 1].id) } : null}
             next={openIndex < steps.length - 1 ? { title: steps[openIndex + 1].title, onClick: () => setOpenId(steps[openIndex + 1].id) } : null}
           />
-          <button
-            type="button"
-            disabled={busyStep === openStep.id}
-            onClick={() => markStep(openStep, !done)}
-            className={done ? `${mainButton} !border !border-solid !border-ink bg-white text-ink` : `${mainButton} bg-accent text-on-brand`}
-          >
-            {busyStep === openStep.id ? 'Saving...' : done ? 'Mark as not completed' : 'Complete step'}
-          </button>
+          {locked ? (
+            buyButton
+          ) : (
+            <button
+              type="button"
+              disabled={busyStep === openStep.id}
+              onClick={() => markStep(openStep, !done)}
+              className={done ? `${mainButton} !border !border-solid !border-ink bg-white text-ink` : `${mainButton} bg-accent text-on-brand`}
+            >
+              {busyStep === openStep.id ? 'Saving...' : done ? 'Mark as not completed' : 'Complete step'}
+            </button>
+          )}
         </>
       )
     }
@@ -345,10 +380,10 @@ function PathPage({ path, onSaved }) {
   }
 
   return (
-    <PathShell crumb={crumb} current={path.title} coverActions={coverActions} headerAction={headerAction}>
+    <PathShell crumb={crumb} current={path.title} cover={path.cover_url} coverActions={coverActions} headerAction={headerAction}>
       <h1 className="m-0 text-[36px] leading-[1.15] font-bold tracking-[-0.72px] text-ink [overflow-wrap:anywhere]">{path.title}</h1>
-      <div className="flex items-center gap-3">
-        {owned && <p className="m-0 text-[10px] leading-[1.4] font-normal whitespace-nowrap text-quiet">By {authorName(user)}</p>}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <p className="m-0 text-[10px] leading-[1.4] font-normal whitespace-nowrap text-quiet">By {owned ? authorName(user) : path.author}</p>
         <div className="flex items-center gap-1">
           <span className="flex items-center gap-0.5" aria-label={`Saved ${saves} ${saves === 1 ? 'time' : 'times'}`}>
             <img src={saveCount} alt="" width="12" height="12" className="block max-w-none" />
@@ -359,9 +394,14 @@ function PathPage({ path, onSaved }) {
             <span aria-hidden="true" className="text-[10px] leading-[1.4] whitespace-nowrap text-[#5a5a5a]">{formatCount(path.forks)}</span>
           </span>
         </div>
+        {owned ? (
+          <span className="text-[10px] leading-[1.4] whitespace-nowrap text-quiet">{published ? 'Public' : 'Private'}</span>
+        ) : path.price ? (
+          <span className="text-[10px] leading-[1.4] whitespace-nowrap text-quiet">{path.purchased ? 'Purchased' : formatPrice(path.price)}</span>
+        ) : null}
       </div>
-      <PathSections render={renderSection} />
-      {toast}
+      <PathSections render={renderSection} initial={startsOnStep ? 1 : 0} />
+      {notice}
     </PathShell>
   )
 }

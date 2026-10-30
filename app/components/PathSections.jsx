@@ -3,11 +3,16 @@ import PathSectionHeader, { pathSections } from './PathSectionHeader.jsx'
 
 /**
  * Overview, Steps, and Materials side by side. Swipe between them, or tap the bars in each header.
- * @param {{ render: (label: string, showSection: (index: number) => void) => import('react').ReactNode }} props
+ * @param {{ render: (label: string, showSection: (index: number) => void) => import('react').ReactNode, initial?: number }} props
  */
-export default function PathSections({ render }) {
+export default function PathSections({ render, initial = 0 }) {
   const scrollerRef = useRef(null)
-  const [active, setActive] = useState(0)
+  const [active, setActive] = useState(initial)
+
+  useEffect(() => {
+    const scroller = scrollerRef.current
+    if (scroller && initial) scroller.scrollLeft = initial * scroller.clientWidth
+  }, [initial])
 
   // The row is as tall as its tallest section, so match the open one to keep what follows close.
   useEffect(() => {

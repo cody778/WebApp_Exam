@@ -1,19 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, Navigate } from 'react-router'
 import AppNav from '../components/AppNav.jsx'
-import PathCard from '../components/PathCard.jsx'
-import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
+import PathCard, { formatPrice } from '../components/PathCard.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { supabase } from '../user/client.js'
-import { toggleSavedTitle, useSavedTitles } from '../user/savedTitles.js'
+import { listCommissions } from '../user/data.js'
+import DataState from '../user/DataState.jsx'
 import searchIcon from '../assets/explore/search.svg'
-import plants from '../assets/explore/plants.jpg'
-import landscape from '../assets/explore/landscape.jpg'
-import blender from '../assets/explore/blender.jpg'
-import sashiko from '../assets/profile/sashiko.jpg'
-import watercolors from '../assets/explore/watercolors.jpg'
-import robotics from '../assets/explore/robotics.png'
-import embroidery from '../assets/profile/embroidery.jpg'
 
 const filters = [
   { id: 'listed', label: 'Listed' },
@@ -21,32 +14,47 @@ const filters = [
   { id: 'purchased', label: 'Purchased' },
 ]
 
-const commissions = [
-  { title: 'Plant care for begginers', listing: 'sold', soldCount: 20, progress: 'Not started', image: plants, imageWidth: 678, imageHeight: 452 },
-  { title: 'Landscape photography', listing: 'listed', progress: 'Not started', image: landscape, imageWidth: 2048, imageHeight: 1373, cropped: true },
-  { title: '3d modeling with Blender', listing: 'listed', progress: 'Step 4/10', image: blender, imageWidth: 1280, imageHeight: 720 },
-  { title: 'Sashiko', listing: 'listed', progress: 'Step 2/6', image: sashiko, imageWidth: 768, imageHeight: 1017 },
-  { title: 'Watercolors', listing: 'purchased', progress: 'Not started', image: watercolors, imageWidth: 748, imageHeight: 512 },
-  { title: 'Introduction to Robotics', listing: 'purchased', progress: 'Step 1/12', image: robotics, imageWidth: 996, imageHeight: 598 },
-  { title: 'Embroidery', listing: 'purchased', progress: 'Step 1/12', image: embroidery, imageWidth: 736, imageHeight: 981 },
-]
+function progress(path) {
+  const lessons = path.lessons.filter((lesson) => lesson?.title)
+  const index = lessons.findIndex((lesson) => !lesson.completed)
+  if (!lessons.length || !lessons.some((lesson) => lesson.completed)) return 'Not started'
+  return index === -1 ? 'Completed' : `Step ${index + 1}/${lessons.length}`
+}
 
-/** Paths listed, sold, and purchased, opened from My commissions. */
+/** Paid paths the user listed, how often they sold, and the paths the user bought. */
 export default function Commissions() {
   const { user, loading } = useAuth()
   const authPending = Boolean(supabase) && loading && !user
-  const savedTitles = useSavedTitles(user?.id ?? null)
-  const { saveOrPrompt, prompt } = useSavePrompt()
-  const [status, setStatus] = useState('sold')
+  const [status, setStatus] = useState('listed')
   const [query, setQuery] = useState('')
+  const [data, setData] = useState(null)
+  const [loadError, setLoadError] = useState(null)
   const needle = query.trim().toLowerCase()
-  const visible = commissions.filter(
-    (item) => item.listing === status && (needle === '' || item.title.toLowerCase().includes(needle)),
-  )
 
-  function toggleSave(title) {
-    toggleSavedTitle(user?.id ?? null, title)
-  }
+  useEffect(() => {
+    if (!user) return
+    let active = true
+    listCommissions(user.id).then(
+      (result) => active && setData(result),
+      (error) => active && setLoadError(error),
+    )
+    return () => {
+      active = false
+    }
+  }, [user])
+
+  const items =
+    status === 'purchased'
+      ? (data?.purchased ?? []).map((path) => ({ ...path, to: `/path/${path.id}`, label: progress(path) }))
+      : (data?.listed ?? [])
+          .filter((path) => status === 'listed' || path.sales > 0)
+          .map((path) => ({
+            ...path,
+            to: `/my-path/${path.id}`,
+            label: `${formatPrice(path.price)}${path.is_published ? '' : ', private'}`,
+            soldCount: status === 'sold' ? path.sales : undefined,
+          }))
+  const visible = items.filter((item) => needle === '' || item.title.toLowerCase().includes(needle))
 
   if (supabase && !loading && !user) {
     return <Navigate to="/sign-in" state={{ from: '/commissions' }} replace />
@@ -94,29 +102,29 @@ export default function Commissions() {
         </label>
       </div>
 
-      {visible.length === 0 ? (
-        <p className="m-0 mt-6 font-sans text-sm leading-body text-quiet">No commissions match that search.</p>
+      {!data || loadError ? (
+        <div className="mt-6">
+          <DataState loading={!loadError} error={loadError} />
+        </div>
+      ) : visible.length === 0 ? (
+        <p className="m-0 mt-6 font-sans text-sm leading-body text-quiet">
+          {needle
+            ? 'No commissions match that search.'
+            : status === 'purchased'
+              ? 'You have not bought any paths yet.'
+              : status === 'sold'
+                ? 'None of your paths have sold yet.'
+                : 'You have no paid paths listed yet.'}
+        </p>
       ) : (
         <ul className="m-0 mt-6 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 xl:grid-cols-4">
           {visible.map((item) => (
-            <li key={item.title}>
-              <PathCard
-                title={item.title}
-                image={item.image}
-                imageWidth={item.imageWidth}
-                imageHeight={item.imageHeight}
-                cropped={item.cropped}
-                status={item.progress}
-                soldCount={item.listing === 'sold' ? item.soldCount : undefined}
-                saved={savedTitles.has(item.title)}
-                onToggleSave={() => saveOrPrompt(() => toggleSave(item.title))}
-                to={item.title === 'Sashiko' ? '/sashiko' : undefined}
-              />
+            <li key={item.id}>
+              <PathCard title={item.title} to={item.to} cover={item.cover_url} status={item.label} soldCount={item.soldCount} />
             </li>
           ))}
         </ul>
       )}
-      {prompt}
     </div>
   )
 }

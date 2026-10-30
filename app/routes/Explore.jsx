@@ -1,58 +1,75 @@
-import { useState } from 'react'
-import { Link } from 'react-router'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router'
 import AppNav from '../components/AppNav.jsx'
 import Logo from '../components/Logo.jsx'
+import { useNotice } from '../components/Notice.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
-import { toggleSavedTitle, useSavedTitles } from '../user/savedTitles.js'
 import PathCard from '../components/PathCard.jsx'
 import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
 import { supabase } from '../user/client.js'
+import { forkPathById, listExplorePaths, setPathSaved } from '../user/data.js'
+import DataState from '../user/DataState.jsx'
 import searchIcon from '../assets/explore/search.svg'
-import knitting from '../assets/explore/knitting.png'
-import crochet from '../assets/explore/crochet.png'
-import oleo from '../assets/explore/oleo.png'
-import sewing from '../assets/explore/sewing.png'
-import digital from '../assets/explore/digital.png'
-import watercolors from '../assets/explore/watercolors.jpg'
-import robotics from '../assets/explore/robotics.png'
-import plants from '../assets/explore/plants.jpg'
-import landscape from '../assets/explore/landscape.jpg'
-import blender from '../assets/explore/blender.jpg'
 
-const paths = [
-  { title: 'Knitting', author: 'Pathify', image: knitting, imageWidth: 1860, imageHeight: 850 },
-  { title: 'Crochet', author: 'Pathify', image: crochet, imageWidth: 1860, imageHeight: 850 },
-  { title: 'Oil painting', author: 'Pathify', image: oleo, imageWidth: 1860, imageHeight: 850 },
-  { title: 'Sewing for begginers', author: 'Pathify', image: sewing, imageWidth: 1860, imageHeight: 850 },
-  { title: 'Digital drawing', author: 'Pathify', image: digital, imageWidth: 1860, imageHeight: 850 },
-  { title: 'Watercolors', author: 'Omar Caloca', image: watercolors, imageWidth: 748, imageHeight: 512 },
-  { title: 'Introduction to Robotics', author: 'Teofil Corad', image: robotics, imageWidth: 996, imageHeight: 598 },
-  { title: 'Plant care for begginers', author: 'Barbara Borini', image: plants, imageWidth: 678, imageHeight: 452 },
-  {
-    title: 'Landscape photography',
-    author: 'Omar Caloca',
-    image: landscape,
-    imageWidth: 2048,
-    imageHeight: 1373,
-    cropped: true,
-  },
-  { title: '3d modeling with Blender', author: 'Blender Guru', image: blender, imageWidth: 1280, imageHeight: 720 },
-]
-
-/** Public catalog reached from the landing explore card. */
+/** Public paths from Pathify and the community. Anyone can browse; saving, forking, and buying need an account. */
 export default function Explore() {
   const { user, loading } = useAuth()
+  const navigate = useNavigate()
   const [query, setQuery] = useState('')
-  const savedTitles = useSavedTitles(user?.id ?? null)
+  const [paths, setPaths] = useState(null)
+  const [loadError, setLoadError] = useState(null)
+  const [forkingId, setForkingId] = useState(null)
   const { saveOrPrompt, prompt } = useSavePrompt()
+  const { notice, show } = useNotice()
   const authPending = Boolean(supabase) && loading && !user
   const signedIn = !supabase || Boolean(user)
+  const userId = user?.id ?? null
   const needle = query.trim().toLowerCase()
 
-  function toggleSave(title) {
-    toggleSavedTitle(user?.id ?? null, title)
+  useEffect(() => {
+    if (authPending || !supabase) return
+    let active = true
+    listExplorePaths(userId).then(
+      (data) => active && setPaths(data),
+      (error) => active && setLoadError(error),
+    )
+    return () => {
+      active = false
+    }
+  }, [authPending, userId])
+
+  function update(id, changes) {
+    setPaths((current) => current.map((path) => (path.id === id ? { ...path, ...changes(path) } : path)))
   }
-  const visible = paths.filter(
+
+  async function toggleSave(path) {
+    const saved = !path.saved
+    update(path.id, (current) => ({ saved, saves: current.saves + (saved ? 1 : -1) }))
+    try {
+      await setPathSaved(userId, path.id, saved)
+      show(saved ? 'Saved to your paths' : 'Removed from saved paths')
+    } catch {
+      update(path.id, (current) => ({ saved: !saved, saves: current.saves + (saved ? -1 : 1) }))
+      show(saved ? 'Could not save this path' : 'Could not unsave this path')
+    }
+  }
+
+  async function fork(path) {
+    if (path.price && !path.purchased) {
+      show('Buy this path to fork it')
+      return
+    }
+    setForkingId(path.id)
+    try {
+      const id = await forkPathById(userId, path.id)
+      navigate(`/my-path/${id}`, { state: { notice: 'This is your copy. Unlock it to edit.' } })
+    } catch {
+      setForkingId(null)
+      show('Could not copy this path')
+    }
+  }
+
+  const visible = (paths ?? []).filter(
     (path) =>
       needle === '' ||
       path.title.toLowerCase().includes(needle) ||
@@ -106,31 +123,37 @@ export default function Explore() {
         />
         <img src={searchIcon} alt="" width="16" height="16" className="block shrink-0" />
       </form>
-      {visible.length === 0 ? (
-        <p className="m-0 text-body text-ink">No paths match that search.</p>
+      {!paths || loadError ? (
+        <DataState loading={!loadError} error={loadError} />
+      ) : visible.length === 0 ? (
+        <p className="m-0 text-body text-ink">{paths.length ? 'No paths match that search.' : 'No public paths yet.'}</p>
       ) : (
         <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 pt-2 pb-12 md:grid-cols-3 xl:grid-cols-4">
-          {visible.map((path) => (
-            <li key={path.title}>
-              <PathCard
-                {...path}
-                saves="1.5 k"
-                forks="208"
-                saved={savedTitles.has(path.title)}
-                onToggleSave={() => saveOrPrompt(() => toggleSave(path.title))}
-                to={
-                  path.title === 'Knitting'
-                    ? signedIn && savedTitles.has('Knitting')
-                      ? '/saved-path'
-                      : '/public-path'
-                    : undefined
-                }
-              />
-            </li>
-          ))}
+          {visible.map((path) => {
+            const own = path.owner_id === userId
+            return (
+              <li key={path.id}>
+                <PathCard
+                  title={path.title}
+                  to={own ? `/my-path/${path.id}` : `/path/${path.id}`}
+                  cover={path.cover_url}
+                  author={own ? 'you' : path.author}
+                  saves={path.saves}
+                  forks={path.forks}
+                  saved={path.saved}
+                  onToggleSave={own ? undefined : () => saveOrPrompt(() => toggleSave(path))}
+                  onFork={own ? undefined : () => saveOrPrompt(() => fork(path))}
+                  forking={forkingId === path.id}
+                  price={path.price}
+                  buyTo={own || path.purchased ? undefined : signedIn ? `/premium?path=${path.id}` : '/sign-in'}
+                />
+              </li>
+            )
+          })}
         </ul>
       )}
       {prompt}
+      {notice}
     </div>
   )
 }

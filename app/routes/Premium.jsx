@@ -1,8 +1,11 @@
-import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router'
+import { useEffect, useState } from 'react'
+import { Navigate, useNavigate, useSearchParams } from 'react-router'
 import AppNav from '../components/AppNav.jsx'
+import { formatPrice } from '../components/PathCard.jsx'
 import SubmitButton from '../components/SubmitButton.jsx'
 import TextField from '../components/TextField.jsx'
+import { useAuth } from '../user/AuthProvider.jsx'
+import { buyPath, getPath } from '../user/data.js'
 import { emmaPayment, savePaymentMethod, unlockPremium } from '../user/paymentMethods.js'
 
 const methods = [
@@ -81,16 +84,46 @@ function SaveDetailsPrompt({ method, onSave, onSkip, onDismiss }) {
   )
 }
 
-/** Mock checkout. Only a purchase started from the AI upgrade banner unlocks the assistant. */
+/** Mock checkout for a paid path (?path=id) or the AI assistant. Only a purchase started from the AI upgrade banner unlocks the assistant. */
 export default function Premium() {
   const navigate = useNavigate()
+  const { user, loading } = useAuth()
   const [searchParams] = useSearchParams()
   const unlockAi = searchParams.get('unlock') === 'ai'
+  const pathId = searchParams.get('path')
   const [method, setMethod] = useState('card')
   const [promptOpen, setPromptOpen] = useState(false)
+  const [path, setPath] = useState(null)
+  const [error, setError] = useState('')
 
-  function finish(save) {
+  useEffect(() => {
+    if (!pathId || !user) return
+    let active = true
+    getPath(user.id, pathId).then(
+      (data) => active && setPath(data),
+      () => active && setError('Could not load this path.'),
+    )
+    return () => {
+      active = false
+    }
+  }, [pathId, user])
+
+  if (pathId && !loading && !user) {
+    return <Navigate to="/sign-in" state={{ from: `/premium?path=${pathId}` }} replace />
+  }
+
+  async function finish(save) {
     if (save) savePaymentMethod(detailsFor(method))
+    if (pathId) {
+      try {
+        await buyPath(user.id, pathId)
+        navigate(`/path/${pathId}`, { state: { notice: 'Purchased. The steps are open now.' } })
+      } catch {
+        setPromptOpen(false)
+        setError('Could not complete the purchase. Please try again.')
+      }
+      return
+    }
     if (unlockAi) unlockPremium()
     navigate('/home')
   }
@@ -101,10 +134,17 @@ export default function Premium() {
       <h1 className="m-0 font-display text-xl leading-heading font-medium tracking-heading">Payment details</h1>
 
       <section className="flex items-center justify-between gap-3 rounded-2xl bg-accent-muted p-4">
-        <div>
-          <p className="m-0 font-sans text-sm leading-body text-accent">Premium AI assistant</p>
-          <p className="m-0 mt-1 font-sans text-sm font-semibold text-ink">€5/month</p>
-        </div>
+        {pathId ? (
+          <div>
+            <p className="m-0 font-sans text-sm leading-body text-accent">{path ? path.title : 'Path'}</p>
+            <p className="m-0 mt-1 font-sans text-sm font-semibold text-ink">{path?.price ? formatPrice(path.price) : '…'}</p>
+          </div>
+        ) : (
+          <div>
+            <p className="m-0 font-sans text-sm leading-body text-accent">Premium AI assistant</p>
+            <p className="m-0 mt-1 font-sans text-sm font-semibold text-ink">€5/month</p>
+          </div>
+        )}
         <p className="m-0 font-sans text-sm leading-body text-quiet">Paying as {emmaPayment.holder}</p>
       </section>
 
@@ -182,6 +222,7 @@ export default function Premium() {
           ) : null}
 
           <p className="m-0 font-sans text-sm leading-body text-quiet">This is a mock purchase. Nothing is charged.</p>
+          {error ? <p role="alert" className="m-0 font-sans text-sm leading-body text-ink">{error}</p> : null}
           <SubmitButton>Confirm purchase</SubmitButton>
         </fieldset>
       </form>
