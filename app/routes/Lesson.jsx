@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router'
+import { Link, Navigate, useParams } from 'react-router'
 import BlockEditor from '../components/BlockEditor.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { getLesson, setLessonCompleted } from '../user/data.js'
 import useUserData from '../user/useUserData.js'
 import DataState from '../user/DataState.jsx'
+import { isUnavailableItem } from '../user/dataErrors.js'
 
 export default function Lesson() { // displays lesson and allows user to mark as completed
   const { user } = useAuth()
@@ -27,8 +28,9 @@ export default function Lesson() { // displays lesson and allows user to mark as
     }
   }
 
+  if (isUnavailableItem(error)) return <Navigate to="/404" replace />
   if (loading || error) return <DataState loading={loading} error={error} /> // shows loading or error state
-  if (roadmapId && !data.roadmap_lessons.some(link => link.roadmap_id === roadmapId)) return <p className="text-[#9e2020]" role="alert">This lesson is not in this path.</p> // checks if lesson is part of the roadmap
+  if (roadmapId && !data.roadmap_lessons.some(link => link.roadmap_id === roadmapId)) return <Navigate to="/404" replace /> // checks if lesson is part of the roadmap
 
   return (
     <>

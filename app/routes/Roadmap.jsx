@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router'
+import { Navigate, useLocation, useNavigate, useParams } from 'react-router'
 import PathEditor from '../components/PathEditor.jsx'
 import PathSections from '../components/PathSections.jsx'
 import PathShell, { authorName } from '../components/PathShell.jsx'
@@ -18,6 +18,7 @@ import forkCount from '../assets/explore/fork-count.svg'
 import { forkPath, getPath, setLessonCompleted, setPathSaved, updatePath } from '../user/data.js'
 import DataState from '../user/DataState.jsx'
 import useUserData from '../user/useUserData.js'
+import { isUnavailableItem } from '../user/dataErrors.js'
 
 const coverButton =
   '!m-0 flex size-8 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent !p-0 hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white disabled:cursor-wait disabled:opacity-60'
@@ -36,6 +37,7 @@ export default function Roadmap() {
   const { roadmapId } = useParams()
   const { data, loading, error, reload } = useUserData(getPath, roadmapId)
 
+  if (isUnavailableItem(error)) return <Navigate to="/404" replace />
   if (loading || error) {
     return (
       <div className="py-6">
