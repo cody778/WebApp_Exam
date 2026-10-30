@@ -3,36 +3,37 @@ import { useSyncExternalStore } from 'react'
 const EVENT = 'pathify-saved-titles'
 const EMPTY = new Set()
 
-let cache = { key: '', raw: '[]', value: EMPTY }
+const caches = new Map()
 
-function storageKey(userId) {
-  return `pathify-saved-titles:${userId ?? 'preview'}`
+function storageKey(prefix, userId) {
+  return `${prefix}:${userId ?? 'preview'}`
 }
 
-/** Titles bookmarked on the sample cards. Shared across Explore and Home. */
-export function readSavedTitles(userId) {
-  const key = storageKey(userId)
+function readSet(prefix, userId) {
+  const key = storageKey(prefix, userId)
   const raw = typeof localStorage === 'undefined' ? '[]' : (localStorage.getItem(key) ?? '[]')
-  if (cache.key === key && cache.raw === raw) return cache.value
-  let titles = []
+  const cache = caches.get(key)
+  if (cache?.raw === raw) return cache.value
+  let values = []
   try {
     const parsed = JSON.parse(raw)
-    if (Array.isArray(parsed)) titles = parsed.filter((title) => typeof title === 'string')
+    if (Array.isArray(parsed)) values = parsed.filter((value) => typeof value === 'string')
   } catch {
-    titles = []
+    values = []
   }
-  const value = titles.length === 0 ? EMPTY : new Set(titles)
-  cache = { key, raw, value }
+  const value = values.length === 0 ? EMPTY : new Set(values)
+  caches.set(key, { raw, value })
   return value
 }
 
-export function toggleSavedTitle(userId, title) {
-  const next = new Set(readSavedTitles(userId))
-  if (next.has(title)) next.delete(title)
-  else next.add(title)
+function toggle(prefix, userId, value) {
+  const next = new Set(readSet(prefix, userId))
+  if (next.has(value)) next.delete(value)
+  else next.add(value)
+  const key = storageKey(prefix, userId)
   const raw = JSON.stringify([...next])
-  localStorage.setItem(storageKey(userId), raw)
-  cache = { key: storageKey(userId), raw, value: next.size === 0 ? EMPTY : next }
+  localStorage.setItem(key, raw)
+  caches.set(key, { raw, value: next.size === 0 ? EMPTY : next })
   window.dispatchEvent(new Event(EVENT))
 }
 
@@ -45,6 +46,27 @@ function subscribe(onChange) {
   }
 }
 
+const TITLES = 'pathify-saved-titles'
+const PATHS = 'pathify-saved-paths'
+
+/** Titles bookmarked on the sample cards. Shared across Explore and Home. */
+export function readSavedTitles(userId) {
+  return readSet(TITLES, userId)
+}
+
+export function toggleSavedTitle(userId, title) {
+  toggle(TITLES, userId, title)
+}
+
 export function useSavedTitles(userId) {
-  return useSyncExternalStore(subscribe, () => readSavedTitles(userId), () => EMPTY)
+  return useSyncExternalStore(subscribe, () => readSet(TITLES, userId), () => EMPTY)
+}
+
+/** Ids of other people's paths that the user saved. Kept on this device until saved paths have a table. */
+export function toggleSavedPath(userId, pathId) {
+  toggle(PATHS, userId, pathId)
+}
+
+export function useSavedPaths(userId) {
+  return useSyncExternalStore(subscribe, () => readSet(PATHS, userId), () => EMPTY)
 }

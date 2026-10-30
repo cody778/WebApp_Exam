@@ -9,21 +9,24 @@ import listIcon from '../assets/create-path/blocks/list.svg'
 import orderedIcon from '../assets/create-path/blocks/list-ordered.svg'
 import todoIcon from '../assets/create-path/blocks/check-square.svg'
 import iconCheck from '../assets/public-path/icon-check.svg'
+import { StepBlock, MediaPreview, headingLevel, headingStyles as textStyles } from './StepBlocks.jsx'
 
 /** @returns {{ id: string, type: string, content: object }} */
 export function textBlock(content = {}) {
   return { id: crypto.randomUUID(), type: 'paragraph', content: { text: '', ...content } }
 }
 
-const httpsUrl = /^https:\/\/\S+$/
+const textTypes = ['paragraph', 'heading', 'quote']
+const mediaTypes = ['image', 'video']
 
 /** Trims blocks for saving and drops empty ones. A step always keeps at least one block. */
 export function cleanBlocks(blocks) {
   const kept = blocks.flatMap((block) => {
-    if (block.type === 'image' || block.type === 'video') {
+    if (mediaTypes.includes(block.type)) {
       const url = block.content.url.trim()
-      return httpsUrl.test(url) ? [{ ...block, content: { ...block.content, url } }] : []
+      return /^https:\/\/\S+$/.test(url) ? [{ ...block, content: { ...block.content, url } }] : []
     }
+    if (!textTypes.includes(block.type)) return [block]
     const text = (block.content.text ?? '').trim()
     return text ? [{ ...block, content: { ...block.content, text } }] : []
   })
@@ -32,6 +35,7 @@ export function cleanBlocks(blocks) {
 
 /** @param {{ content: object, type: string }} block */
 export function blockHasContent(block) {
+  if (!textTypes.includes(block.type) && !mediaTypes.includes(block.type)) return true
   return Boolean((block.content.text ?? block.content.url ?? '').trim())
 }
 
@@ -54,26 +58,11 @@ const mediaBlocks = {
   video: () => ({ type: 'video', content: { url: '' } }),
 }
 
-const textStyles = {
-  1: 'text-[28px] leading-[1.2] font-bold tracking-[-0.56px]',
-  2: 'text-[22px] leading-[1.25] font-semibold tracking-[-0.44px]',
-  3: 'text-lg leading-[1.3] font-semibold',
-  4: 'text-base leading-[1.4] font-semibold',
-}
-
 // Lines the gutter plus up with the first line of each text size.
 const gutterOffset = { 1: 'top-[7px]', 2: 'top-1', 3: 'top-0.5', 4: 'top-px' }
 
-function headingLevel(block) {
-  return block.type === 'heading' ? block.content.level ?? 2 : null
-}
-
-function youTubeId(url) {
-  return url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/)?.[1] ?? null
-}
-
 /** Textarea that grows with its text. */
-function GrowingText({ fieldRef, value, className, ...props }) {
+export function GrowingText({ fieldRef = () => {}, value, className, ...props }) {
   const ref = useRef(null)
   useLayoutEffect(() => {
     const element = ref.current
@@ -297,10 +286,9 @@ export default function StepBlockEditor({ blocks, onChange, label }) {
         const level = headingLevel(block)
         const { list } = block.content
         number = list === 'numbered' ? number + 1 : 0
-        const isMedia = block.type === 'image' || block.type === 'video'
+        const isMedia = mediaTypes.includes(block.type)
         const url = isMedia ? block.content.url : ''
-        const validUrl = httpsUrl.test(url.trim())
-        const videoId = block.type === 'video' && validUrl ? youTubeId(url) : null
+        const fixed = !isMedia && !textTypes.includes(block.type)
 
         return (
           <div key={block.id} className="group/block relative flex cursor-auto items-start gap-2">
@@ -368,21 +356,21 @@ export default function StepBlockEditor({ blocks, onChange, label }) {
                     <img src={removeIcon} alt="" width="12" height="12" className="block max-w-none" />
                   </button>
                 </div>
-                {validUrl && block.type === 'image' && (
-                  <img src={url.trim()} alt="" className="block max-h-80 w-full rounded-lg bg-surface-muted object-contain" />
-                )}
-                {validUrl && block.type === 'video' &&
-                  (videoId ? (
-                    <iframe
-                      src={`https://www.youtube-nocookie.com/embed/${videoId}`}
-                      title="Step video"
-                      allow="accelerometer; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="block aspect-video w-full rounded-lg border-0"
-                    />
-                  ) : (
-                    <video src={url.trim()} controls className="block max-h-80 w-full rounded-lg bg-ink" />
-                  ))}
+                <MediaPreview type={block.type} url={url} />
+              </div>
+            ) : fixed ? (
+              <div className="group/fixed flex min-w-0 flex-1 items-start gap-2">
+                <div className="min-w-0 flex-1">
+                  <StepBlock block={block} />
+                </div>
+                <button
+                  type="button"
+                  aria-label="Remove block"
+                  onClick={() => remove(block.id)}
+                  className="!m-0 flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent !p-0 hover:bg-[#9e2020]/10"
+                >
+                  <img src={removeIcon} alt="" width="12" height="12" className="block max-w-none" />
+                </button>
               </div>
             ) : (
               <GrowingText

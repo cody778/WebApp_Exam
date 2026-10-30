@@ -85,6 +85,42 @@ export function setLessonCompleted(userId, id, completed) {
   return result(query)
 }
 
+/** A path with each step's blocks, for the path page. */
+export async function getPath(userId, id) {
+  const roadmap = await getRoadmap(userId, id)
+  const ids = roadmap.lessons.filter(lesson => !lesson.unavailable).map(lesson => lesson.id)
+  const rows = ids.length ? await result(supabase.from('lessons').select('id, lesson_blocks(id, type, content, position)').in('id', ids)) : []
+  const blocks = new Map(rows.map(row => [row.id, [...row.lesson_blocks].sort((a, b) => a.position - b.position).map(({ id, type, content }) => ({ id, type, content }))]))
+  return { ...roadmap, lessons: roadmap.lessons.map(lesson => ({ ...lesson, blocks: blocks.get(lesson.id) ?? [] })) }
+}
+
+/** Saves an edited path: details, every step, removed steps, and the new step order. */
+export async function updatePath(userId, roadmap, { title, description, steps }) {
+  await createRoadmap(userId, roadmap.id, title, description)
+  for (const step of steps) await saveLesson(step.id, roadmap.id, step.title, step.blocks)
+  const kept = new Set(steps.map(step => step.id))
+  const removed = roadmap.lessons.map(lesson => lesson.id).filter(id => !kept.has(id))
+  if (removed.length) await result(supabase.from('roadmap_lessons').delete().eq('roadmap_id', roadmap.id).in('lesson_id', removed))
+  // Two passes so no two links share a position while they are being renumbered.
+  for (const offset of [steps.length, 0]) {
+    for (const [index, step] of steps.entries()) {
+      await result(supabase.from('roadmap_lessons').update({ position: offset + index }).eq('roadmap_id', roadmap.id).eq('lesson_id', step.id))
+    }
+  }
+}
+
+/** Copies a path and its steps to the user's own paths. Returns the new path id. */
+export async function forkPath(userId, path) {
+  const id = crypto.randomUUID()
+  await createRoadmap(userId, id, path.title, path.description ?? '')
+  for (const lesson of path.lessons) {
+    if (lesson.unavailable) continue
+    const blocks = lesson.blocks.length ? lesson.blocks : [{ type: 'paragraph', content: { text: '' } }]
+    await saveLesson(crypto.randomUUID(), id, lesson.title, blocks.map(block => ({ ...block, id: crypto.randomUUID() })))
+  }
+  return id
+}
+
 export async function linkLesson(userId, roadmapId, lessonId) {
   const [roadmap] = await Promise.all([
     getRoadmap(userId, roadmapId),
