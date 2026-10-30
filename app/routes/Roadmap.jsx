@@ -219,6 +219,7 @@ function PathPage({ path, onSaved }) {
           initial={{
             title: path.title,
             description: path.description ?? '',
+            materials: path.materials ?? [],
             steps: steps.map((step) => ({ id: step.id, title: step.title, blocks: step.blocks })),
           }}
           author={authorName(user)}
@@ -330,7 +331,17 @@ function PathPage({ path, onSaved }) {
       )
     }
 
-    return <p className="m-0 text-sm leading-[1.4] text-quiet">No materials listed for this path yet.</p>
+    if (!path.materials?.length) return <p className="m-0 text-sm leading-[1.4] text-quiet">No materials listed for this path yet.</p>
+    return (
+      <ul className="m-0 flex list-none flex-col gap-4 p-0">
+        {path.materials.map((name, index) => (
+          <li key={index} className="flex items-center gap-3">
+            <span className="size-4 shrink-0 rounded border border-brand" aria-hidden="true" />
+            <span className="min-w-0 flex-1 text-base leading-[1.4] font-normal text-ink [overflow-wrap:anywhere]">{name}</span>
+          </li>
+        ))}
+      </ul>
+    )
   }
 
   return (

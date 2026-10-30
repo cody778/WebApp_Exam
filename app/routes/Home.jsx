@@ -4,7 +4,7 @@ import PathFilters from '../components/PathFilters.jsx'
 import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
 import ShortcutCard from '../components/ShortcutCard.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
-import { listProjects, listRoadmaps } from '../user/data.js'
+import { listProjects, listRoadmaps, listSavedRoadmaps } from '../user/data.js'
 import useUserData from '../user/useUserData.js'
 import DataState from '../user/DataState.jsx'
 import { usePremiumUnlocked } from '../user/paymentMethods.js'
@@ -131,6 +131,7 @@ export default function Home() {
   const { user } = useAuth()
   const { data, error, loading } = useUserData(listRoadmaps)
   const projects = useUserData(listProjects)
+  const savedPaths = useUserData(listSavedRoadmaps)
   const [searchParams, setSearchParams] = useSearchParams()
   const requestedFilter = searchParams.get('filter')
   const filter = requestedFilter === 'saved' || requestedFilter === 'mine' ? requestedFilter : 'all'
@@ -144,17 +145,23 @@ export default function Home() {
     status: pathProgress(path).label,
     to: `/my-path/${path.id}`,
   }))
+  const saved = (savedPaths.data ?? []).map(path => ({
+    ...path,
+    savedReal: true,
+    status: pathProgress(path).label,
+    to: `/my-path/${path.id}`,
+  }))
   const shortcuts = [
-    ...owned.flatMap(path => {
+    ...[...owned, ...saved].flatMap(path => {
       const { lesson, label } = pathProgress(path)
       return lesson ? [{ id: path.id, title: lesson.title, path: path.title, step: label, to: `/my-path/${path.id}/lesson/${lesson.id}` }] : []
     }),
     ...sampleShortcuts,
   ]
   const needle = query.trim().toLowerCase()
-  const visible = [...owned, ...samplePaths].filter(path => {
-    if (filter === 'mine' && !path.owned && (path.savedPath || path.status === 'Not started')) return false
-    if (filter === 'saved' && (path.owned || (!path.savedPath && !savedTitles.has(path.title)))) return false
+  const visible = [...owned, ...saved, ...samplePaths].filter(path => {
+    if (filter === 'mine' && !path.owned && (path.savedReal || path.savedPath || path.status === 'Not started')) return false
+    if (filter === 'saved' && (path.owned || (!path.savedReal && !path.savedPath && !savedTitles.has(path.title)))) return false
     return needle === '' || path.title.toLowerCase().includes(needle)
   })
 

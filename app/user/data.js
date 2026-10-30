@@ -23,7 +23,7 @@ async function withRoadmapLessons(userId, roadmaps) {
   }))
 }
 
-const roadmapFields = 'id, owner_id, title, description, roadmap_lessons(lesson_id, position, lessons(id, owner_id, title))'
+const roadmapFields = 'id, owner_id, title, description, materials, roadmap_lessons(lesson_id, position, lessons(id, owner_id, title))'
 
 export async function listRoadmaps(userId) {
   const roadmaps = await result(supabase.from('roadmaps').select(roadmapFields).eq('owner_id', userId).order('created_at', { ascending: false }))
@@ -40,8 +40,16 @@ export async function listPublishedRoadmaps(userId) {
   return withRoadmapLessons(userId, roadmaps)
 }
 
-export function createRoadmap(userId, id, title, description) {
-  return result(supabase.from('roadmaps').upsert({ id, owner_id: userId, title: title.trim(), description: description.trim() }, { onConflict: 'id' }).select('id').single())
+export function createRoadmap(userId, id, title, description, materials) {
+  const row = { id, owner_id: userId, title: title.trim(), description: description.trim() }
+  if (materials) row.materials = materials
+  return result(supabase.from('roadmaps').upsert(row, { onConflict: 'id' }).select('id').single())
+}
+
+/** Paths from other people that the user saved, with the user's progress on each. */
+export async function listSavedRoadmaps(userId) {
+  const rows = await result(supabase.from('saved_roadmaps').select(`roadmaps(${roadmapFields})`).eq('user_id', userId).order('created_at', { ascending: false }))
+  return withRoadmapLessons(userId, rows.map(row => row.roadmaps).filter(Boolean))
 }
 
 export function listProjects(userId) {
@@ -112,8 +120,8 @@ export function setPathSaved(userId, id, saved) {
 }
 
 /** Saves an edited path: details, every step, removed steps, and the new step order. */
-export async function updatePath(userId, roadmap, { title, description, steps }) {
-  await createRoadmap(userId, roadmap.id, title, description)
+export async function updatePath(userId, roadmap, { title, description, materials, steps }) {
+  await createRoadmap(userId, roadmap.id, title, description, materials)
   for (const step of steps) await saveLesson(step.id, roadmap.id, step.title, step.blocks)
   const kept = new Set(steps.map(step => step.id))
   const removed = roadmap.lessons.map(lesson => lesson.id).filter(id => !kept.has(id))
@@ -129,7 +137,7 @@ export async function updatePath(userId, roadmap, { title, description, steps })
 /** Copies a path and its steps to the user's own paths. Returns the new path id. */
 export async function forkPath(userId, path) {
   const id = crypto.randomUUID()
-  await result(supabase.from('roadmaps').insert({ id, owner_id: userId, title: path.title, description: path.description ?? '', forked_from: path.id }))
+  await result(supabase.from('roadmaps').insert({ id, owner_id: userId, title: path.title, description: path.description ?? '', materials: path.materials ?? [], forked_from: path.id }))
   for (const lesson of path.lessons) {
     if (lesson.unavailable) continue
     const blocks = lesson.blocks.length ? lesson.blocks : [{ type: 'paragraph', content: { text: '' } }]

@@ -22,10 +22,10 @@ const removeButton =
 /**
  * Editable path: title, description, steps with block content, and materials. Used to create and to edit a path.
  * @param {{
- *   initial: { title: string, description: string, steps: Array<{ id: string, title: string | null, blocks: object[] }> },
+ *   initial: { title: string, description: string, materials?: string[], steps: Array<{ id: string, title: string | null, blocks: object[] }> },
  *   author: string,
  *   submitLabel: string,
- *   onSubmit: (path: { title: string, description: string, steps: Array<{ id: string, title: string, blocks: object[] }> }) => Promise<void>,
+ *   onSubmit: (path: { title: string, description: string, materials: string[], steps: Array<{ id: string, title: string, blocks: object[] }> }) => Promise<void>,
  *   secondary?: import('react').ReactNode,
  *   autoFocusTitle?: boolean,
  * }} props
@@ -38,7 +38,7 @@ export default function PathEditor({ initial, author, submitLabel, onSubmit, sec
   const [steps, setSteps] = useState(() =>
     initial.steps.length ? initial.steps.map((step) => ({ ...step, blocks: step.blocks.length ? step.blocks : [textBlock()] })) : [newStep()],
   )
-  const [materials, setMaterials] = useState([])
+  const [materials, setMaterials] = useState(() => (initial.materials ?? []).map((name) => ({ id: crypto.randomUUID(), name })))
   const [material, setMaterial] = useState('')
   const [openId, setOpenId] = useState(null)
   const [draggingId, setDraggingId] = useState(null)
@@ -140,6 +140,7 @@ export default function PathEditor({ initial, author, submitLabel, onSubmit, sec
       await onSubmit({
         title: title.trim(),
         description: description.trim(),
+        materials: materials.map((item) => item.name),
         steps: steps.flatMap((step, index) => {
           const name = stepTitle(step, index).trim()
           return name ? [{ id: step.id, title: name, blocks: cleanBlocks(step.blocks) }] : []

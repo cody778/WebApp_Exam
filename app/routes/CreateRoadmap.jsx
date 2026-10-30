@@ -13,8 +13,8 @@ export default function CreateRoadmap() {
   const [id] = useState(() => crypto.randomUUID())
   const [initial] = useState(() => ({ title: '', description: '', steps: [newStep()] }))
 
-  async function create({ title, description, steps }) {
-    const roadmap = await createRoadmap(user.id, id, title, description)
+  async function create({ title, description, materials, steps }) {
+    const roadmap = await createRoadmap(user.id, id, title, description, materials)
     for (const step of steps) {
       if (savedStepIds.current.has(step.id)) continue
       await saveLesson(step.id, roadmap.id, step.title, step.blocks)
