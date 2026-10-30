@@ -166,32 +166,6 @@
     margin-top: 2rem;
   }
 
-  .roadmap-list {
-    display: grid;
-    gap: 1rem;
-    padding: 0;
-    list-style: none;
-  }
-
-  .roadmap-card {
-    padding: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 0.5rem;
-    background: white;
-    overflow-wrap: anywhere;
-  }
-
-  .user-fields {
-    display: grid;
-    gap: 0.75rem;
-    min-width: 0;
-    margin: 0 0 1rem;
-    padding: 0;
-    border: 0;
-  }
-
-  .user-fields input,
-  .user-fields textarea,
   button {
     min-width: 0;
     padding: 0.75rem;
@@ -209,83 +183,6 @@
   [role="alert"] {
     color: #9e2020;
   }
-
-  .project-fields {
-    display: grid;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-  }
-
-  .project-fields input,
-  .project-fields textarea {
-    min-width: 0;
-    padding: 0.75rem;
-    font: inherit;
-  }
-
-  .lesson-editor select {
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    font: inherit;
-  }
-
-  .lesson-paper {
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-    min-height: 65vh;
-    padding: clamp(1rem, 4vw, 3rem);
-    background: white;
-  }
-
-  .lesson-paper [contenteditable] {
-    min-height: 1.5em;
-    overflow-wrap: anywhere;
-    white-space: pre-wrap;
-  }
-
-  .lesson-paper [contenteditable]:focus {
-    outline: 1px solid #ddd;
-  }
-
-  .lesson-paper blockquote {
-    margin: 1rem 0;
-    padding-left: 1rem;
-    border-left: 3px solid #aaa;
-  }
-
-  .lesson-paper table {
-    width: 100%;
-    table-layout: fixed;
-    border-collapse: collapse;
-    margin: 1rem 0;
-  }
-
-  .lesson-paper td {
-    height: 2rem;
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-  }
-}
-
-/* Paper texture fills the viewport on every page. Cover crops the edges instead of stretching. */
-html,
-body {
-  min-height: 100%;
-  background: transparent;
-  overflow-x: clip;
-}
-
-body {
-  position: relative;
-  z-index: 0;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  background: #f7f4ee url("./assets/background.jpg") center / cover no-repeat;
 }
 
 /* These frames are full-bleed. Drop the shared page column only on those screens. */
@@ -334,25 +231,4 @@ main:has(.sign-in-page) {
 .sign-in-page,
 .sign-in-page * {
   box-sizing: border-box;
-}
-
-/* Small downward nudge so the skip arrow reads as a hint, not a jump. */
-@keyframes arrow-bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(0.375rem);
-  }
-}
-
-.landing-arrow-bounce {
-  animation: arrow-bounce 1.8s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .landing-arrow-bounce {
-    animation: none;
-  }
 }
