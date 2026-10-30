@@ -4,6 +4,7 @@ import { supabase } from '../user/client.js'
 
 export default function GetStarted() {
   const { user } = useAuth()
+  // Signed-in members and preview mode skip the Sign in link.
   const signedIn = Boolean(user) || !supabase
 
   return (

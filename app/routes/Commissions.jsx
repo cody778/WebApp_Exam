@@ -14,6 +14,10 @@ const filters = [
   { id: 'purchased', label: 'Purchased' },
 ]
 
+/**
+ * Status pill for a bought path: "Not started" until a step is done, then the first unfinished step, then "Completed".
+ * @param {{ lessons: Array<{ title?: string, completed?: boolean }> }} path
+ */
 function progress(path) {
   const lessons = path.lessons.filter((lesson) => lesson?.title)
   const index = lessons.findIndex((lesson) => !lesson.completed)
@@ -31,6 +35,7 @@ export default function Commissions() {
   const [loadError, setLoadError] = useState(null)
   const needle = query.trim().toLowerCase()
 
+  // Loads listed and purchased paths once the user is known. `active` drops results that arrive after leaving the page.
   useEffect(() => {
     if (!user) return
     let active = true
@@ -43,6 +48,7 @@ export default function Commissions() {
     }
   }, [user])
 
+  // Purchased shows progress. Listed shows every paid path with its price. Sold keeps only paths with sales and adds the sold badge.
   const items =
     status === 'purchased'
       ? (data?.purchased ?? []).map((path) => ({ ...path, to: `/path/${path.id}`, label: progress(path) }))

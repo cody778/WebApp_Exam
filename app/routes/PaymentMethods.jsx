@@ -6,10 +6,14 @@ import { emmaPayment } from '../user/paymentMethods.js'
 import { firstName } from '../user/profile.js'
 import iconPlus from '../assets/account/icon-plus.svg'
 
-/** Saved payment options opened from the account payment methods row. */
+/**
+ * Saved payment options opened from the account payment methods row.
+ * The card and PayPal details are mock values. Only the holder name and email come from the signed-in account.
+ */
 export default function PaymentMethods() {
   const { user, loading } = useAuth()
   const authPending = Boolean(supabase) && loading && !user
+  // Signed-out preview falls back to the Emma mock.
   const holder = firstName(user) || emmaPayment.holder
   const paypalEmail = user?.email || emmaPayment.paypal.email
 

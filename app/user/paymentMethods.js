@@ -53,11 +53,13 @@ export function savePaymentMethod(entry) {
   notify()
 }
 
+/** Whether the AI assistant was unlocked on this device. Always false during server rendering. */
 export function readPremiumUnlocked() {
   if (typeof localStorage === 'undefined') return false
   return localStorage.getItem(PREMIUM_KEY) === '1'
 }
 
+/** Marks Premium as bought on this device and updates every component using `usePremiumUnlocked`. */
 export function unlockPremium() {
   localStorage.setItem(PREMIUM_KEY, '1')
   notify()
@@ -72,6 +74,7 @@ function subscribe(onChange) {
   }
 }
 
+/** React hook for the Premium flag. Re-renders on unlock, on account deletion, and when another tab changes it. */
 export function usePremiumUnlocked() {
   return useSyncExternalStore(subscribe, readPremiumUnlocked, () => false)
 }

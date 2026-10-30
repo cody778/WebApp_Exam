@@ -30,6 +30,10 @@ export default function Logo({ variant = 'hero' }) {
   )
 }
 
+/**
+ * The skipping-stone mark, rebuilt from the Figma vectors.
+ * Each piece is placed and rotated by hand, so keep the img width and height values as they are.
+ */
 function LogoMark() {
   return (
     <span className="relative h-[27px] w-[32.545px] shrink-0" aria-hidden="true">

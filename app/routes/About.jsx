@@ -31,6 +31,7 @@ const poem = [
   'Turn at last to home afar.',
 ]
 
+/** The landing page's down arrow, repeated in each corner of the Tolkien quote and rotated to frame it. */
 const quoteArrows = [
   { corner: 'top-2 left-2', rotate: '-45deg' },
   { corner: 'top-2 right-2', rotate: '45deg' },
@@ -38,7 +39,10 @@ const quoteArrows = [
   { corner: 'bottom-2 right-2', rotate: '135deg' },
 ]
 
-/** Our Mission, told from the brand frames and set for a narrow screen. */
+/**
+ * Our Mission, told from the brand frames and set for a narrow screen.
+ * Reads top to bottom as a story: who we are, the mission, the philosophy, the values, then the Tolkien quote.
+ */
 export default function About() {
   return (
     <div className="landing-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col gap-16 px-4 pt-8 pb-20 font-sans text-ink">

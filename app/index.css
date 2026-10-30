@@ -4,8 +4,10 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "@fontsource/opendyslexic/400.css";
 
+/* Always generate these classes, even when the scanner misses them. Most are the Appearance theme chips, which are stored in a data array. */
 @source inline("!bg-[#9e2020] bg-[#efe6dd] text-[#6c5b5b] bg-[#756e66] text-[#efe6dd] bg-[#0088ff] text-[22px] !h-[51px] !border-black");
 
+/* Design tokens from the brand frames. Each one becomes a utility, such as --color-accent to bg-accent and --font-display to font-display. */
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: Futura, "Futura PT", "Century Gothic", sans-serif;

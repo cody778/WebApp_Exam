@@ -34,6 +34,7 @@ const lightIcon = '[&_img]:brightness-0 [&_img]:invert'
 export default function AppNav({ notification = null }) {
   const { user } = useAuth()
   const name = accountLabel(user)
+  // The member's uploaded photo from their profile. Members without one see the shared placeholder.
   const avatar = useAvatarUrl(user?.id) || defaultAvatar
 
   return (
