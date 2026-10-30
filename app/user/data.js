@@ -93,12 +93,24 @@ export function setLessonCompleted(userId, id, completed) {
   return result(query)
 }
 
+/** Counts are supplementary; a statistics outage should not make the path itself unavailable. */
+async function getRoadmapStats(id) {
+  const { data, error } = await supabase.rpc('roadmap_stats', { p_roadmap_id: id })
+  if (error) {
+    console.warn('Could not load path statistics.', { code: error.code, message: error.message })
+    return { saves: 0, forks: 0 }
+  }
+
+  const stats = Array.isArray(data) ? data[0] : data
+  return stats ?? { saves: 0, forks: 0 }
+}
+
 /** A path with each step's blocks, whether the user saved it, and its save and fork counts, for the path page. */
 export async function getPath(userId, id) {
-  const [roadmap, saves, [stats]] = await Promise.all([
+  const [roadmap, saves, stats] = await Promise.all([
     getRoadmap(userId, id),
     result(supabase.from('saved_roadmaps').select('roadmap_id').eq('user_id', userId).eq('roadmap_id', id)),
-    result(supabase.rpc('roadmap_stats', { p_roadmap_id: id })),
+    getRoadmapStats(id),
   ])
   const ids = roadmap.lessons.filter(lesson => !lesson.unavailable).map(lesson => lesson.id)
   const rows = ids.length ? await result(supabase.from('lessons').select('id, lesson_blocks(id, type, content, position)').in('id', ids)) : []
