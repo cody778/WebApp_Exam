@@ -20,7 +20,7 @@ import landscape from '../assets/explore/landscape.jpg'
 import blender from '../assets/explore/blender.jpg'
 
 const paths = [
-  { title: 'Knittings', author: 'Pathify', image: knitting, imageWidth: 1860, imageHeight: 850 },
+  { title: 'Knitting', author: 'Pathify', image: knitting, imageWidth: 1860, imageHeight: 850 },
   { title: 'Crochet', author: 'Pathify', image: crochet, imageWidth: 1860, imageHeight: 850 },
   { title: 'Oil painting', author: 'Pathify', image: oleo, imageWidth: 1860, imageHeight: 850 },
   { title: 'Sewing for begginers', author: 'Pathify', image: sewing, imageWidth: 1860, imageHeight: 850 },
