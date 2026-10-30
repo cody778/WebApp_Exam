@@ -5,7 +5,6 @@ import PathShell, { authorName } from '../components/PathShell.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { createRoadmap, saveLesson } from '../user/data.js'
 
-/** Create-path screen. The title, description, and steps are saved together. */
 export default function CreateRoadmap() {
   const { user } = useAuth()
   const navigate = useNavigate()

@@ -1,9 +1,5 @@
 import iconNext from '../assets/public-path/icon-next.svg'
 
-/**
- * "Step 2/6" with one bar segment per step.
- * @param {{ count: number, index: number, filled: (index: number) => boolean }} props
- */
 export function StepProgress({ count, index, filled }) {
   return (
     <div className="flex items-center gap-2">
@@ -24,10 +20,6 @@ export function StepProgress({ count, index, filled }) {
 
 const navButton = '!m-0 flex min-w-0 cursor-pointer items-center gap-[9px] border-0 bg-transparent !p-0 text-sm leading-[1.4]'
 
-/**
- * Previous and next step links. `end` replaces Next on the last step.
- * @param {{ previous?: { title: string, onClick: () => void }, next?: { title: string, onClick: () => void }, end?: import('react').ReactNode }} props
- */
 export function StepNav({ previous, next, end }) {
   return (
     <div className="flex min-h-[27px] items-center justify-between gap-4">

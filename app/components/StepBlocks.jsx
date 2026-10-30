@@ -9,20 +9,15 @@ export const headingStyles = {
   4: 'text-base leading-[1.4] font-semibold',
 }
 
-/** @param {{ type: string, content: object }} block */
 export function headingLevel(block) {
   return block.type === 'heading' ? block.content.level ?? 2 : null
 }
 
-/** @param {string} url */
 export function youTubeId(url) {
   return url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/)?.[1] ?? null
 }
 
-/**
- * Image or video preview for a link. Nothing renders until the link is a full https address.
- * @param {{ type: 'image' | 'video', url: string }} props
- */
+// Only complete HTTPS links are rendered as media.
 export function MediaPreview({ type, url }) {
   const link = url.trim()
   if (!httpsUrl.test(link)) return null
@@ -43,7 +38,6 @@ export function MediaPreview({ type, url }) {
 
 const text = 'm-0 whitespace-pre-wrap [overflow-wrap:anywhere] text-ink'
 
-/** Read-only content of one block. */
 export function StepBlock({ block }) {
   const { type, content } = block
   const level = headingLevel(block)
@@ -80,10 +74,7 @@ export function StepBlock({ block }) {
   return <p className={`${text} text-sm leading-[1.4]`}>{content.text}</p>
 }
 
-/**
- * Read-only step content. Neighbouring list items are grouped into one list.
- * @param {{ blocks: Array<{ id: string, type: string, content: object }>, emptyMessage?: string }} props
- */
+// Consecutive list blocks are grouped into valid HTML lists.
 export default function StepBlocks({ blocks, emptyMessage = 'This step has no content yet.' }) {
   const groups = []
   for (const block of blocks) {

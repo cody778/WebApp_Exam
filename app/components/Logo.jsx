@@ -7,11 +7,6 @@ import vector66 from '../assets/landing/logo/vector-66.svg'
 import vector70 from '../assets/landing/logo/vector-70.svg'
 import vector71 from '../assets/landing/logo/vector-71.svg'
 
-/**
- * Wordmark. The hero uses the bold 32px name. The explore header uses regular 30px.
- * @param {object} props
- * @param {'hero' | 'header'} [props.variant]
- */
 export default function Logo({ variant = 'hero' }) {
   const header = variant === 'header'
   return (
@@ -30,10 +25,7 @@ export default function Logo({ variant = 'hero' }) {
   )
 }
 
-/**
- * The skipping-stone mark, rebuilt from the Figma vectors.
- * Each piece is placed and rotated by hand, so keep the img width and height values as they are.
- */
+// The mark uses fixed vector positions, so its image sizes must stay unchanged.
 function LogoMark() {
   return (
     <span className="relative h-[27px] w-[32.545px] shrink-0" aria-hidden="true">

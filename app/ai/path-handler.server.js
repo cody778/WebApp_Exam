@@ -18,8 +18,10 @@ export async function handlePathRequest(request, {
   const key = env.VITE_SUPABASE_PUBLISHABLE_KEY
   const model = env.GEMINI_MODEL || 'gemini-3.8-flash'
   if (!url || !key) return json({ error: 'The sign-in service is not configured on the server.' }, 503)
+  // The Gemini key is read only on the server and is never sent to the browser.
   if (!env.GEMINI_API_KEY) return json({ error: 'The path generator API key is missing on the server.' }, 503)
 
+  // Verify the access token with Supabase before spending a Gemini request.
   try {
     const client = makeClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } })
     const { data, error } = await client.auth.getUser(token)
@@ -35,6 +37,7 @@ export async function handlePathRequest(request, {
   }
 
   let input
+  // The endpoint accepts either a topic prompt or a YouTube source.
   try {
     const body = await request.text()
     if (body.length > 70000) return json({ error: 'The request is too large.' }, 413)
@@ -58,7 +61,9 @@ export async function handlePathRequest(request, {
     return json({ error: error instanceof SyntaxError ? 'The request could not be read.' : error.message }, 400)
   }
 
+  // Pass the request signal through so leaving the page also stops the Gemini request.
   const generationOptions = { apiKey: env.GEMINI_API_KEY, model, signal: request.signal }
+  // NDJSON sends progress without waiting for the complete path.
   if (request.headers.get('accept')?.includes('application/x-ndjson')) {
     const encoder = new TextEncoder()
     const abort = new AbortController()

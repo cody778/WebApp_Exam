@@ -1,8 +1,5 @@
 import { Link } from 'react-router'
 
-/**
- * Promo for community roadmaps. Opens the public explore screen.
- */
 export default function ExplorePathsCard() {
   return (
     <Link

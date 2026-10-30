@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from './AuthProvider.jsx'
 
-export default function useUserData(load, id) { // takes user userID and data ID to return data, error, loading and reload function
+export default function useUserData(load, id) {
   const { user, loading: authLoading } = useAuth()
   const userId = user?.id ?? null
   const [version, setVersion] = useState(0)
   const [state, setState] = useState(null)
 
-  useEffect(() => { // load data when user, id or version changes
+  useEffect(() => {
     if (authLoading && !userId) return
     let active = true
 
-    load(userId, id).then( // load data from the load function passed
+    // Ignore a request if the page unmounts before it finishes.
+    load(userId, id).then(
       data => { if (active) setState({ userId, id, version, data }) },
       error => { if (active) setState({ userId, id, version, error }) },
     )

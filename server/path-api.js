@@ -5,6 +5,7 @@ export function pathApi() {
   let middleware
   return {
     name: 'path-api',
+    // Use the production API middleware in Vite development and preview.
     configResolved(config) {
       middleware = pathMiddleware({ ...loadEnv(config.mode, config.envDir, ''), ...process.env })
     },

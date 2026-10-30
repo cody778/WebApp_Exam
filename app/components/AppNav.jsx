@@ -7,10 +7,7 @@ import plusIcon from '../assets/home/plus.svg'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { useAvatarUrl } from '../user/profile.js'
 
-/**
- * First name from the account, then the email name, then a plain fallback.
- * @param {object | null | undefined} user
- */
+// Prefer the profile name, then the email, then a safe fallback.
 function accountLabel(user) {
   const fullName = user?.user_metadata?.full_name
   if (typeof fullName === 'string' && fullName.trim()) return fullName.trim().split(/\s+/)[0]
@@ -24,17 +21,9 @@ const selectedChip = '!bg-accent !text-on-brand'
 /** Home and Explore icons are drawn dark. This turns them light on the blue chip. */
 const lightIcon = '[&_img]:brightness-0 [&_img]:invert'
 
-/**
- * Top bar for signed-in screens. It stays fixed to the viewport.
- * Options are home, account, explore, and a new path. The current page uses the blue chip.
- * `notification` is reserved for the inbox control. Leave it empty until that control is ready.
- * @param {object} props
- * @param {import('react').ReactNode} [props.notification]
- */
 export default function AppNav({ notification = null }) {
   const { user } = useAuth()
   const name = accountLabel(user)
-  // The member's uploaded photo from their profile. Members without one see the shared placeholder.
   const avatar = useAvatarUrl(user?.id) || defaultAvatar
 
   return (
@@ -94,7 +83,6 @@ export default function AppNav({ notification = null }) {
   )
 }
 
-/** Top bar for signed-out visitors, matching AppNav: the logo leads home, then sign in and sign up. */
 export function GuestNav() {
   return (
     <>

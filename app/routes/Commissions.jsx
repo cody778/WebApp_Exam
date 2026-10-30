@@ -14,10 +14,7 @@ const filters = [
   { id: 'purchased', label: 'Purchased' },
 ]
 
-/**
- * Status pill for a bought path: "Not started" until a step is done, then the first unfinished step, then "Completed".
- * @param {{ lessons: Array<{ title?: string, completed?: boolean }> }} path
- */
+// Show the next unfinished step, or the start and completion states.
 function progress(path) {
   const lessons = path.lessons.filter((lesson) => lesson?.title)
   const index = lessons.findIndex((lesson) => !lesson.completed)
@@ -25,7 +22,6 @@ function progress(path) {
   return index === -1 ? 'Completed' : `Step ${index + 1}/${lessons.length}`
 }
 
-/** Paid paths the user listed, how often they sold, and the paths the user bought. */
 export default function Commissions() {
   const { user, loading } = useAuth()
   const authPending = Boolean(supabase) && loading && !user
@@ -35,7 +31,7 @@ export default function Commissions() {
   const [loadError, setLoadError] = useState(null)
   const needle = query.trim().toLowerCase()
 
-  // Loads listed and purchased paths once the user is known. `active` drops results that arrive after leaving the page.
+  // Ignore results that arrive after the page has been left.
   useEffect(() => {
     if (!user) return
     let active = true
@@ -48,7 +44,7 @@ export default function Commissions() {
     }
   }, [user])
 
-  // Purchased shows progress. Listed shows every paid path with its price. Sold keeps only paths with sales and adds the sold badge.
+  // The selected tab decides which fields and status label each card receives.
   const items =
     status === 'purchased'
       ? (data?.purchased ?? []).map((path) => ({ ...path, to: `/path/${path.id}`, label: progress(path) }))

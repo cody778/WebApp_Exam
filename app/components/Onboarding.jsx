@@ -4,12 +4,7 @@ import hintArrow from '../assets/onboarding/hint-arrow.svg'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { completeOnboarding } from '../user/data.js'
 
-/**
- * Each hint points at the element marked with the same `data-tour` value.
- * `waitForClick` hints move on only when that element is clicked; the others also offer Next.
- * `doneAt` moves on once the address starts with it, for actions that can fail, such as saving.
- * `resume` is where "Continue the tour" leads when the element is not on the current page.
- */
+// Each step targets a data-tour element and can wait for a click, URL, or resume route.
 const tour = [
   { target: 'new-path', text: 'Click here to create your first learning path', waitForClick: true, resume: '/home' },
   { target: 'path-title', text: 'Click here to type your path name', resume: '/create-path' },
@@ -41,7 +36,7 @@ function clamp(value, min, max) {
   return Math.min(Math.max(value, min), Math.max(min, max))
 }
 
-/** Whether the element is inside the viewport and not cut off by a sideways-scrolling row, such as the path sections. */
+// A target must also be visible inside horizontal scrollers.
 function isShown(element, rect) {
   if (!rect.width || rect.bottom <= 0 || rect.top >= window.innerHeight) return false
   if (rect.left < 0 || rect.right > document.documentElement.clientWidth + 1) return false
@@ -53,14 +48,13 @@ function isShown(element, rect) {
   return true
 }
 
-/** First-login tour across Home, creating a path, Explore, and a public path. Shows until the account completes or skips it. */
+// The tour stays hidden after completion is saved to the account.
 export default function Onboarding() {
   const { user } = useAuth()
   if (!user || user.user_metadata?.onboarding_completed) return null
   return <Tour key={user.id} storageKey={`pathify-tour:${user.id}`} />
 }
 
-/** @param {{ storageKey: string }} props */
 function Tour({ storageKey }) {
   const navigate = useNavigate()
   const { pathname } = useLocation()

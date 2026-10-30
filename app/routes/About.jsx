@@ -31,7 +31,7 @@ const poem = [
   'Turn at last to home afar.',
 ]
 
-/** The landing page's down arrow, repeated in each corner of the Tolkien quote and rotated to frame it. */
+/** The same arrow is rotated into each corner to frame the quote. */
 const quoteArrows = [
   { corner: 'top-2 left-2', rotate: '-45deg' },
   { corner: 'top-2 right-2', rotate: '45deg' },
@@ -39,14 +39,9 @@ const quoteArrows = [
   { corner: 'bottom-2 right-2', rotate: '135deg' },
 ]
 
-// Shared type for the story. Desktop keeps one reading column and only steps the sizes up.
 const sectionTitle = 'm-0 text-center font-display text-xl leading-heading font-medium tracking-heading lg:text-[2rem]'
 const storyText = 'm-0 font-sans text-base leading-body lg:text-lg'
 
-/**
- * Our Mission, told from the brand frames. Mobile first, widening to a single centered column on desktop.
- * Reads top to bottom as a story: who we are, the mission, the philosophy, the values, then the Tolkien quote.
- */
 export default function About() {
   return (
     <div className="landing-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col gap-16 px-4 pt-8 pb-20 font-sans text-ink lg:max-w-3xl lg:gap-24 lg:px-8 lg:pt-16 lg:pb-28">
@@ -88,7 +83,7 @@ export default function About() {
         <h2 id="values" className={sectionTitle}>
           Our Values
         </h2>
-        {/* Two per row on mobile, three per row on desktop, so the six values always fill complete rows. */}
+        {/* Two columns on mobile and three on desktop keep all six values in complete rows. */}
         <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 lg:grid-cols-3 lg:gap-4">
           {values.map((value) => (
             <li

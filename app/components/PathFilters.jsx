@@ -8,14 +8,6 @@ const filters = [
   { id: 'saved', label: 'Saved paths' },
 ]
 
-/**
- * Library chips and search. The search chip grows to the full row when opened.
- * @param {object} props
- * @param {'all' | 'mine' | 'saved'} props.value Active chip.
- * @param {(id: 'all' | 'mine' | 'saved') => void} props.onChange
- * @param {string} props.query
- * @param {(query: string) => void} props.onQuery
- */
 export default function PathFilters({ value, onChange, query, onQuery }) {
   const [open, setOpen] = useState(false)
   const [chipWidth, setChipWidth] = useState(0)

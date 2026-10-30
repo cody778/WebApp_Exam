@@ -31,7 +31,6 @@ const headerButton =
 const mainButton =
   '!m-0 !flex h-12 w-full cursor-pointer items-center justify-center rounded-lg border-0 !px-4 !py-0 font-sans text-base leading-none font-normal !no-underline disabled:cursor-wait disabled:opacity-70'
 
-/** Path page. Owners can unlock it to edit and make it public; other people can save, fork, buy, and share it. */
 export default function Roadmap() {
   const { roadmapId } = useParams()
   const { data, loading, error, reload } = useUserData(getPath, roadmapId)
@@ -47,9 +46,6 @@ export default function Roadmap() {
   return <PathPage key={data.id} path={data} onSaved={reload} />
 }
 
-/**
- * @param {{ path: Awaited<ReturnType<typeof getPath>>, onSaved: () => void }} props
- */
 function PathPage({ path, onSaved }) {
   const { user } = useAuth()
   const navigate = useNavigate()

@@ -5,14 +5,9 @@ const BUCKET = 'avatars'
 const CHANGE_EVENT = 'pathify-avatar'
 const AVATAR_SIZE = 400
 
-/** Avatar URL per user id. `null` means the profile has no photo yet. */
 const avatarUrls = new Map()
 const loading = new Set()
 
-/**
- * First name from the account, then the email name. Empty when nobody is signed in.
- * @param {object | null | undefined} user
- */
 export function firstName(user) {
   const fullName = user?.user_metadata?.full_name
   if (typeof fullName === 'string' && fullName.trim()) return fullName.trim().split(/\s+/)[0]
@@ -28,7 +23,7 @@ function subscribe(onChange) {
   return () => window.removeEventListener(CHANGE_EVENT, onChange)
 }
 
-/** Fetches a user's photo URL once and caches it, so the nav does not refetch on every page. */
+// Cache each avatar so the navigation does not fetch it on every page.
 async function loadAvatar(userId) {
   if (!supabase || !userId || avatarUrls.has(userId) || loading.has(userId)) return
   loading.add(userId)
@@ -38,10 +33,6 @@ async function loadAvatar(userId) {
   notify()
 }
 
-/**
- * The saved profile photo for this user, or `null` until one is uploaded.
- * @param {string | null | undefined} userId
- */
 export function useAvatarUrl(userId) {
   useEffect(() => {
     loadAvatar(userId)
@@ -49,7 +40,7 @@ export function useAvatarUrl(userId) {
   return useSyncExternalStore(subscribe, () => (userId ? avatarUrls.get(userId) ?? null : null), () => null)
 }
 
-/** Center-crops the image to a square JPEG so every avatar is small and fills the round frame. */
+// Crop uploads to a small square JPEG before sending them to Storage.
 async function squareJpeg(file) {
   const bitmap = await createImageBitmap(file)
   const side = Math.min(bitmap.width, bitmap.height)
@@ -65,17 +56,14 @@ async function squareJpeg(file) {
   })
 }
 
-/**
- * Uploads a new profile photo to the user's own folder and saves its URL on their profile.
- * @param {string} userId
- * @param {File} file
- */
+// Store the file in the user's folder, then save its public URL on the profile.
 export async function uploadAvatar(userId, file) {
   if (!supabase || !userId) throw new Error('Sign in to change your photo.')
   if (!file.type.startsWith('image/')) throw new Error('Choose an image file.')
   if (file.size > 10 * 1024 * 1024) throw new Error('Choose an image under 10 MB.')
 
   const image = await squareJpeg(file)
+  // The user ID folder matches the Storage policy that limits who can upload or remove files.
   const path = `${userId}/avatar-${Date.now()}.jpg`
   const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, image, { contentType: 'image/jpeg' })
   if (uploadError) throw uploadError

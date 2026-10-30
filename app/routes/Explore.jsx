@@ -10,7 +10,6 @@ import { forkPathById, listExplorePaths, setPathSaved } from '../user/data.js'
 import DataState from '../user/DataState.jsx'
 import searchIcon from '../assets/explore/search.svg'
 
-/** Public paths from Pathify and the community. Anyone can browse; saving, forking, and buying need an account. */
 export default function Explore() {
   const { user, loading } = useAuth()
   const navigate = useNavigate()
@@ -20,9 +19,8 @@ export default function Explore() {
   const [forkingId, setForkingId] = useState(null)
   const { saveOrPrompt, prompt } = useSavePrompt()
   const { notice, show } = useNotice()
-  // authPending holds the header back while the session loads, so the guest nav does not flash for signed-in users.
+  // Wait for the session so the guest navigation does not flash for members.
   const authPending = Boolean(supabase) && loading && !user
-  // Without Supabase (preview), the page behaves as signed in.
   const signedIn = !supabase || Boolean(user)
   const userId = user?.id ?? null
   const needle = query.trim().toLowerCase()
@@ -70,7 +68,6 @@ export default function Explore() {
     }
   }
 
-  // The search box matches path titles and author names, ignoring case.
   const visible = (paths ?? []).filter(
     (path) =>
       needle === '' ||
@@ -81,7 +78,6 @@ export default function Explore() {
 
   return (
     <div className="explore-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 px-4 pt-0 pb-4 font-sans text-ink lg:max-w-6xl lg:px-8">
-      {/* Members get the account nav. Visitors get the guest nav with Sign in and Sign up. */}
       {authPending ? (
         <header className="h-[4.5rem] shrink-0" aria-busy="true" />
       ) : signedIn ? (
@@ -92,7 +88,6 @@ export default function Explore() {
       <h1 className="m-0 font-display text-xl leading-heading font-medium tracking-heading text-ink">
         Explore paths from the community
       </h1>
-      {/* Filters as you type. Submitting does nothing, so pressing Enter does not reload the page. */}
       <form
         className="flex items-center gap-2 rounded-full border border-surface-muted bg-white px-4 py-3"
         onSubmit={(event) => event.preventDefault()}
@@ -139,7 +134,6 @@ export default function Explore() {
           })}
         </ul>
       )}
-      {/* Sign-in prompt, shown when a visitor tries to save or fork. */}
       {prompt}
       {notice}
     </div>

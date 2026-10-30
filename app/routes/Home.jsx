@@ -22,7 +22,6 @@ function pathProgress(path) {
   return { label: `Step ${index + 1}/${lessons.length}`, lesson: lessons[index] }
 }
 
-/** The paths the user created and the paths the user saved, with progress on each. */
 export default function Home() {
   const { user } = useAuth()
   const navigate = useNavigate()

@@ -1,10 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import PathSectionHeader, { pathSections } from './PathSectionHeader.jsx'
 
-/**
- * Overview, Steps, and Materials side by side. Swipe between them, or tap the bars in each header.
- * @param {{ render: (label: string, showSection: (index: number) => void) => import('react').ReactNode, initial?: number }} props
- */
+// The three sections share a horizontal scroller and can be swiped between.
 export default function PathSections({ render, initial = 0 }) {
   const scrollerRef = useRef(null)
   const [active, setActive] = useState(initial)
@@ -14,7 +11,7 @@ export default function PathSections({ render, initial = 0 }) {
     if (scroller && initial) scroller.scrollLeft = initial * scroller.clientWidth
   }, [initial])
 
-  // The row is as tall as its tallest section, so match the open one to keep what follows close.
+  // Match the row to the open section so content below does not jump.
   useEffect(() => {
     const scroller = scrollerRef.current
     const current = scroller?.children[active]
@@ -47,7 +44,7 @@ export default function PathSections({ render, initial = 0 }) {
       className="-mx-6 flex min-w-0 snap-x snap-mandatory items-start overflow-x-auto overflow-y-hidden overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] lg:-mx-8 [&::-webkit-scrollbar]:hidden"
     >
       {pathSections.map((label, index) => (
-        // Sections carry the page padding so the editor's gutter plus has room inside the scroller.
+        // Inner padding leaves space for the editor's add button.
         <section
           key={label}
           aria-label={label}

@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 import RoadmapList from '../user/RoadmapList.jsx'
 
-export default function MyRoadmap() { // displays a list of the user's roadmaps
+export default function MyRoadmap() {
   return (
     <section className="flex flex-col gap-6 py-6 font-sans text-ink">
       <div>

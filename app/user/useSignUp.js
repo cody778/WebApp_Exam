@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { supabase } from './client.js'
 
-/**
- * Creates an account and records when Supabase asks the user to confirm their email.
- */
 export default function useSignUp() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')

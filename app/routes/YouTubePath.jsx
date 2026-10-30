@@ -56,6 +56,7 @@ export function YouTubePath() {
     setGenerated(null)
     generation.current = new AbortController()
     try {
+      // The access token lets the server verify the user before it sends anything to Gemini.
       const { data, error: sessionError } = await supabase.auth.getSession()
       if (sessionError || !data.session) throw new Error('Please sign in again to create a path.')
       const response = await fetch('/api/generate-path', {
@@ -66,6 +67,7 @@ export function YouTubePath() {
       })
       if (response.ok && response.headers.get('content-type')?.includes('application/x-ndjson')) {
         let result
+        // Progress lines update the loading preview; the complete line contains the final draft.
         for await (const line of readLines(response.body)) {
           if (!line.trim()) continue
           const event = JSON.parse(line)

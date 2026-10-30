@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router'
 import premiumIcon from '../assets/home/premium.svg'
 
-/** Premium offer under the library. Checkout from here is what unlocks the AI assistant. */
 export default function PremiumBanner() {
   const navigate = useNavigate()
 
@@ -15,7 +14,7 @@ export default function PremiumBanner() {
       </div>
       <div className="flex items-center justify-between gap-3">
         <p className="m-0 font-sans text-sm font-semibold whitespace-nowrap text-ink">€5/month</p>
-        {/* unlock=ai is the flag Premium checks: only checkout started here unlocks the AI assistant. */}
+        {/* unlock=ai tells Premium that this checkout should unlock the AI assistant. */}
         <button
           type="button"
           onClick={() => navigate('/premium?unlock=ai')}

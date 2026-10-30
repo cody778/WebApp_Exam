@@ -1,18 +1,3 @@
-/**
- * Labeled single-line field for account forms.
- * @param {object} props
- * @param {string} props.id Input id, also used by the label.
- * @param {string} props.name Form field name.
- * @param {string} props.label Visible label.
- * @param {string} [props.type] Input type. Defaults to text.
- * @param {string} [props.autoComplete] Browser autofill hint.
- * @param {string} [props.placeholder] Gray hint shown while the field is empty.
- * @param {number} [props.minLength] Minimum characters the browser should accept.
- * @param {boolean} [props.required] Block submit until the field has a value.
- * @param {string} [props.value] Current value. Omit it to leave the field uncontrolled.
- * @param {boolean} [props.readOnly] Keep a preset value from being edited.
- * @param {import('react').ReactNode} [props.icon] Optional mark shown before the label.
- */
 export default function TextField({
   id,
   name,

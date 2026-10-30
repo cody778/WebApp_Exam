@@ -2,7 +2,6 @@ import { Outlet } from 'react-router'
 import AppNav, { GuestNav } from '../components/AppNav.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 
-/** App shell. Signed-in people get the app bar; signed-out visitors on public pages get the guest bar. */
 export default function AppLayout() {
   const { user, loading } = useAuth()
   return (

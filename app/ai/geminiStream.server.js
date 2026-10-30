@@ -37,6 +37,7 @@ export async function readGeminiStream(stream, onProgress) {
   let event = []
   let previousPreview = ''
 
+  // A blank SSE line ends one event; only complete lessons reach the preview.
   function consume() {
     if (!event.length) return
     const data = JSON.parse(event.join('\n'))

@@ -22,16 +22,14 @@ const highlights = [
   },
 ]
 
-/** One viewport down, so the control reveals the next screen of the page. */
+// Respect reduced-motion settings when skipping past the hero.
 function skipOneScreen() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   window.scrollBy({ top: window.innerHeight, behavior: reduceMotion ? 'auto' : 'smooth' })
 }
 
-/** Three product points that sit under the hero. Copy is static marketing text. */
 export default function HighlightsSection() {
   return (
-    // On desktop the arrow keeps its own row and the three cards sit side by side.
     <section className="flex w-full flex-col items-center gap-8 py-8 lg:grid lg:grid-cols-3 lg:items-stretch lg:gap-6 lg:pt-4 lg:pb-12">
       <button
         type="button"

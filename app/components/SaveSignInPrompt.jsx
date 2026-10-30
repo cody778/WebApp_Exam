@@ -5,17 +5,12 @@ import iconClose from '../assets/public-path/icon-close.svg'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { supabase } from '../user/client.js'
 
-/**
- * Sign-in prompt shown when a signed-out visitor tries to save a path.
- * @param {object} props
- * @param {() => void} props.onClose
- */
 export default function SaveSignInPrompt({ onClose }) {
   const closeRef = useRef(null)
   const location = useLocation()
   const returnTo = { from: location.pathname + location.search }
 
-  // Moves keyboard focus into the dialog and lets Escape close it.
+  // Move focus into the dialog and close it with Escape.
   useEffect(() => {
     closeRef.current?.focus()
     function onKeyDown(event) {
@@ -73,20 +68,12 @@ export default function SaveSignInPrompt({ onClose }) {
   )
 }
 
-/**
- * Signed-out visitors see the save prompt. Signed-in visitors run the toggle.
- * @returns {{ saveOrPrompt: (toggle: () => void) => void, prompt: import('react').ReactNode }}
- */
+// Visitors see Sign In; members run the requested save action.
 export function useSavePrompt() {
   const { user } = useAuth()
   const [open, setOpen] = useState(false)
   const close = useCallback(() => setOpen(false), [])
 
-  /**
-   * Call from a save button. Opens the sign-in prompt for visitors, otherwise saves or unsaves.
-   * Preview mode without Supabase always saves, so pages can be tried without an account.
-   * @param {() => void} toggle
-   */
   function saveOrPrompt(toggle) {
     if (!user && supabase) {
       setOpen(true)

@@ -1,8 +1,3 @@
-/**
- * Tells the reader that a confirmation message is waiting in their inbox.
- * @param {object} props
- * @param {string} props.email Address the verification message was sent to.
- */
 export default function VerifyEmailNotice({ email }) {
   return (
     <p

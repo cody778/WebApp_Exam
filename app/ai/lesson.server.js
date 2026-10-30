@@ -21,6 +21,7 @@ export function normalizeYouTubeUrl(value) {
 }
 
 const textSchema = { type: 'STRING' }
+// Force Gemini to return the same lesson shape used by the editor.
 const schema = {
   type: 'OBJECT',
   properties: {
@@ -61,6 +62,7 @@ export function validateLessonDraft(draft) {
 }
 
 function toEditorDraft(draft, sourceUrl) {
+  // Convert the structured response into normal editor blocks.
   const blocks = []
   const add = (type, text) => blocks.push({ id: randomUUID(), type, content: { text: text.trim() } })
   add('heading', 'Learning objectives')
@@ -88,6 +90,7 @@ async function requestDraft(input, {
   let sourceUrl = ''
   let parts
   let systemInstruction
+  // Prompts, transcripts, and videos share one validated output format.
   if (fromPrompt) {
     const topic = input.prompt.trim()
     if (!topic || topic.length > 2000) throw new Error('Enter a path topic under 2,000 characters.')
@@ -110,6 +113,7 @@ async function requestDraft(input, {
   }
   parts.push({ text: prompt })
 
+  // The response schema keeps Gemini output predictable enough to validate and save as editor blocks.
   let response
   let payload
   try {
@@ -134,6 +138,7 @@ async function requestDraft(input, {
   }
   if (response.status === 429) throw new Error('Path creation is busy right now. Please try again later.')
   if (!response.ok) throw new Error('Could not process this request. Please try again.')
+  // Reject blocked, unfinished, or malformed responses before they reach the editor.
   const candidate = payload?.candidates?.[0]
   if (payload?.promptFeedback?.blockReason || candidate?.finishReason !== 'STOP') {
     throw new Error('Could not complete the lesson. Please try again.')

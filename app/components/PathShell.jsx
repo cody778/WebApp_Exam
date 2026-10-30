@@ -1,9 +1,5 @@
 import { Link } from 'react-router'
 
-/**
- * Full name from the account, then the email name.
- * @param {object | null | undefined} user
- */
 export function authorName(user) {
   const fullName = user?.user_metadata?.full_name
   if (typeof fullName === 'string' && fullName.trim()) return fullName.trim()
@@ -11,10 +7,7 @@ export function authorName(user) {
   return emailName || 'you'
 }
 
-/**
- * Page frame shared by creating, viewing, and editing a path: the full-width cover, then a breadcrumb row.
- * @param {{ crumb: { to: string, label: string }, current: string, cover?: string | null, coverActions?: import('react').ReactNode, headerAction?: import('react').ReactNode, children: import('react').ReactNode }} props
- */
+// Shared frame for creating, viewing, and editing paths.
 export default function PathShell({ crumb, current, cover, coverActions, headerAction, children }) {
   return (
     <div className="path-page -mx-4 -mt-6 -mb-6 flex min-h-full flex-1 flex-col bg-white font-sans text-ink lg:mx-0">

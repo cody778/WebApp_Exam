@@ -3,14 +3,13 @@ import Button from './Button.jsx'
 import Logo from './Logo.jsx'
 import heroDrawing from '../assets/landing/hero-drawing.svg'
 
-/** Opening pitch: logo, headline, illustration, and the account actions. */
 export default function HeroSection() {
   return (
     // One centered column on every screen. Desktop only gives the headline more room and the drawing a capped width.
     <section className="flex w-full flex-col items-center gap-16 py-16 lg:gap-12 lg:pt-20 lg:pb-8">
       <Logo />
-      {/* Mobile breaks the headline over two lines. Desktop runs the headline and the sentence each on a single line. */}
       <div className="flex w-full max-w-88 flex-col items-center gap-4 text-center lg:max-w-none">
+        {/* Mobile breaks the headline over two lines. Desktop runs the headline and the sentence each on a single line. */}
         <h1 className="m-0 text-hero-title text-ink lg:text-[3.5rem]">
           <span className="block lg:inline">Turn scatter into</span>{' '}
           <span className="block text-[2.75rem] lg:inline lg:text-[3.5rem]"><span className="font-bold">learning paths</span><span>.</span></span>

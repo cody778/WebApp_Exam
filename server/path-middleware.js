@@ -18,6 +18,7 @@ export function pathMiddleware(env = process.env) {
         }
         chunks.push(chunk)
       }
+      // Convert Express input to the Fetch Request used by the shared handler.
       const request = new Request('http://localhost/api/generate-path', {
         method: req.method,
         signal: abort.signal,
@@ -26,6 +27,7 @@ export function pathMiddleware(env = process.env) {
         body: ['GET', 'HEAD'].includes(req.method) ? undefined : Buffer.concat(chunks),
       })
       const response = await handlePathRequest(request, { env })
+      // Forward streamed chunks as they arrive instead of buffering the result.
       res.writeHead(response.status, Object.fromEntries(response.headers))
       res.flushHeaders()
       for await (const chunk of response.body) {

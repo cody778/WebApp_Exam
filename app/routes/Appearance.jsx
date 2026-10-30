@@ -29,13 +29,9 @@ const bodyFonts = [
 const themeGrid = { display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '16px' }
 const typeGrid = { display: 'grid', gridTemplateColumns: 'auto minmax(0, 1fr) minmax(0, 1fr)', columnGap: '12px', rowGap: '16px', alignItems: 'center' }
 
-/** Horizontal centers, in px, of the five dots drawn in `spacing-bar.svg`. Index 2 is the default. */
+// These positions match the five stops drawn in the spacing bar asset.
 const spacingStops = [42.5, 99.5, 143.5, 195.5, 247.5]
 
-/**
- * Theme, type, and line spacing opened from Appearance.
- * Choices live in component state only, so they reset when the page is left.
- */
 export default function Appearance() {
   const { user, loading } = useAuth()
   const authPending = Boolean(supabase) && loading && !user
@@ -151,15 +147,10 @@ export default function Appearance() {
   )
 }
 
-/** Places a marker dot over one of the spacing bar's stops. `left` is a value from `spacingStops`. */
 function dotStyle(left) {
   return { left, top: 23.46, width: 11, height: 10, transform: 'translate(-50%, -50%)', pointerEvents: 'none', position: 'absolute' }
 }
 
-/**
- * One font option, previewed in its own typeface. Dark when selected.
- * Pass `font` for a Tailwind font class, or `family` for a CSS font stack that has no class.
- */
 function FontChoice({ label, font, family, selected, onClick }) {
   return (
     <button

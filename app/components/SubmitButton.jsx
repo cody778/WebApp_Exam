@@ -1,9 +1,3 @@
-/**
- * Full-width account action. Stays a button so it can submit a form.
- * @param {object} props
- * @param {import('react').ReactNode} props.children Visible label.
- * @param {boolean} [props.busy] Disables the control while a request is in flight.
- */
 export default function SubmitButton({ children, busy = false }) {
   return (
     <button

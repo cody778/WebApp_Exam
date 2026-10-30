@@ -18,12 +18,7 @@ const methods = [
 const choiceClass =
   'm-0 inline-flex h-10 min-w-0 shrink-0 disabled:cursor-wait py-3 cursor-pointer items-center rounded-full border-0 px-4 font-sans text-sm whitespace-nowrap'
 
-/**
- * The record kept when the buyer chooses to save their payment method.
- * Only display details are kept. The card number and CVC are never stored.
- * @param {'card' | 'paypal' | 'mobilepay'} method
- * @param {{ holder: string, email: string }} payer
- */
+// Save display details only; the full card number and CVC are discarded.
 function detailsFor(method, payer) {
   if (method === 'paypal') {
     return {
@@ -48,10 +43,6 @@ function detailsFor(method, payer) {
   }
 }
 
-/**
- * Modal shown after "Confirm purchase", asking whether to keep the payment details.
- * Save and Skip both finish the purchase. Clicking the backdrop closes it without buying.
- */
 function SaveDetailsPrompt({ method, onSave, onSkip, onDismiss }) {
   const card = method === 'card'
 
@@ -95,7 +86,7 @@ function SaveDetailsPrompt({ method, onSave, onSkip, onDismiss }) {
   )
 }
 
-/** Mock checkout for a paid path (?path=id) or the AI assistant. Only a purchase started from the AI upgrade banner unlocks the assistant. */
+// The same mock checkout handles paid paths and the Premium assistant.
 export default function Premium() {
   const navigate = useNavigate()
   const { user, loading } = useAuth()
@@ -106,7 +97,7 @@ export default function Premium() {
   const [promptOpen, setPromptOpen] = useState(false)
   const [path, setPath] = useState(null)
   const [error, setError] = useState('')
-  // "Paying as", the card name, and PayPal use the signed-in account. Signed-out preview shows the Emma mock.
+  // Signed-out previews use the mock payer details.
   const payer = {
     holder: firstName(user) || emmaPayment.holder,
     email: user?.email || emmaPayment.paypal.email,
@@ -128,11 +119,7 @@ export default function Premium() {
     return <Navigate to="/sign-in" state={{ from: `/premium?path=${pathId}` }} replace />
   }
 
-  /**
-   * Completes the mock checkout. A path purchase is recorded in the database and opens the path.
-   * The AI upgrade is unlocked on this device and returns home.
-   * @param {boolean} save Whether to keep the payment details for next time.
-   */
+  // Path purchases are stored in Supabase; Premium is unlocked on this device.
   async function finish(save) {
     if (save) savePaymentMethod(detailsFor(method, payer))
     if (pathId) {

@@ -1,9 +1,6 @@
 export const pathSections = ['Overview', 'Steps', 'Materials']
 
-/**
- * Path section title. The open section shows its name; each other section is a bar that opens it.
- * @param {{ active: string, onSelect?: (index: number) => void }} props
- */
+/** The open section shows its name; the other bars switch sections. */
 export default function PathSectionHeader({ active, onSelect, ...props }) {
   return (
     <div className="flex items-center gap-2 font-sans text-2xl leading-[1.2] text-ink" {...props}>

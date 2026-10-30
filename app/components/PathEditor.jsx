@@ -7,7 +7,7 @@ import removeIcon from '../assets/create-path/remove.svg'
 import dragIcon from '../assets/create-path/drag.svg'
 import stepDot from '../assets/public-path/step-dot.svg'
 
-/** A new, untouched step. A null title shows its position as "Step N". */
+// A missing title displays the step number until the user names it.
 export function newStep() {
   return { id: crypto.randomUUID(), title: null, blocks: [textBlock()] }
 }
@@ -19,17 +19,6 @@ function stepTitle(step, index) {
 const removeButton =
   '!m-0 flex !size-6 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent !p-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-[#9e2020]/10 [@media(hover:none)]:opacity-100'
 
-/**
- * Editable path: title, description, steps with block content, and materials. Used to create and to edit a path.
- * @param {{
- *   initial: { title: string, description: string, materials?: string[], steps: Array<{ id: string, title: string | null, blocks: object[] }> },
- *   author: string,
- *   submitLabel: string,
- *   onSubmit: (path: { title: string, description: string, materials: string[], steps: Array<{ id: string, title: string, blocks: object[] }> }) => Promise<void>,
- *   secondary?: import('react').ReactNode,
- *   autoFocusTitle?: boolean,
- * }} props
- */
 export default function PathEditor({ initial, author, submitLabel, onSubmit, secondary, autoFocusTitle = false }) {
   const titleRef = useRef(null)
   const listRef = useRef(null)
@@ -137,6 +126,7 @@ export default function PathEditor({ initial, author, submitLabel, onSubmit, sec
     setBusy(true)
     setError('')
     try {
+      // Clean block content once, just before the draft is saved.
       await onSubmit({
         title: title.trim(),
         description: description.trim(),
@@ -369,6 +359,5 @@ export default function PathEditor({ initial, author, submitLabel, onSubmit, sec
   )
 }
 
-/** Outlined secondary action that sits beside the main path button. */
 export const secondaryButton =
   '!m-0 !flex !h-12 w-full !items-center !justify-center !rounded-lg !border !border-ink !bg-white !px-4 !py-0 !text-center !font-sans !text-base !leading-none !font-normal !text-ink !no-underline lg:flex-1'

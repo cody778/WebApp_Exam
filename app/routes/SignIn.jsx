@@ -7,12 +7,11 @@ import TextField from '../components/TextField.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import useSignIn from '../user/useSignIn.js'
 
-/** Returning-user screen: email, password, and a choice to keep the session. */
 export default function SignIn() {
   const { user, loading } = useAuth()
   const location = useLocation()
   const { busy, error, resetSentTo, signIn, sendReset, configured } = useSignIn()
-  // Return to the page that asked for sign-in. Only same-site paths are accepted, so a crafted link cannot send people elsewhere.
+  // Accept same-site return paths only, preventing redirects to another site.
   const from = location.state?.from
   const destination = typeof from === 'string' && from.startsWith('/') && !from.startsWith('//') ? from : '/home'
 
@@ -37,7 +36,7 @@ export default function SignIn() {
   return (
     <div className="sign-in-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col items-center px-6 py-12 font-sans text-ink">
       <div className="flex w-full flex-col items-center gap-8">
-        {/* The logo leads home. The ! classes beat the old global link frame, so the logo never shows a border. */}
+        {/* The ! classes override the old global link frame so the logo has no border. */}
         <Link to="/" aria-label="Pathify home" className="!m-0 !inline-flex !border-0 !bg-transparent !p-0 !text-inherit !no-underline">
           <Logo />
         </Link>

@@ -3,12 +3,10 @@ import { Link } from 'react-router'
 import saveCount from '../assets/explore/save-count.svg'
 import forkCount from '../assets/explore/fork-count.svg'
 
-/** 1500 becomes "1.5 k". */
 export function formatCount(count) {
   return count >= 1000 ? `${Number((count / 1000).toFixed(1))} k` : String(count)
 }
 
-/** 4.5 becomes "€4.50". */
 export function formatPrice(price) {
   return `€${Number(price).toFixed(2)}`
 }
@@ -18,25 +16,6 @@ const iconButton =
 
 const smallButton = '!m-0 inline-flex shrink-0 cursor-pointer items-center !rounded-lg !border-0 !px-2 !py-1 text-h5 !no-underline'
 
-/**
- * One path in a grid: Home, Explore, and Commissions.
- * @param {object} props
- * @param {string} props.title Path name.
- * @param {string} props.to Path page opened when the card is clicked. The buttons on the card stay separate.
- * @param {string | null} [props.cover] Cover image address. A plain cover shows without one.
- * @param {string} [props.status] Progress label, such as "Step 2/5". Replaces the author row.
- * @param {string} [props.author] Creator shown after "By".
- * @param {number} [props.saves] Save count.
- * @param {number} [props.forks] Fork count.
- * @param {boolean} [props.saved] Whether the user saved this path.
- * @param {() => void} [props.onToggleSave] Shows the save control. Unsaving asks first.
- * @param {() => void} [props.onFork] Shows the fork control.
- * @param {boolean} [props.forking] Disables the fork control while a copy is made.
- * @param {number | null} [props.price] Price of a paid path.
- * @param {string} [props.buyTo] Checkout page. Shows a Buy button for a paid path.
- * @param {string} [props.badge] Short label beside the status, such as "Public".
- * @param {number} [props.soldCount] Times this path sold.
- */
 export default function PathCard({
   title,
   to,
@@ -134,7 +113,6 @@ export default function PathCard({
               {title}
             </Link>
           </h2>
-          {/* A status label (Home, Commissions) replaces the author and count row that Explore shows. */}
           {status ? (
             <p className="m-0 flex flex-wrap gap-1">
               <span className="inline-flex items-center rounded-lg bg-accent-muted px-2 py-1 text-h5 text-quiet">{status}</span>

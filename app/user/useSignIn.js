@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import { rememberKey, supabase } from './client.js'
 
-/**
- * Signs in with email and password, and can email a reset link to that same address.
- */
 export default function useSignIn() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')

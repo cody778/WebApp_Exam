@@ -11,7 +11,6 @@ import todoIcon from '../assets/create-path/blocks/check-square.svg'
 import iconCheck from '../assets/public-path/icon-check.svg'
 import { StepBlock, MediaPreview, headingLevel, headingStyles as textStyles } from './StepBlocks.jsx'
 
-/** @returns {{ id: string, type: string, content: object }} */
 export function textBlock(content = {}) {
   return { id: crypto.randomUUID(), type: 'paragraph', content: { text: '', ...content } }
 }
@@ -19,7 +18,7 @@ export function textBlock(content = {}) {
 const textTypes = ['paragraph', 'heading', 'quote']
 const mediaTypes = ['image', 'video']
 
-/** Trims blocks for saving and drops empty ones. A step always keeps at least one block. */
+// Remove empty blocks before saving, but keep one editable paragraph.
 export function cleanBlocks(blocks) {
   const kept = blocks.flatMap((block) => {
     if (mediaTypes.includes(block.type)) {
@@ -33,7 +32,6 @@ export function cleanBlocks(blocks) {
   return kept.length ? kept : [textBlock()]
 }
 
-/** @param {{ content: object, type: string }} block */
 export function blockHasContent(block) {
   if (!textTypes.includes(block.type) && !mediaTypes.includes(block.type)) return true
   return Boolean((block.content.text ?? block.content.url ?? '').trim())
@@ -41,7 +39,7 @@ export function blockHasContent(block) {
 
 const heading = (level) => () => ({ type: 'heading', content: { text: '', level } })
 
-// Headings keep the existing "heading" type with a level; lists are paragraphs with a list style.
+// Lists reuse paragraph blocks and add a list style.
 const basicBlocks = [
   { label: 'Text', glyph: 'T', glyphClass: 'text-lg font-medium', make: () => ({ type: 'paragraph', content: { text: '' } }) },
   { label: 'Heading 1', glyph: 'H₁', make: heading(1) },
@@ -58,10 +56,9 @@ const mediaBlocks = {
   video: () => ({ type: 'video', content: { url: '' } }),
 }
 
-// Lines the gutter plus up with the first line of each text size.
+// Keep the add button level with headings of different sizes.
 const gutterOffset = { 1: 'top-[7px]', 2: 'top-1', 3: 'top-0.5', 4: 'top-px' }
 
-/** Textarea that grows with its text. */
 export function GrowingText({ fieldRef = () => {}, value, className, ...props }) {
   const ref = useRef(null)
   useLayoutEffect(() => {
@@ -83,10 +80,7 @@ export function GrowingText({ fieldRef = () => {}, value, className, ...props })
   )
 }
 
-/**
- * Block picker. A sheet fixed to the bottom on small screens; a menu next to the plus on desktop.
- * @param {{ anchor: DOMRect, onChoose: (make: () => object) => void, onClose: () => void }} props
- */
+// The picker is a bottom sheet on mobile and an anchored menu on desktop.
 function BlockMenu({ anchor, onChoose, onClose }) {
   const menuRef = useRef(null)
   const [place, setPlace] = useState(null)
@@ -168,11 +162,7 @@ function BlockMenu({ anchor, onChoose, onClose }) {
   )
 }
 
-/**
- * Notion-style editor for one step. Each line is a block; the plus beside a block opens the block picker.
- * Enter starts a new block, Backspace on an empty block removes it, and "/" on an empty block opens the picker.
- * @param {{ blocks: Array<{ id: string, type: string, content: object }>, onChange: (blocks: object[]) => void, label: string, placeholder?: string }} props
- */
+// Each line is a block; Enter adds one, Backspace removes an empty one, and "/" opens the picker.
 export default function StepBlockEditor({ blocks, onChange, label, placeholder = 'Describe this step, or press + to add blocks' }) {
   const fields = useRef(new Map())
   const pendingFocus = useRef(null)

@@ -25,7 +25,6 @@ const breakOptions = [
   { id: '120', label: '2 hours' },
 ]
 
-/** Account settings opened from the account chip. */
 export default function Account() {
   const { user, loading } = useAuth()
   const navigate = useNavigate()
@@ -49,7 +48,7 @@ export default function Account() {
     setPrefs((current) => ({ ...current, [id]: !current[id] }))
   }
 
-  /** Mock deletion: clears every saved `pathify-` setting on this device, tells listeners, and returns to the landing page. */
+  // The current delete flow clears local Pathify settings only.
   function deleteAccount() {
     if (!confirmDelete) return
     for (const key of Object.keys(localStorage)) {
@@ -60,10 +59,6 @@ export default function Account() {
     navigate('/')
   }
 
-  /**
-   * Runs when a file is picked from the hidden input behind the avatar.
-   * Uploads it as this user's profile photo and shows any failure under the name.
-   */
   async function changePhoto(event) {
     const file = event.target.files?.[0]
     // Clearing the input lets the same file be picked again after an error.
@@ -80,7 +75,6 @@ export default function Account() {
     }
   }
 
-  /** Ends the Supabase session. AuthProvider then clears the user everywhere in the app. */
   async function signOff() {
     // Leave first so the signed-out guard above does not bounce to /sign-in.
     navigate('/', { replace: true })

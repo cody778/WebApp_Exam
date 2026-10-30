@@ -7,14 +7,14 @@ import useUserData from '../user/useUserData.js'
 import DataState from '../user/DataState.jsx'
 import { isUnavailableItem } from '../user/dataErrors.js'
 
-export default function Lesson() { // displays lesson and allows user to mark as completed
+export default function Lesson() {
   const { user } = useAuth()
   const { lessonId, roadmapId } = useParams()
   const { data, loading, error, reload } = useUserData(getLesson, lessonId)
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
 
-  async function toggleCompleted() { // toggle for completed status 
+  async function toggleCompleted() {
     if (busy) return
     setBusy(true)
     setMessage('')
@@ -22,15 +22,16 @@ export default function Lesson() { // displays lesson and allows user to mark as
       await setLessonCompleted(user.id, data.id, !data.completed)
       reload()
     } catch {
-      setMessage('Could not save your progress. Please try again.') // error handling
+      setMessage('Could not save your progress. Please try again.')
     } finally {
       setBusy(false)
     }
   }
 
   if (isUnavailableItem(error)) return <Navigate to="/404" replace />
-  if (loading || error) return <DataState loading={loading} error={error} /> // shows loading or error state
-  if (roadmapId && !data.roadmap_lessons.some(link => link.roadmap_id === roadmapId)) return <Navigate to="/404" replace /> // checks if lesson is part of the roadmap
+  if (loading || error) return <DataState loading={loading} error={error} />
+  // Reject lesson URLs that do not belong to the path in the address.
+  if (roadmapId && !data.roadmap_lessons.some(link => link.roadmap_id === roadmapId)) return <Navigate to="/404" replace />
 
   return (
     <section className="flex flex-col gap-6 py-6 font-sans text-ink">

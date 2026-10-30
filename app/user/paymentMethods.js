@@ -4,7 +4,7 @@ const METHODS_KEY = 'pathify-payment-methods'
 const PREMIUM_KEY = 'pathify-premium'
 const CHANGE_EVENT = 'pathify-premium'
 
-/** Preset checkout details for the Emma preview. These are mock values, not a real account. */
+// Mock checkout details used when no account is signed in.
 export const emmaPayment = {
   holder: 'Emma',
   card: {
@@ -36,16 +36,12 @@ function notify() {
   window.dispatchEvent(new Event(CHANGE_EVENT))
 }
 
-/**
- * Payment methods saved from checkout. A later settings page can read this list.
- * @returns {Array<{ method: string, holder: string, brand?: string, last4?: string, expiry?: string, email?: string, phone?: string, savedAt: string }>}
- */
 export function readPaymentMethods() {
   const value = readJson(METHODS_KEY, [])
   return Array.isArray(value) ? value : []
 }
 
-/** Stores one method per type. The card security code is never saved. */
+// Keep one method per type and never store the card security code.
 export function savePaymentMethod(entry) {
   const next = readPaymentMethods().filter((item) => item.method !== entry.method)
   next.push({ ...entry, savedAt: new Date().toISOString() })
@@ -53,13 +49,12 @@ export function savePaymentMethod(entry) {
   notify()
 }
 
-/** Whether the AI assistant was unlocked on this device. Always false during server rendering. */
 export function readPremiumUnlocked() {
   if (typeof localStorage === 'undefined') return false
   return localStorage.getItem(PREMIUM_KEY) === '1'
 }
 
-/** Marks Premium as bought on this device and updates every component using `usePremiumUnlocked`. */
+// Notify every open component when Premium changes on this device.
 export function unlockPremium() {
   localStorage.setItem(PREMIUM_KEY, '1')
   notify()
@@ -74,7 +69,6 @@ function subscribe(onChange) {
   }
 }
 
-/** React hook for the Premium flag. Re-renders on unlock, on account deletion, and when another tab changes it. */
 export function usePremiumUnlocked() {
   return useSyncExternalStore(subscribe, readPremiumUnlocked, () => false)
 }

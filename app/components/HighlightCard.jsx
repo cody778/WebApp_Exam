@@ -1,10 +1,3 @@
-/**
- * Feature summary with a small icon, used for the landing highlights.
- * @param {object} props
- * @param {string} props.icon Address of a 16×16 icon.
- * @param {string} props.title Short card title.
- * @param {string} props.body Supporting sentence.
- */
 export default function HighlightCard({ icon, title, body }) {
   return (
     <article className="flex w-full items-center gap-3 rounded-2xl bg-surface-muted p-4 lg:h-full lg:items-start lg:p-6">

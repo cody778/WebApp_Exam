@@ -1,10 +1,5 @@
 import { useEffect, useState } from 'react'
 
-/**
- * Short message at the bottom of the screen that hides itself.
- * @param {string} [initial] Message to show right away, such as one passed through navigation.
- * @returns {{ notice: import('react').ReactNode, show: (message: string) => void }}
- */
 export function useNotice(initial = '') {
   const [message, setMessage] = useState(initial)
 

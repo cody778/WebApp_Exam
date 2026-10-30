@@ -1,6 +1,6 @@
 ﻿const labels = { heading: 'Heading', paragraph: 'Paragraph', quote: 'Quote', table: 'Table', link: 'Link', image: 'Image', video: 'Video' }
 
-export default function BlockEditor({ blocks, onChange, readOnly = false, label = 'Lesson content' }) { // Content for a simple block editor
+export default function BlockEditor({ blocks, onChange, readOnly = false, label = 'Lesson content' }) {
   function update(id, values) {
     onChange(blocks.map(block => block.id === id ? { ...block, content: { ...block.content, ...values } } : block))
   }
@@ -8,8 +8,8 @@ export default function BlockEditor({ blocks, onChange, readOnly = false, label 
   return (
     <section className="min-w-0" aria-label={label}>
       {!readOnly && <select className="mb-4 w-full rounded-lg border border-accent-muted bg-white p-3 text-ink outline-none focus:border-accent" aria-label="Add block" value="" onChange={event => {
-        const type = event.target.value // gets the selected block type
-        const content = type === 'table' ? { rows: Array.from({ length: 3 }, () => ['', '', '']) } // initializes a table with 3 rows and 3 columns
+        const type = event.target.value
+        const content = type === 'table' ? { rows: Array.from({ length: 3 }, () => ['', '', '']) }
           : ['link', 'image', 'video'].includes(type) ? { url: '' } : { text: '' }
         onChange([...blocks, { id: crypto.randomUUID(), type, content }])
       }}>
@@ -20,13 +20,13 @@ export default function BlockEditor({ blocks, onChange, readOnly = false, label 
         {blocks.map((block, index) => {
           const { id, type, content } = block
           const label = `${labels[type]} ${index + 1}`
-          if (['link', 'image', 'video'].includes(type)) { // handles link, image, and video blocks
+          if (['link', 'image', 'video'].includes(type)) {
             if (!readOnly) return <label className="grid gap-2 text-sm font-medium" key={id}>{label}
               <input className="min-w-0 rounded-lg border border-accent-muted px-3 py-2 font-normal outline-none focus:border-accent" type="url" value={content.url} pattern="https://[^\s]+" placeholder="https://" required onChange={event => update(id, { url: event.target.value })} />
             </label>
             return /^https:\/\/\S+$/.test(content.url) ? <p className="m-0" key={id}><a className="m-0 text-accent underline" href={content.url} target="_blank" rel="noopener noreferrer">{content.title || `${labels[type]}: ${content.url}`}</a></p> : <p className="m-0 text-quiet" key={id}>This {labels[type].toLowerCase()} is unavailable.</p>
           }
-          if (type === 'table') return ( // handles table blocks
+          if (type === 'table') return (
             <table className="my-4 w-full table-fixed border-collapse" key={id} aria-label={label}><tbody>
               {content.rows.map((cells, row) => (
                 <tr key={row}>{(Array.isArray(cells) ? cells : [cells]).map((cell, column) => (

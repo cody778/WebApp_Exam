@@ -3,14 +3,14 @@ import { Link, useNavigate } from 'react-router'
 import BlockEditor from '../components/BlockEditor.jsx'
 import { saveLesson } from './data.js'
 
-export default function LessonForm({ lesson, roadmapId }) { //creating or editing a lesson with optional roadmapId
+export default function LessonForm({ lesson, roadmapId }) {
   const navigate = useNavigate()
   const [id] = useState(() => lesson?.id ?? crypto.randomUUID())
   const [blocks, setBlocks] = useState(() => lesson?.blocks ?? [{ id: crypto.randomUUID(), type: 'paragraph', content: { text: '' } }])
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
-  async function submit(event) { // handles the form submission
+  async function submit(event) {
     event.preventDefault()
     if (busy) return
     const title = new FormData(event.currentTarget).get('title').trim()
@@ -18,7 +18,7 @@ export default function LessonForm({ lesson, roadmapId }) { //creating or editin
     setBusy(true)
     setError('')
 
-    try { // saves the lesson and navigates to the correct page
+    try {
       await saveLesson(id, roadmapId, title, blocks)
       navigate(roadmapId ? `/my-path/${roadmapId}/lesson/${id}` : `/lesson/${id}`)
     } catch {
