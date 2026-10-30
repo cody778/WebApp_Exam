@@ -4,7 +4,6 @@ import editIcon from '../assets/create-path/edit.svg'
 import plusIcon from '../assets/create-path/plus.svg'
 import iconForkCount from '../assets/public-path/icon-fork-count.svg'
 import iconSaveCount from '../assets/public-path/icon-save-count.svg'
-import iconShare from '../assets/public-path/icon-share.svg'
 import stepDot from '../assets/public-path/step-dot.svg'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { createRoadmap, saveLesson } from '../user/data.js'
@@ -77,20 +76,10 @@ export default function CreateRoadmap() {
   return (
     <form
       onSubmit={submit}
-      className="-mx-4 -mt-6 -mb-6 flex flex-1 flex-col bg-white font-sans text-ink lg:-mx-8"
+      className="create-path -mx-4 -mt-6 -mb-6 flex min-h-full flex-1 flex-col bg-white font-sans text-ink lg:mx-0"
     >
-      <div className="flex h-40 shrink-0 items-start justify-end overflow-hidden bg-[#dad6cd] p-4">
-        <div className="flex w-6 flex-col">
-          <button
-            type="button"
-            aria-label="Share"
-            className="m-0 flex h-6 w-full -scale-y-100 rotate-180 cursor-pointer items-center justify-center border-0 bg-transparent p-0"
-          >
-            <img src={iconShare} alt="" width="24" height="24" className="block max-w-none" />
-          </button>
-        </div>
-      </div>
-      <div className="flex flex-1 flex-col gap-4 px-6 py-4">
+      <div className="h-40 shrink-0 bg-[#dad6cd]" />
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-6 py-4 lg:max-w-6xl lg:px-8">
         <div className="flex items-center justify-between">
           <p className="m-0 text-[13px] leading-normal font-normal whitespace-nowrap text-quiet">
             <Link to="/home" className="m-0 border-0 p-0 text-quiet underline">
@@ -177,16 +166,19 @@ export default function CreateRoadmap() {
             Add step
           </button>
           {error && <p role="alert" className="m-0 text-sm leading-[1.4]">{error}</p>}
-          <Link to="/create-path/youtube" className="m-0 border-0 p-0 text-center text-sm leading-[1.4] text-accent underline">
-            Create a path from YouTube
-          </Link>
-          <div className="mt-auto pt-4">
+          <div className="mt-auto flex flex-col gap-3 pt-4 lg:flex-row-reverse">
             <button
               type="submit"
-              className="m-0 flex h-12 w-full cursor-pointer items-center justify-center rounded-lg border-0 bg-brand px-4 py-0 font-sans text-base leading-none font-normal text-on-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-wait disabled:opacity-70"
+              className="m-0 flex h-12 w-full cursor-pointer items-center justify-center rounded-lg border-0 bg-brand px-4 py-0 font-sans text-base leading-none font-normal text-on-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-wait disabled:opacity-70 lg:flex-1"
             >
-              {busy ? 'Saving...' : 'Continue path'}
+              {busy ? 'Saving...' : 'Create path'}
             </button>
+            <Link
+              to="/create-path/youtube"
+              className="!m-0 !flex !h-12 w-full !items-center !justify-center !rounded-lg !border !border-ink !bg-white !px-4 !py-0 !text-center !font-sans !text-base !leading-none !font-normal !text-ink !no-underline lg:flex-1"
+            >
+              Create a path from YouTube
+            </Link>
           </div>
         </fieldset>
       </div>
