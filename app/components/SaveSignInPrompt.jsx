@@ -15,6 +15,7 @@ export default function SaveSignInPrompt({ onClose }) {
   const location = useLocation()
   const returnTo = { from: location.pathname + location.search }
 
+  // Moves keyboard focus into the dialog and lets Escape close it.
   useEffect(() => {
     closeRef.current?.focus()
     function onKeyDown(event) {
@@ -81,6 +82,11 @@ export function useSavePrompt() {
   const [open, setOpen] = useState(false)
   const close = useCallback(() => setOpen(false), [])
 
+  /**
+   * Call from a save button. Opens the sign-in prompt for visitors, otherwise saves or unsaves.
+   * Preview mode without Supabase always saves, so pages can be tried without an account.
+   * @param {() => void} toggle
+   */
   function saveOrPrompt(toggle) {
     if (!user && supabase) {
       setOpen(true)

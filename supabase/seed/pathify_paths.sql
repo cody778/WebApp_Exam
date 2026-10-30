@@ -165,7 +165,7 @@ select pg_temp.seed_path('crochet', 'Crochet',
     ]}
   ]$json$::jsonb);
 
-select pg_temp.seed_path('oil-painting', 'Oleo Painting',
+select pg_temp.seed_path('oil-painting', 'Oil Painting',
   'Paint a small still life in oils: set up safely, mix colour, block in, and add light.',
   '/covers/oleo.png', null,
   array['Canvas panel 20 x 25 cm', 'Oil paints: titanium white, ultramarine, cadmium yellow, cadmium red, burnt umber', 'Flat and round brushes', 'Odourless solvent', 'Linseed oil', 'Palette and palette knife', 'Rags'],

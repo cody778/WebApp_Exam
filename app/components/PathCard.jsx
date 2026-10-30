@@ -126,6 +126,7 @@ export default function PathCard({
       <div className="flex items-end justify-between gap-2 p-2">
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <h2 className="m-0 truncate text-card-title text-black">
+            {/* The ::before overlay stretches this link over the whole card. Card buttons sit above it at z-20 so they stay clickable. */}
             <Link
               to={to}
               className="!m-0 !inline !rounded-none !border-0 !bg-transparent !p-0 font-[inherit] text-inherit no-underline before:absolute before:inset-0 before:z-10 before:content-[''] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
@@ -133,6 +134,7 @@ export default function PathCard({
               {title}
             </Link>
           </h2>
+          {/* A status label (Home, Commissions) replaces the author and count row that Explore shows. */}
           {status ? (
             <p className="m-0 flex flex-wrap gap-1">
               <span className="inline-flex items-center rounded-lg bg-accent-muted px-2 py-1 text-h5 text-quiet">{status}</span>

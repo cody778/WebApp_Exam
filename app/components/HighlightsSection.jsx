@@ -31,12 +31,13 @@ function skipOneScreen() {
 /** Three product points that sit under the hero. Copy is static marketing text. */
 export default function HighlightsSection() {
   return (
-    <section className="flex w-full flex-col items-center gap-8 py-8">
+    // On desktop the arrow keeps its own row and the three cards sit side by side.
+    <section className="flex w-full flex-col items-center gap-8 py-8 lg:grid lg:grid-cols-3 lg:items-stretch lg:gap-6 lg:pt-4 lg:pb-12">
       <button
         type="button"
         onClick={skipOneScreen}
         aria-label="Skip down one screen"
-        className="min-w-0 disabled:cursor-wait [font:inherit] motion-safe:animate-arrow-bounce m-0 cursor-pointer border-0 bg-transparent p-0"
+        className="min-w-0 disabled:cursor-wait [font:inherit] motion-safe:animate-arrow-bounce m-0 cursor-pointer border-0 bg-transparent p-0 lg:col-span-3 lg:mb-4 lg:justify-self-center"
       >
         <img src={jumpArrow} alt="" width="47" height="38" />
       </button>

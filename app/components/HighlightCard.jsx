@@ -7,7 +7,7 @@
  */
 export default function HighlightCard({ icon, title, body }) {
   return (
-    <article className="flex w-full items-center gap-3 rounded-2xl bg-surface-muted p-4">
+    <article className="flex w-full items-center gap-3 rounded-2xl bg-surface-muted p-4 lg:h-full lg:items-start lg:p-6">
       <span className="flex size-8 shrink-0 items-center justify-center rounded-2xl bg-accent">
         <img src={icon} alt="" width="16" height="16" />
       </span>

@@ -28,6 +28,7 @@ function subscribe(onChange) {
   return () => window.removeEventListener(CHANGE_EVENT, onChange)
 }
 
+/** Fetches a user's photo URL once and caches it, so the nav does not refetch on every page. */
 async function loadAvatar(userId) {
   if (!supabase || !userId || avatarUrls.has(userId) || loading.has(userId)) return
   loading.add(userId)

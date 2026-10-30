@@ -8,6 +8,7 @@ export default [
   route('sign-up', 'routes/SignUp.jsx'),
   route('sign-in', 'routes/SignIn.jsx'),
   route('explore', 'routes/Explore.jsx'),
+  // Settings and Premium sit outside RequireUser and their own AppLayout. Each page handles signed-out visitors itself.
   route('account', 'routes/Account.jsx'),
   route('appearance', 'routes/Appearance.jsx'),
   route('commissions', 'routes/Commissions.jsx'),

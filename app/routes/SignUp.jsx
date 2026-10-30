@@ -37,11 +37,13 @@ export default function SignUp() {
 
   if (loading) return <p role="status">Loading your account...</p>
   if (user) return <Navigate to={destination} replace />
+  // Preview without Supabase has no account to sign in to, so the "Sign In." line below is hidden there.
   const signedIn = Boolean(user) || !supabase
 
   return (
     <div className="register-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col items-center px-6 py-12 font-sans text-ink">
       <div className="flex w-full flex-col items-center gap-8">
+        {/* The logo leads home. The ! classes beat the old global link frame, so the logo never shows a border. */}
         <Link to="/" aria-label="Pathify home" className="!m-0 !inline-flex !border-0 !bg-transparent !p-0 !text-inherit !no-underline">
           <Logo />
         </Link>
