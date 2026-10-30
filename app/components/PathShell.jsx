@@ -13,14 +13,15 @@ export function authorName(user) {
 
 /**
  * Page frame shared by creating, viewing, and editing a path: the full-width cover, then a breadcrumb row.
- * @param {{ crumb: { to: string, label: string }, current: string, coverActions?: import('react').ReactNode, headerAction?: import('react').ReactNode, children: import('react').ReactNode }} props
+ * @param {{ crumb: { to: string, label: string }, current: string, cover?: string | null, coverActions?: import('react').ReactNode, headerAction?: import('react').ReactNode, children: import('react').ReactNode }} props
  */
-export default function PathShell({ crumb, current, coverActions, headerAction, children }) {
+export default function PathShell({ crumb, current, cover, coverActions, headerAction, children }) {
   return (
     <div className="path-page -mx-4 -mt-6 -mb-6 flex min-h-full flex-1 flex-col bg-white font-sans text-ink lg:mx-0">
       <div className="relative h-40 shrink-0 bg-[#dad6cd]">
+        {cover ? <img src={cover} alt="" className="pointer-events-none absolute inset-0 h-full w-full max-w-none object-cover" /> : null}
         {coverActions && (
-          <div className="mx-auto flex h-full w-full max-w-md justify-end px-4 py-4 lg:max-w-6xl lg:px-8">
+          <div className="relative mx-auto flex h-full w-full max-w-md justify-end px-4 py-4 lg:max-w-6xl lg:px-8">
             <div className="relative flex h-fit flex-col gap-2 rounded-full bg-ink/35 p-1.5">{coverActions}</div>
           </div>
         )}

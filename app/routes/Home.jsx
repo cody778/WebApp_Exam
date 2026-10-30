@@ -1,18 +1,13 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
+import PathCard from '../components/PathCard.jsx'
 import PathFilters from '../components/PathFilters.jsx'
-import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
 import ShortcutCard from '../components/ShortcutCard.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
-import { listProjects, listRoadmaps, listSavedRoadmaps } from '../user/data.js'
+import { listProjects, listRoadmaps, listSavedRoadmaps, setPathSaved } from '../user/data.js'
 import useUserData from '../user/useUserData.js'
 import DataState from '../user/DataState.jsx'
 import { usePremiumUnlocked } from '../user/paymentMethods.js'
-import { toggleSavedTitle, useSavedTitles } from '../user/savedTitles.js'
-import knitting from '../assets/explore/knitting.png'
-import sewing from '../assets/explore/sewing.png'
-import sashiko from '../assets/profile/sashiko.jpg'
-import embroidery from '../assets/profile/embroidery.jpg'
 import iconImage from '../assets/profile/icon-image.svg'
 import iconMic from '../assets/profile/icon-mic.svg'
 import iconArrowUp from '../assets/profile/icon-arrow-up.svg'
@@ -20,113 +15,16 @@ import plusIcon from '../assets/home/plus.svg'
 import exploreIcon from '../assets/home/explore.svg'
 import PremiumBanner from '../components/PremiumBanner.jsx'
 
-const sampleShortcuts = [
-  { title: 'Transfer Your Pattern', path: 'Sashiko', step: 'Step 2/6' },
-  { title: 'Cast on', path: 'Knitting', step: 'Step 1/8', to: '/public-path' },
-]
-
-const samplePaths = [
-  { title: 'Sashiko', status: 'Step 2/6', image: sashiko, imageWidth: 768, imageHeight: 1017 },
-  {
-    title: 'Knitting',
-    status: 'Step 1/8',
-    image: knitting,
-    imageWidth: 1860,
-    imageHeight: 850,
-    save: true,
-    to: '/public-path',
-  },
-  { title: 'Embroidery', status: 'Step 1/12', image: embroidery, imageWidth: 736, imageHeight: 981, savedPath: true, buy: true },
-  { title: 'Sewing', status: 'Not started', image: sewing, imageWidth: 1860, imageHeight: 850, save: true },
-]
-
-function SaveMark({ saved, title, onToggleSave }) {
-  return (
-    <button
-      type="button"
-      aria-pressed={saved}
-      aria-label={saved ? `Unsave ${title}` : `Save ${title}`}
-      onClick={(event) => {
-        event.preventDefault()
-        event.stopPropagation()
-        onToggleSave()
-      }}
-      className="relative z-20 m-0 min-w-0 cursor-pointer border-0 bg-transparent p-0 font-[inherit] text-[length:inherit] font-[weight:inherit] leading-none disabled:cursor-wait"
-    >
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        aria-hidden="true"
-        className={`block ${saved ? 'text-accent' : 'text-ink'}`}
-      >
-        <path
-          d="M6.5 6.9148C6.5 5.89462 6.5 5.38453 6.69983 4.99468C6.8756 4.65191 7.15605 4.37323 7.501 4.19857C7.89333 4 8.40667 4 9.43333 4H14.5667C15.5933 4 16.1067 4 16.499 4.19857C16.8439 4.37323 17.1244 4.65191 17.3002 4.99468C17.5 5.38453 17.5 5.89462 17.5 6.9148V19.034C17.5 19.4767 17.5 19.698 17.4074 19.8192C17.3674 19.8719 17.3164 19.9153 17.2578 19.9464C17.1992 19.9776 17.1346 19.9957 17.0682 19.9995C16.9152 20.0086 16.73 19.8857 16.3597 19.6406L12 16.7523L7.64033 19.6397C7.27 19.8857 7.08483 20.0086 6.93083 19.9995C6.86468 19.9956 6.80019 19.9774 6.74179 19.9462C6.6834 19.9151 6.63249 19.8717 6.59258 19.8192C6.5 19.698 6.5 19.4767 6.5 19.034V6.9148Z"
-          fill={saved ? 'currentColor' : 'none'}
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </button>
-  )
-}
-
-function ProgressCard({ path, saved, onToggleSave }) {
-  return (
-    <article className="relative flex h-36 flex-col gap-2 overflow-hidden border border-[#bcbcbc] bg-white">
-      <div className="relative flex min-h-0 w-full flex-1 items-start justify-end bg-[#dad6cd] px-[3px] py-[5px]">
-        {path.image ? <img
-          src={path.image}
-          alt=""
-          width={path.imageWidth}
-          height={path.imageHeight}
-          className="pointer-events-none absolute inset-0 h-full w-full max-w-none object-cover"
-        /> : null}
-        {path.save ? <SaveMark saved={saved} title={path.title} onToggleSave={onToggleSave} /> : null}
-      </div>
-      <div className="flex items-end justify-between gap-2 p-2">
-        <div className="flex min-w-0 flex-col gap-1">
-          <h2 className="m-0 line-clamp-2 text-card-title text-black">
-            {path.to ? (
-              <Link
-                to={path.to}
-                className="!m-0 !inline !rounded-none !border-0 !bg-transparent !p-0 font-[inherit] text-inherit no-underline before:absolute before:inset-0 before:z-10 before:content-[''] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-              >
-                {path.title}
-              </Link>
-            ) : (
-              path.title
-            )}
-          </h2>
-          <p className="m-0">
-            <span className="inline-flex items-center rounded-lg bg-accent-muted px-2 py-1 text-h5 text-quiet">{path.status}</span>
-          </p>
-        </div>
-        {path.buy ? (
-          <Link
-            to="/premium"
-            className="relative z-20 !m-0 inline-flex shrink-0 items-center !rounded-lg !border-0 bg-accent !px-2 !py-1 text-h5 !text-on-brand no-underline"
-          >
-            Buy
-          </Link>
-        ) : null}
-      </div>
-    </article>
-  )
-}
-
 function pathProgress(path) {
   const lessons = (path.lessons ?? []).filter(lesson => lesson?.title)
   if (lessons.length === 0) return { label: 'Not started', lesson: null }
   const index = lessons.findIndex(lesson => !lesson.completed)
-  const current = index === -1 ? lessons.length - 1 : index
-  return { label: `Step ${current + 1}/${lessons.length}`, lesson: lessons[current] }
+  if (index === -1) return { label: 'Completed', lesson: lessons.at(-1) }
+  if (!lessons.some(lesson => lesson.completed)) return { label: 'Not started', lesson: lessons[0] }
+  return { label: `Step ${index + 1}/${lessons.length}`, lesson: lessons[index] }
 }
 
-/** The library combines created paths with the existing sample and saved paths. */
+/** The paths the user created and the paths the user saved, with progress on each. */
 export default function Home() {
   const { user } = useAuth()
   const { data, error, loading } = useUserData(listRoadmaps)
@@ -136,32 +34,20 @@ export default function Home() {
   const requestedFilter = searchParams.get('filter')
   const filter = requestedFilter === 'saved' || requestedFilter === 'mine' ? requestedFilter : 'all'
   const [query, setQuery] = useState('')
-  const savedTitles = useSavedTitles(user.id)
-  const { saveOrPrompt, prompt } = useSavePrompt()
+  const [unsaved, setUnsaved] = useState(() => new Set())
   const premium = usePremiumUnlocked()
-  const owned = (data ?? []).map(path => ({
-    ...path,
-    owned: true,
-    status: pathProgress(path).label,
-    to: `/my-path/${path.id}`,
-  }))
-  const saved = (savedPaths.data ?? []).map(path => ({
-    ...path,
-    savedReal: true,
-    status: pathProgress(path).label,
-    to: `/my-path/${path.id}`,
-  }))
-  const shortcuts = [
-    ...[...owned, ...saved].flatMap(path => {
-      const { lesson, label } = pathProgress(path)
-      return lesson ? [{ id: path.id, title: lesson.title, path: path.title, step: label, to: `/my-path/${path.id}/lesson/${lesson.id}` }] : []
-    }),
-    ...sampleShortcuts,
-  ]
+  const owned = (data ?? []).map(path => ({ ...path, owned: true, to: `/my-path/${path.id}` }))
+  const saved = (savedPaths.data ?? [])
+    .filter(path => path.owner_id !== user.id && !unsaved.has(path.id))
+    .map(path => ({ ...path, owned: false, to: `/path/${path.id}` }))
+  const shortcuts = [...owned, ...saved].flatMap(path => {
+    const { lesson, label } = pathProgress(path)
+    return lesson && !lesson.completed ? [{ id: path.id, title: lesson.title, path: path.title, step: label, to: `${path.to}?step=${lesson.id}` }] : []
+  })
   const needle = query.trim().toLowerCase()
-  const visible = [...owned, ...saved, ...samplePaths].filter(path => {
-    if (filter === 'mine' && !path.owned && (path.savedReal || path.savedPath || path.status === 'Not started')) return false
-    if (filter === 'saved' && (path.owned || (!path.savedReal && !path.savedPath && !savedTitles.has(path.title)))) return false
+  const visible = [...owned, ...saved].filter(path => {
+    if (filter === 'mine' && !path.owned) return false
+    if (filter === 'saved' && path.owned) return false
     return needle === '' || path.title.toLowerCase().includes(needle)
   })
 
@@ -174,8 +60,17 @@ export default function Home() {
     }, { replace: true })
   }
 
-  function toggleSave(title) {
-    toggleSavedTitle(user.id, title)
+  async function unsave(path) {
+    setUnsaved(current => new Set(current).add(path.id))
+    try {
+      await setPathSaved(user.id, path.id, false)
+    } catch {
+      setUnsaved(current => {
+        const next = new Set(current)
+        next.delete(path.id)
+        return next
+      })
+    }
   }
 
   return (
@@ -188,19 +83,14 @@ export default function Home() {
         </h1>
         <div className="flex w-full min-w-0 justify-start gap-2 overflow-x-auto overscroll-x-contain [overflow-anchor:none] [-ms-overflow-style:none] [scrollbar-width:none] lg:grid lg:grid-cols-[repeat(auto-fit,minmax(16rem,1fr))] lg:overflow-visible [&::-webkit-scrollbar]:hidden">
           {shortcuts.map((shortcut) => (
-            <ShortcutCard
-              key={shortcut.id ?? shortcut.title}
-              {...shortcut}
-              to={
-                !shortcut.id && shortcut.path === 'Sashiko'
-                  ? '/sashiko'
-                  : !shortcut.id && shortcut.path === 'Knitting' && savedTitles.has('Knitting')
-                    ? '/saved-path'
-                    : shortcut.to
-              }
-            />
+            <ShortcutCard key={shortcut.id} {...shortcut} />
           ))}
         </div>
+        {shortcuts.length === 0 && !loading && !savedPaths.loading ? (
+          <p className="m-0 font-sans text-sm leading-[1.4] text-quiet">
+            Nothing to continue yet. <Link to="/explore" className="!m-0 !inline !border-0 !bg-transparent !p-0 !text-accent !underline">Explore paths</Link> or create your own.
+          </p>
+        ) : null}
       </section>
 
       <section className="flex flex-col gap-4" aria-label="Your paths">
@@ -213,19 +103,15 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
             {visible.map((path) => (
-              <ProgressCard
-                key={path.id ?? path.title}
-                path={{
-                  ...path,
-                  to:
-                    !path.owned && path.title === 'Sashiko'
-                      ? '/sashiko'
-                      : !path.owned && path.title === 'Knitting' && savedTitles.has('Knitting')
-                        ? '/saved-path'
-                        : path.to,
-                }}
-                saved={savedTitles.has(path.title)}
-                onToggleSave={() => saveOrPrompt(() => toggleSave(path.title))}
+              <PathCard
+                key={path.id}
+                title={path.title}
+                to={path.to}
+                cover={path.cover_url}
+                status={pathProgress(path).label}
+                badge={path.owned ? (path.is_published ? 'Public' : 'Private') : undefined}
+                saved={!path.owned}
+                onToggleSave={path.owned ? undefined : () => unsave(path)}
               />
             ))}
           </div>
@@ -251,7 +137,7 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
             {projects.data.map(project => (
-              <ProgressCard key={project.id} path={{ ...project, status: 'My project', to: `/profile/projects/${project.id}` }} />
+              <PathCard key={project.id} title={project.title} to={`/profile/projects/${project.id}`} status="My project" />
             ))}
           </div>
         )}
@@ -290,7 +176,6 @@ export default function Home() {
           </div>
         </form>
       ) : <PremiumBanner />}
-      {prompt}
     </div>
   )
 }
