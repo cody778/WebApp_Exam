@@ -1,12 +1,12 @@
 ﻿const labels = { heading: 'Heading', paragraph: 'Paragraph', quote: 'Quote', table: 'Table', link: 'Link', image: 'Image', video: 'Video' }
 
-export default function BlockEditor({ blocks, onChange, readOnly = false }) { // Content for a simple block editor
+export default function BlockEditor({ blocks, onChange, readOnly = false, label = 'Lesson content' }) { // Content for a simple block editor
   function update(id, values) {
     onChange(blocks.map(block => block.id === id ? { ...block, content: { ...block.content, ...values } } : block))
   }
 
   return (
-    <section aria-label="Lesson content">
+    <section aria-label={label}>
       {!readOnly && <select className="mb-4 p-2 [font:inherit]" aria-label="Add block" value="" onChange={event => {
         const type = event.target.value // gets the selected block type
         const content = type === 'table' ? { rows: Array.from({ length: 3 }, () => ['', '', '']) } // initializes a table with 3 rows and 3 columns
