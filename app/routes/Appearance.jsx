@@ -3,7 +3,6 @@ import { Link, Navigate } from 'react-router'
 import AppNav from '../components/AppNav.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { supabase } from '../user/client.js'
-import anna from '../assets/explore/avatar-anna.png'
 import iconCheck from '../assets/appearance/icon-check.svg'
 import spacingBar from '../assets/appearance/spacing-bar.svg'
 
@@ -46,8 +45,8 @@ export default function Appearance() {
   }
 
   return (
-    <div className="appearance-page mx-auto flex min-h-screen w-full max-w-[440px] flex-col px-2 pt-4 pb-14 font-sans text-ink">
-      {authPending ? <header className="flex h-10 items-center" aria-busy="true" /> : <AppNav showHome={false} avatarSrc={anna} />}
+    <div className="appearance-page mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pt-0 pb-14 font-sans text-ink lg:max-w-2xl lg:px-8">
+      {authPending ? <header className="flex h-16 items-center" aria-busy="true" /> : <AppNav />}
 
       <h1 className="font-display text-xl leading-heading font-medium tracking-heading" style={{ margin: '2rem 0 0' }}>
         <Link to="/account" className="!m-0 !inline !border-0 !bg-transparent !p-0 !text-inherit !no-underline">

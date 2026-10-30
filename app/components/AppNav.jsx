@@ -13,73 +13,77 @@ function accountLabel(user) {
   const fullName = user?.user_metadata?.full_name
   if (typeof fullName === 'string' && fullName.trim()) return fullName.trim().split(/\s+/)[0]
   const emailName = user?.email?.split('@')[0]
-  return emailName || 'Anna'
+  return emailName || 'Account'
 }
 
-const idleChip = '!m-0 !inline-flex !h-10 shrink-0 !items-center !rounded-full !border-0 !no-underline'
-const selectedChip = 'bg-accent !text-on-brand'
-const restingChip = 'bg-accent-muted text-ink'
+const chip = '!m-0 !inline-flex !h-10 !items-center !gap-1.5 !rounded-full !border-0 !no-underline font-sans text-sm leading-none whitespace-nowrap sm:!gap-2'
+const restingChip = '!bg-accent-muted !text-ink'
+const selectedChip = '!bg-accent !text-on-brand'
 /** Home and Explore icons are drawn dark. This turns them light on the blue chip. */
 const lightIcon = '[&_img]:brightness-0 [&_img]:invert'
 
 /**
- * Top bar for signed-in screens: home, account, explore, and a new path.
- * The item for the current page uses the blue selected chip.
+ * Top bar for signed-in screens. It stays fixed to the viewport.
+ * Options are home, account, explore, and a new path. The current page uses the blue chip.
  * `notification` is reserved for the inbox control. Leave it empty until that control is ready.
  * @param {object} props
  * @param {import('react').ReactNode} [props.notification]
- * @param {boolean} [props.showHome] Home chip. The signed-in explore and account frames leave it out.
- * @param {string} [props.avatarSrc] Account photo. Defaults to the shared portrait.
  */
-export default function AppNav({ notification = null, showHome = true, avatarSrc = avatar }) {
+export default function AppNav({ notification = null }) {
   const { user } = useAuth()
-  const label = showHome
-    ? 'font-sans text-sm whitespace-nowrap'
-    : 'font-sans text-[15px] leading-none font-normal whitespace-nowrap'
+  const name = accountLabel(user)
 
   return (
-    <header className="flex items-center gap-2">
-      {showHome ? (
-        <NavLink
-          to="/profile"
-          end
-          aria-label="Home"
-          className={({ isActive }) =>
-            `${idleChip} !justify-center !px-4 ${isActive ? `${selectedChip} ${lightIcon}` : restingChip}`
-          }
-        >
-          <img src={homeIcon} alt="" width="16" height="16" className="block max-w-none shrink-0" />
-        </NavLink>
-      ) : null}
-      <NavLink
-        to="/account"
-        end
-        className={({ isActive }) => `${idleChip} !gap-2 overflow-hidden !py-0 !pr-4 !pl-0 ${isActive ? selectedChip : restingChip}`}
+    <>
+      <header
+        className="fixed inset-x-0 top-0 z-50 bg-[#f7f4ee]/95"
+        style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50 }}
       >
-        <img src={avatarSrc} alt="" width="40" height="40" className="size-10 rounded-full object-cover" />
-        <span className={`${label} ${showHome ? 'font-medium' : ''}`}>{accountLabel(user)}</span>
-      </NavLink>
-      <div className="ml-auto flex items-center gap-2">
-        {notification}
-        <NavLink
-          to="/explore"
-          className={({ isActive }) =>
-            `${idleChip} !gap-2 !px-4 ${isActive ? `${selectedChip} ${lightIcon}` : restingChip}`
-          }
-        >
-          <img src={exploreIcon} alt="" width="16" height="16" className="block max-w-none shrink-0" />
-          <span className={label}>Explore</span>
-        </NavLink>
-        <NavLink
-          to="/create-roadmap"
-          className={({ isActive }) =>
-            `${idleChip} !gap-2 !px-4 !text-on-brand ${isActive ? 'bg-accent' : '!bg-ink'}`
-          }
-        >
-          <img src={plusIcon} alt="" width="16" height="16" className="block max-w-none shrink-0" />
-          <span className={`${label} ${showHome ? 'font-medium' : ''}`}>New Path</span>
-        </NavLink>
-      </div>
-    </header>
+        <div className="mx-auto flex h-[4.5rem] w-full min-w-0 max-w-6xl items-center gap-1.5 px-4 sm:gap-2 lg:px-8">
+          <NavLink
+            to="/home"
+            end
+            aria-label="Home"
+            className={({ isActive }) =>
+              `${chip} shrink-0 !px-2.5 sm:!px-4 ${isActive ? `${selectedChip} ${lightIcon}` : restingChip}`
+            }
+          >
+            <img src={homeIcon} alt="" width="16" height="16" className="block max-w-none shrink-0" />
+          </NavLink>
+          <NavLink
+            to="/account"
+            end
+            className={({ isActive }) =>
+              `${chip} min-w-0 overflow-hidden !py-0 !pr-2.5 !pl-0 sm:!pr-4 ${isActive ? selectedChip : restingChip}`
+            }
+          >
+            <img src={avatar} alt="" width="40" height="40" className="size-10 shrink-0 rounded-full object-cover" />
+            <span className="min-w-0 truncate font-medium">{name}</span>
+          </NavLink>
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
+            {notification}
+            <NavLink
+              to="/explore"
+              className={({ isActive }) =>
+                `${chip} !px-2.5 sm:!px-4 ${isActive ? `${selectedChip} ${lightIcon}` : restingChip}`
+              }
+            >
+              <img src={exploreIcon} alt="" width="16" height="16" className="block max-w-none shrink-0" />
+              Explore
+            </NavLink>
+            <NavLink
+              to="/create-roadmap"
+              className={({ isActive }) =>
+                `${chip} !px-2.5 !text-on-brand sm:!px-4 ${isActive ? '!bg-accent' : '!bg-ink'}`
+              }
+            >
+              <img src={plusIcon} alt="" width="16" height="16" className="block max-w-none shrink-0" />
+              New Path
+            </NavLink>
+          </div>
+        </div>
+      </header>
+      <div className="h-[4.5rem] shrink-0" aria-hidden="true" />
+    </>
   )
 }

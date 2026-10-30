@@ -60,11 +60,11 @@ export default function Explore() {
   )
 
   return (
-    <div className="explore-page mx-auto flex min-h-screen w-full max-w-[440px] flex-col gap-4 px-6 py-4 font-sans text-ink">
+    <div className="explore-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 px-4 pt-0 pb-4 font-sans text-ink lg:max-w-6xl lg:px-8">
       {authPending ? (
-        <header className="flex h-10 items-center justify-between gap-3" aria-busy="true" />
+        <header className="flex h-16 items-center justify-between gap-3" aria-busy="true" />
       ) : signedIn ? (
-        <AppNav showHome={false} />
+        <AppNav />
       ) : (
         <header className="flex items-center justify-between gap-3">
           <Link to="/" className="m-0 inline-flex border-0 p-0 no-underline">
@@ -109,7 +109,7 @@ export default function Explore() {
       {visible.length === 0 ? (
         <p className="m-0 text-body text-ink">No paths match that search.</p>
       ) : (
-        <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 pt-2 pb-12">
+        <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 pt-2 pb-12 md:grid-cols-3 xl:grid-cols-4">
           {visible.map((path) => (
             <li key={path.title}>
               <PathCard

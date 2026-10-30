@@ -54,8 +54,8 @@ export default function Account() {
   }
 
   return (
-    <div className="account-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-8 p-4 font-sans text-ink">
-      {authPending ? <header className="flex h-10 items-center" aria-busy="true" /> : <AppNav showHome={false} avatarSrc={anna} />}
+    <div className="account-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-8 px-4 pt-0 pb-4 font-sans text-ink lg:max-w-2xl lg:px-8">
+      {authPending ? <header className="flex h-16 items-center" aria-busy="true" /> : <AppNav />}
 
       <section className="flex flex-col gap-4" aria-labelledby="account-settings">
         <h1 id="account-settings" className="m-0 font-display text-xl leading-heading font-medium tracking-heading">

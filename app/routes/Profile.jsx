@@ -230,8 +230,8 @@ export default function Profile() {
   }
 
   return (
-    <div className="profile-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-8 p-4 font-sans text-ink">
-      {authPending ? <header className="flex h-10 items-center" aria-busy="true" /> : <AppNav />}
+    <div className="profile-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-8 px-4 pt-0 pb-4 font-sans text-ink lg:max-w-6xl lg:px-8">
+      {authPending ? <header className="flex h-16 items-center" aria-busy="true" /> : <AppNav />}
 
       <section className="flex flex-col gap-3" aria-labelledby="jump-back">
         <h1 id="jump-back" className="m-0 font-display text-[15px] leading-none font-normal">
@@ -244,7 +244,7 @@ export default function Profile() {
           onPointerUp={onJumpPointerEnd}
           onPointerCancel={onJumpPointerEnd}
           onClickCapture={onJumpClickCapture}
-          className="flex cursor-grab gap-2.5 snap-x overflow-x-auto overscroll-x-contain select-none [-ms-overflow-style:none] [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
+          className="flex w-full min-w-0 cursor-grab gap-2.5 snap-x overflow-x-auto overscroll-x-contain select-none [-ms-overflow-style:none] [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
         >
           {shortcuts.map((shortcut) => (
             <ShortcutCard
@@ -263,7 +263,7 @@ export default function Profile() {
       </section>
 
       <section className="flex flex-col gap-4" aria-label="Your paths">
-        <div className="flex items-center gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div role="radiogroup" aria-label="Path filters" className="flex shrink-0 items-center gap-2">
             {filters.map((item) => {
               const selected = filter === item.id
@@ -304,7 +304,7 @@ export default function Profile() {
             {filter === 'saved' && needle === '' ? 'No saved paths yet.' : 'No paths match your search.'}
           </p>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
             {visible.map((path) => (
               <ProgressCard
                 key={path.title}

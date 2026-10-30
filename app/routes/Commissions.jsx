@@ -6,7 +6,6 @@ import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { supabase } from '../user/client.js'
 import { toggleSavedTitle, useSavedTitles } from '../user/savedTitles.js'
-import anna from '../assets/explore/avatar-anna.png'
 import searchIcon from '../assets/explore/search.svg'
 import plants from '../assets/explore/plants.jpg'
 import landscape from '../assets/explore/landscape.jpg'
@@ -54,8 +53,8 @@ export default function Commissions() {
   }
 
   return (
-    <div className="commissions-page mx-auto flex min-h-screen w-full max-w-[440px] flex-col px-2 pt-4 pb-14 font-sans text-ink">
-      {authPending ? <header className="flex h-10 items-center" aria-busy="true" /> : <AppNav showHome={false} avatarSrc={anna} />}
+    <div className="commissions-page mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pt-0 pb-14 font-sans text-ink lg:max-w-6xl lg:px-8">
+      {authPending ? <header className="flex h-16 items-center" aria-busy="true" /> : <AppNav />}
 
       <h1 className="font-display text-xl leading-heading font-medium tracking-heading" style={{ margin: '2rem 0 0' }}>
         <Link to="/account" className="!m-0 !inline !border-0 !bg-transparent !p-0 !text-inherit !no-underline">
@@ -98,7 +97,7 @@ export default function Commissions() {
       {visible.length === 0 ? (
         <p className="m-0 mt-6 font-sans text-sm leading-body text-quiet">No commissions match that search.</p>
       ) : (
-        <ul className="m-0 mt-6 grid list-none grid-cols-2 gap-4 p-0">
+        <ul className="m-0 mt-6 grid list-none grid-cols-2 gap-4 p-0 md:grid-cols-3 xl:grid-cols-4">
           {visible.map((item) => (
             <li key={item.title}>
               <PathCard

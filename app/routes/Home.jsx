@@ -199,14 +199,14 @@ export default function Home() {
   }
 
   return (
-    <div className="flex w-full flex-1 flex-col gap-8">
+    <div className="flex w-full min-w-0 flex-1 flex-col gap-8">
       {loading || error ? <DataState loading={loading} error={error} /> : null}
 
       <section className="flex flex-col gap-3" aria-labelledby="jump-back">
         <h1 id="jump-back" className="m-0 font-display text-[15px] leading-none font-normal">
           Jump back in
         </h1>
-        <div className="flex gap-2.5 overflow-x-auto overscroll-x-contain snap-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-full min-w-0 gap-2.5 overflow-x-auto overscroll-x-contain snap-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {shortcuts.map((shortcut) => (
             <ShortcutCard
               key={shortcut.id ?? shortcut.title}
@@ -224,7 +224,7 @@ export default function Home() {
       </section>
 
       <section className="flex flex-col gap-4" aria-label="Your paths">
-        <div className="flex items-center gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           <div role="radiogroup" aria-label="Path filters" className="flex shrink-0 items-center gap-2">
             {filters.map((item) => {
               const selected = filter === item.id
@@ -265,7 +265,7 @@ export default function Home() {
             {filter === 'saved' && needle === '' ? 'No saved paths yet.' : 'No paths match your search.'}
           </p>
         ) : (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
             {visible.map((path) => (
               <ProgressCard
                 key={path.id ?? path.title}

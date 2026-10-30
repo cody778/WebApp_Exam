@@ -96,7 +96,7 @@ export default function Premium() {
   }
 
   return (
-    <div className="premium-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col gap-8 p-4 font-sans text-ink">
+    <div className="premium-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col gap-8 px-4 pt-0 pb-4 font-sans text-ink lg:max-w-2xl lg:px-8">
       <AppNav />
       <h1 className="m-0 font-display text-xl leading-heading font-medium tracking-heading">Payment details</h1>
 

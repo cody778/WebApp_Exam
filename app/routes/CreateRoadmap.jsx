@@ -77,7 +77,7 @@ export default function CreateRoadmap() {
   return (
     <form
       onSubmit={submit}
-      className="-mx-4 -mt-6 -mb-6 flex flex-1 flex-col bg-white font-sans text-ink"
+      className="-mx-4 -mt-6 -mb-6 flex flex-1 flex-col bg-white font-sans text-ink lg:-mx-8"
     >
       <div className="flex h-40 shrink-0 items-start justify-end overflow-hidden bg-[#dad6cd] p-4">
         <div className="flex w-6 flex-col">
