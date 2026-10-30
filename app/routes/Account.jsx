@@ -53,6 +53,12 @@ export default function Account() {
     navigate('/')
   }
 
+  async function signOff() {
+    // Leave first so the signed-out guard above does not bounce to /sign-in.
+    navigate('/', { replace: true })
+    if (supabase) await supabase.auth.signOut()
+  }
+
   return (
     <div className="account-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-8 px-4 pt-0 pb-4 font-sans text-ink lg:max-w-6xl lg:px-8 lg:pb-14">
       {authPending ? <header className="flex h-16 items-center" aria-busy="true" /> : <AppNav />}
@@ -75,10 +81,19 @@ export default function Account() {
                   {premium ? 'Premium' : 'Free'}
                 </span>
               </div>
-              <button type="button" className="!m-0 flex !items-center !gap-2 !border-0 !bg-transparent !p-0 text-left">
-                <img src={iconMenu} alt="" width="32" height="32" className="block max-w-none shrink-0" />
-                <span className="font-sans text-sm leading-body font-medium text-accent">Edit Profile</span>
-              </button>
+              <div className="flex items-center justify-between gap-3">
+                <button type="button" className="!m-0 flex !items-center !gap-2 !border-0 !bg-transparent !p-0 text-left">
+                  <img src={iconMenu} alt="" width="32" height="32" className="block max-w-none shrink-0" />
+                  <span className="font-sans text-sm leading-body font-medium text-accent">Edit Profile</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={signOff}
+                  className="!m-0 !inline-flex !h-8 !items-center !rounded-full !border !border-accent-muted !bg-transparent !px-3 !py-0 hover:!bg-accent-muted"
+                >
+                  <span className="font-sans text-sm leading-none font-medium text-ink">Sign off</span>
+                </button>
+              </div>
             </div>
 
             <div className="overflow-hidden rounded-2xl border border-accent-muted bg-white">
