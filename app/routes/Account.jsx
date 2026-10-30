@@ -12,7 +12,7 @@ import iconCheck from '../assets/public-path/icon-check.svg'
 import iconChevron from '../assets/account/icon-chevron.svg'
 
 const preferences = [
-  { id: 'notifications', title: 'Email notifications', detail: 'Receive emails for new activity' },
+  { id: 'notifications', title: 'Email notifications', detail: 'Receive updates and reminders' },
   { id: 'sync', title: 'Sync Across Devices', detail: 'Keep your paths up to date' },
 ]
 
@@ -139,7 +139,7 @@ export default function Account() {
                       })}
                     </div>
                   </div>
-                  <p className="m-0 font-sans text-sm leading-body font-normal text-quiet">To take some rest during a lesson</p>
+                  <p className="m-0 font-sans text-sm leading-body font-normal text-quiet">During lessons</p>
                 </div>
               ) : null}
             </div>
@@ -152,6 +152,21 @@ export default function Account() {
             className="!m-0 !flex !items-center !justify-between gap-3 !border-0 !bg-transparent !p-0 !text-inherit !no-underline"
           >
             <h2 className="m-0 font-display text-body">Appearance</h2>
+            <img src={iconChevron} alt="" width="24" height="24" className="block max-w-none shrink-0" />
+          </Link>
+        </div>
+
+        <div className="rounded-2xl border border-accent-muted bg-white p-4">
+          <Link
+            to="/payment-methods"
+            className="!m-0 !flex !items-center !justify-between gap-3 !border-0 !bg-transparent !p-0 !text-inherit !no-underline"
+          >
+            <span className="flex min-w-0 flex-col gap-0.5">
+              <h2 className="m-0 font-display text-body">Payment methods</h2>
+              <p className="m-0 font-sans text-sm leading-body font-normal text-quiet">
+                Add your preferred payment methods to pay and get paid for your paths
+              </p>
+            </span>
             <img src={iconChevron} alt="" width="24" height="24" className="block max-w-none shrink-0" />
           </Link>
         </div>

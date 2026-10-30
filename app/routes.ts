@@ -13,6 +13,7 @@ export default [
   route('profile', 'routes/Profile.jsx'),
   route('account', 'routes/Account.jsx'),
   route('appearance', 'routes/Appearance.jsx'),
+  route('payment-methods', 'routes/PaymentMethods.jsx'),
   route('premium', 'routes/Premium.jsx'),
   layout('user/RequireUser.jsx', [
     layout('routes/AppLayout.jsx', [

@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Navigate } from 'react-router'
-import Logo from '../components/Logo.jsx'
+import { Link, Navigate } from 'react-router'
+import AppNav from '../components/AppNav.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { supabase } from '../user/client.js'
-import iconMenu from '../assets/account/icon-menu.svg'
+import anna from '../assets/explore/avatar-anna.png'
 import iconCheck from '../assets/appearance/icon-check.svg'
 import spacingBar from '../assets/appearance/spacing-bar.svg'
 
@@ -35,9 +35,10 @@ const spacingStops = [42.5, 99.5, 143.5, 195.5, 247.5]
 /** Theme, type, and line spacing opened from Appearance. */
 export default function Appearance() {
   const { user, loading } = useAuth()
+  const authPending = Boolean(supabase) && loading && !user
   const [theme, setTheme] = useState('paper')
-  const [titleFont, setTitleFont] = useState(null)
-  const [bodyFont, setBodyFont] = useState(null)
+  const [titleFont, setTitleFont] = useState('opendyslexic')
+  const [bodyFont, setBodyFont] = useState('futura')
   const [spacing, setSpacing] = useState(2)
 
   if (supabase && !loading && !user) {
@@ -46,12 +47,15 @@ export default function Appearance() {
 
   return (
     <div className="appearance-page mx-auto flex min-h-screen w-full max-w-[440px] flex-col px-2 pt-4 pb-14 font-sans text-ink">
-      <header className="flex h-12 items-center justify-between">
-        <Logo variant="header" />
-        <img src={iconMenu} alt="" width="32" height="32" className="block max-w-none shrink-0" />
-      </header>
+      {authPending ? <header className="flex h-10 items-center" aria-busy="true" /> : <AppNav showHome={false} avatarSrc={anna} />}
 
-      <h1 className="m-0 mt-2 font-sans text-[32px] leading-heading font-normal">My Account</h1>
+      <h1 className="font-display text-xl leading-heading font-medium tracking-heading" style={{ margin: '2rem 0 0' }}>
+        <Link to="/account" className="!m-0 !inline !border-0 !bg-transparent !p-0 !text-inherit !no-underline">
+          {'My Account >'}
+        </Link>
+        {' '}
+        <span className="underline">Appearance</span>
+      </h1>
 
       <section className="mt-4 flex flex-col" aria-labelledby="themes">
         <h2 id="themes" className="m-0 font-sans text-[22px] leading-body font-normal">Themes</h2>
@@ -155,9 +159,14 @@ function FontChoice({ label, font, family, selected, onClick }) {
       aria-pressed={selected}
       onClick={onClick}
       className={`!m-0 flex !h-10 !min-w-0 !items-center !justify-center !rounded-2xl !border !border-black !py-0 ${selected ? '!bg-ink' : '!bg-transparent'}`}
-      style={{ paddingLeft: 6, paddingRight: 6 }}
+      style={{ paddingLeft: 4, paddingRight: 4 }}
     >
-      <span className={`${font || ''} text-base leading-normal whitespace-nowrap ${selected ? 'text-on-brand' : 'text-ink'}`} style={family ? { fontFamily: family } : undefined}>{label}</span>
+      <span
+        className={`${font || ''} text-base leading-normal whitespace-nowrap ${selected ? 'text-on-brand' : 'text-ink'}`}
+        style={{ ...(family ? { fontFamily: family } : null), ...(label === 'OpenDyslexic' ? { fontSize: 14 } : null) }}
+      >
+        {label}
+      </span>
     </button>
   )
 }
