@@ -26,6 +26,7 @@ export default [
       route('create-roadmap', 'routes/CreateRoadmap.jsx'),
       route('create-path', 'routes/CreateRoadmap.jsx', { id: 'create-path' }),
       route('create-path/youtube', 'routes/YouTubePath.jsx'),
+      route('create-path/generate', 'routes/YouTubePath.jsx', { id: 'prompt-generation' }),
       route('my-roadmap/:roadmapId', 'routes/Roadmap.jsx'),
       route('my-path/:roadmapId', 'routes/Roadmap.jsx', { id: 'my-path-detail' }),
       route('my-roadmap/:roadmapId/lesson/:lessonId', 'routes/Lesson.jsx'),

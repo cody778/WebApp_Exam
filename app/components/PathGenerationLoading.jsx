@@ -10,7 +10,7 @@ function LoadingDots() {
   </span>
 }
 
-export default function PathGenerationLoading({ preview, complete, name, onComplete }) {
+export default function PathGenerationLoading({ preview, complete, name, onComplete, source = 'video' }) {
   const [visibleCount, setVisibleCount] = useState(0)
   const [elapsed, setElapsed] = useState(0)
   const [progress, setProgress] = useState(0)
@@ -65,15 +65,15 @@ export default function PathGenerationLoading({ preview, complete, name, onCompl
         <div className="flex flex-col gap-1">
           <h1 id="generation-title" className="m-0 text-xl leading-7 font-semibold tracking-heading">{ready ? 'Your path is ready' : <>Creating your path<LoadingDots /></>}</h1>
           <p className="m-0 text-sm leading-5 text-[#92929a]">
-            {ready ? 'Your lessons are ready to review.' : name ? `Putting your lessons together for ${name}` : 'Turning your video into lessons'}
+            {ready ? 'Your lessons are ready to review.' : source === 'prompt' ? 'Preparing your lessons' : name ? `Putting your lessons together for ${name}` : 'Turning your video into lessons'}
           </p>
-          <span className="sr-only">{revealed.length ? `${revealed.length} lessons ready.` : 'Reading your video.'}</span>
+          <span className="sr-only">{revealed.length ? `${revealed.length} lessons ready.` : source === 'prompt' ? 'Preparing your path.' : 'Reading your video.'}</span>
         </div>
       </div>
 
       <div className="rounded-3xl border border-[#e5e5e5] bg-[#f8f8f8] px-6 pt-6 pb-7">
-        <span className="inline-block rounded bg-accent-muted px-2.5 py-1 text-xs leading-4 font-semibold">AI-GENERATED</span>
-        {preview?.title ? <h2 className="m-0 mt-2 text-2xl leading-8 font-bold tracking-heading motion-safe:animate-loader-appear">{preview.title}</h2>
+        {source === 'video' && <span className="inline-block rounded bg-accent-muted px-2.5 py-1 text-xs leading-4 font-semibold">AI-GENERATED</span>}
+        {preview?.title ? <h2 className={`m-0 text-2xl leading-8 font-bold tracking-heading motion-safe:animate-loader-appear ${source === 'video' ? 'mt-2' : ''}`}>{preview.title}</h2>
           : <div className={`mt-3 h-7 w-3/5 rounded ${shimmer}`} aria-hidden="true" />}
         {preview?.description ? <p className="m-0 mt-1 text-sm leading-5 text-[#92929a]">{preview.description}</p>
           : <p className="m-0 mt-2 text-sm leading-5 text-[#92929a]">Finding the key ideas<LoadingDots /></p>}
@@ -91,7 +91,7 @@ export default function PathGenerationLoading({ preview, complete, name, onCompl
           </div>)}
         </div>}
       </div>
-      <p className="m-0 text-center text-xs leading-5 text-[#92929a]">Longer videos can take a few minutes. Keep this page open.</p>
+      <p className="m-0 text-center text-xs leading-5 text-[#92929a]">{source === 'prompt' ? 'This can take a moment. Keep this page open.' : 'Longer videos can take a few minutes. Keep this page open.'}</p>
     </section>
   )
 }

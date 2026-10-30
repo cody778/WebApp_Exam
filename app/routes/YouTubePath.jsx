@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import BlockEditor from '../components/BlockEditor.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { supabase } from '../user/client.js'
@@ -11,20 +11,34 @@ import PathGenerationLoading from '../components/PathGenerationLoading.jsx'
 
 const buttonClass = 'min-w-0 cursor-pointer rounded-lg border-0 bg-accent px-4 py-3 font-sans text-base text-white disabled:cursor-wait disabled:opacity-60'
 
-export default function YouTubePath() {
+export function YouTubePath() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const initialPrompt = typeof location.state?.prompt === 'string' ? location.state.prompt.trim() : ''
+  const promptMode = Boolean(initialPrompt)
   const working = useRef(false)
+  const autoStarted = useRef(false)
   const [draft, setDraft] = useState(null)
-  const [busy, setBusy] = useState('')
+  const [busy, setBusy] = useState(() => initialPrompt ? 'generating' : '')
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(0)
   const [saveStarted, setSaveStarted] = useState(false)
   const [preview, setPreview] = useState(null)
   const [generated, setGenerated] = useState(null)
-  const [source, setSource] = useState({ youtubeUrl: '', transcript: '' })
+  const [source, setSource] = useState(() => promptMode ? { prompt: initialPrompt } : { youtubeUrl: '', transcript: '' })
   const generation = useRef(null)
   useEffect(() => () => generation.current?.abort(), [])
+
+  useEffect(() => {
+    if (!promptMode || !initialPrompt || autoStarted.current) return
+    const timer = setTimeout(() => {
+      if (autoStarted.current) return
+      autoStarted.current = true
+      startGeneration({ prompt: initialPrompt })
+    }, 0)
+    return () => clearTimeout(timer)
+  }, [initialPrompt, promptMode])
 
   const finishGeneration = useCallback(() => {
     setDraft(generated)
@@ -32,11 +46,8 @@ export default function YouTubePath() {
     working.current = false
   }, [generated])
 
-  async function generate(event) {
-    event.preventDefault()
+  async function startGeneration(input) {
     if (working.current) return
-    const form = new FormData(event.currentTarget)
-    const input = { youtubeUrl: form.get('youtubeUrl').trim(), transcript: form.get('transcript').trim() }
     setSource(input)
     working.current = true
     setBusy('generating')
@@ -67,17 +78,27 @@ export default function YouTubePath() {
         return
       }
       if (!response.headers.get('content-type')?.includes('application/json')) {
-        throw new Error('YouTube path creation is unavailable right now. Please try again later.')
+        throw new Error('Path creation is unavailable right now. Please try again later.')
       }
       const result = await response.json()
       if (!response.ok) throw new Error(result.error || 'Could not generate the lessons. Please try again.')
       setGenerated(result)
     } catch (error) {
-      if (error.name === 'AbortError') return
-      setError(error.name === 'TimeoutError' ? 'The server did not respond in time. Please try again or paste the video transcript.' : error.message)
+      if (error.name !== 'AbortError') {
+        setError(error.name === 'TimeoutError' ? 'The server did not respond in time. Please try again.' : error.message)
+      }
       working.current = false
       setBusy('')
     }
+  }
+
+  function generate(event) {
+    event.preventDefault()
+    const form = new FormData(event.currentTarget)
+    const input = promptMode
+      ? { prompt: form.get('prompt').trim() }
+      : { youtubeUrl: form.get('youtubeUrl').trim(), transcript: form.get('transcript').trim() }
+    startGeneration(input)
   }
 
   async function save() {
@@ -106,25 +127,33 @@ export default function YouTubePath() {
     complete={Boolean(generated)}
     name={typeof user?.user_metadata?.full_name === 'string' ? user.user_metadata.full_name.trim().split(/\s+/)[0] : ''}
     onComplete={finishGeneration}
+    source={promptMode ? 'prompt' : 'video'}
   />
 
   return (
     <section className="flex min-w-0 flex-col gap-5" aria-busy={Boolean(busy)}>
-      <h1 className="m-0 text-page-title text-ink">Create a path from YouTube</h1>
+      <h1 className="m-0 text-page-title text-ink">{promptMode ? 'Create a path' : 'Create a path from YouTube'}</h1>
       {!draft ? <>
-        <p className="m-0 text-sm leading-body text-quiet">Paste a public YouTube video link. Gemini will turn it into a short path with lessons you can review before saving.</p>
+        <p className="m-0 text-sm leading-body text-quiet">{promptMode ? 'Describe what the path should cover.' : 'Paste a public YouTube video link. Gemini will turn it into a short path with lessons you can review before saving.'}</p>
         <form onSubmit={generate}>
           <fieldset disabled={Boolean(busy)} className="m-0 grid min-w-0 gap-3 border-0 p-0">
-            <label htmlFor="youtube-url" className="text-sm font-semibold">YouTube link</label>
-            <input id="youtube-url" name="youtubeUrl" type="url" defaultValue={source.youtubeUrl} required maxLength={2048} placeholder="https://www.youtube.com/watch?v=..."
-              className="min-w-0 rounded-lg border border-accent-muted bg-white p-3 font-sans text-base" />
-            <details className="rounded-lg border border-accent-muted p-3">
-              <summary className="cursor-pointer text-sm">Add a transcript (optional)</summary>
-              <label htmlFor="video-transcript" className="my-3 block text-sm leading-body">If the video cannot be read, paste its transcript here.</label>
-              <textarea id="video-transcript" name="transcript" defaultValue={source.transcript} maxLength={60000} rows={6}
-                className="w-full min-w-0 rounded-lg border border-accent-muted bg-white p-3 font-sans text-sm" />
-            </details>
-            <button type="submit" className={buttonClass}>{busy ? 'Creating lessons...' : 'Generate lessons'}</button>
+            {promptMode ? <>
+              <label htmlFor="path-prompt" className="text-sm font-semibold">Path topic</label>
+              <textarea id="path-prompt" name="prompt" defaultValue={source.prompt} required maxLength={2000} rows={4} autoFocus={!initialPrompt}
+                placeholder="What do you want to learn or build?"
+                className="w-full min-w-0 resize-y rounded-lg border border-accent-muted bg-white p-3 font-sans text-base" />
+            </> : <>
+              <label htmlFor="youtube-url" className="text-sm font-semibold">YouTube link</label>
+              <input id="youtube-url" name="youtubeUrl" type="url" defaultValue={source.youtubeUrl} required maxLength={2048} placeholder="https://www.youtube.com/watch?v=..."
+                className="min-w-0 rounded-lg border border-accent-muted bg-white p-3 font-sans text-base" />
+              <details className="rounded-lg border border-accent-muted p-3">
+                <summary className="cursor-pointer text-sm">Add a transcript (optional)</summary>
+                <label htmlFor="video-transcript" className="my-3 block text-sm leading-body">If the video cannot be read, paste its transcript here.</label>
+                <textarea id="video-transcript" name="transcript" defaultValue={source.transcript} maxLength={60000} rows={6}
+                  className="w-full min-w-0 rounded-lg border border-accent-muted bg-white p-3 font-sans text-sm" />
+              </details>
+            </>}
+            <button type="submit" className={buttonClass}>{busy ? 'Creating lessons...' : 'Create path'}</button>
           </fieldset>
         </form>
       </> : <>
@@ -144,10 +173,12 @@ export default function YouTubePath() {
         <button type="button" disabled={Boolean(busy)} onClick={save} className={buttonClass}>
           {busy === 'saving' ? `Saving ${saved} of ${draft.lessons.length} lessons...` : saveStarted ? 'Retry saving path' : 'Save path'}
         </button>
-        {!saveStarted && <button type="button" disabled={Boolean(busy)} className="min-w-0 cursor-pointer border-0 bg-transparent p-0 font-[inherit] text-sm font-[weight:inherit] text-accent underline disabled:cursor-wait" onClick={() => { setDraft(null); setError('') }}>Use a different video</button>}
+        {!saveStarted && <button type="button" disabled={Boolean(busy)} className="min-w-0 cursor-pointer border-0 bg-transparent p-0 font-[inherit] text-sm font-[weight:inherit] text-accent underline disabled:cursor-wait" onClick={() => { setDraft(null); setError('') }}>{promptMode ? 'Change prompt' : 'Use a different video'}</button>}
       </>}
       {error && <p role="alert" className="m-0 text-sm text-[#9e2020]">{error}</p>}
-      <Link to="/create-path" className="m-1 inline-block rounded border border-current px-3 py-2 text-sm text-accent underline">Back to create a path</Link>
+      <Link to={promptMode ? '/home' : '/create-path'} className="m-1 inline-block rounded border border-current px-3 py-2 text-sm text-accent underline">{promptMode ? 'Back to home' : 'Back to create a path'}</Link>
     </section>
   )
 }
+
+export default YouTubePath

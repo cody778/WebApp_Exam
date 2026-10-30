@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useSearchParams } from 'react-router'
+import { Link, useNavigate, useSearchParams } from 'react-router'
 import PathCard from '../components/PathCard.jsx'
 import PathFilters from '../components/PathFilters.jsx'
 import ShortcutCard from '../components/ShortcutCard.jsx'
@@ -8,8 +8,6 @@ import { listProjects, listRoadmaps, listSavedRoadmaps, setPathSaved } from '../
 import useUserData from '../user/useUserData.js'
 import DataState from '../user/DataState.jsx'
 import { usePremiumUnlocked } from '../user/paymentMethods.js'
-import iconImage from '../assets/profile/icon-image.svg'
-import iconMic from '../assets/profile/icon-mic.svg'
 import iconArrowUp from '../assets/profile/icon-arrow-up.svg'
 import plusIcon from '../assets/home/plus.svg'
 import exploreIcon from '../assets/home/explore.svg'
@@ -27,6 +25,7 @@ function pathProgress(path) {
 /** The paths the user created and the paths the user saved, with progress on each. */
 export default function Home() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const { data, error, loading } = useUserData(listRoadmaps)
   const projects = useUserData(listProjects)
   const savedPaths = useUserData(listSavedRoadmaps)
@@ -34,6 +33,7 @@ export default function Home() {
   const requestedFilter = searchParams.get('filter')
   const filter = requestedFilter === 'saved' || requestedFilter === 'mine' ? requestedFilter : 'all'
   const [query, setQuery] = useState('')
+  const [prompt, setPrompt] = useState('')
   const [unsaved, setUnsaved] = useState(() => new Set())
   const premium = usePremiumUnlocked()
   const owned = (data ?? []).map(path => ({ ...path, owned: true, to: `/my-path/${path.id}` }))
@@ -71,6 +71,13 @@ export default function Home() {
         return next
       })
     }
+  }
+
+  function createFromPrompt(event) {
+    event.preventDefault()
+    const value = prompt.trim()
+    if (!value) return
+    navigate('/create-path/generate', { state: { prompt: value } })
   }
 
   return (
@@ -145,35 +152,28 @@ export default function Home() {
 
       {premium ? (
         <form
-          className="flex flex-col gap-6 rounded-[2rem] border border-surface-muted bg-white p-4"
-          onSubmit={(event) => event.preventDefault()}
+          className="flex items-center gap-3 rounded-full border border-surface-muted bg-white p-2 pl-5"
+          onSubmit={createFromPrompt}
         >
-          <label className="m-0">
-            <span className="sr-only">Ask Pathify</span>
+          <label className="m-0 min-w-0 flex-1">
+            <span className="sr-only">Create a path</span>
             <input
               name="prompt"
-              placeholder="What do you want to learn/ build?"
+              value={prompt}
+              maxLength={2000}
+              onChange={(event) => setPrompt(event.target.value)}
+              placeholder="What do you want to learn or build?"
               className="m-0 w-full border-0 bg-transparent p-0 font-sans text-base leading-[1.4] text-ink outline-none placeholder:text-placeholder"
             />
           </label>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <button type="button" aria-label="Add an image" className="min-w-0 cursor-pointer disabled:cursor-wait [font:inherit] m-0 flex size-9 items-center justify-center border-0 bg-transparent p-0">
-                <img src={iconImage} alt="" width="20" height="20" className="block" />
-              </button>
-              <button type="button" aria-label="Use the microphone" className="min-w-0 cursor-pointer disabled:cursor-wait [font:inherit] m-0 flex size-9 items-center justify-center border-0 bg-transparent p-0">
-                <img src={iconMic} alt="" width="20" height="20" className="block" />
-              </button>
-            </div>
-            <button
-              type="submit"
-              aria-label="Send"
-              disabled
-              className="min-w-0 cursor-pointer disabled:cursor-wait [font:inherit] m-0 flex size-9 items-center justify-center rounded-full border-0 bg-surface-muted p-0"
-            >
-              <img src={iconArrowUp} alt="" width="20" height="20" className="block" />
-            </button>
-          </div>
+          <button
+            type="submit"
+            aria-label="Create path"
+            disabled={!prompt.trim()}
+            className="group !m-0 flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-ink !p-0 disabled:cursor-default disabled:bg-surface-muted"
+          >
+            <img src={iconArrowUp} alt="" width="20" height="20" className="block brightness-0 invert group-disabled:brightness-100 group-disabled:invert-0" />
+          </button>
         </form>
       ) : <PremiumBanner />}
     </div>
