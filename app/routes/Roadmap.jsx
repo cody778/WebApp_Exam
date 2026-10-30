@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router'
 import { useNotice } from '../components/Notice.jsx'
 import { formatCount, formatPrice } from '../components/PathCard.jsx'
+import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
 import PathEditor from '../components/PathEditor.jsx'
 import PathSections from '../components/PathSections.jsx'
 import PathShell, { authorName } from '../components/PathShell.jsx'
@@ -37,7 +38,7 @@ export default function Roadmap() {
 
   if (isUnavailableItem(error)) return <Navigate to="/404" replace />
   if (loading || error) {
-    return (
+  return (
       <div className="py-6">
         <DataState loading={loading} error={error} />
       </div>
@@ -53,7 +54,8 @@ function PathPage({ path, onSaved }) {
   const { user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const owned = path.owner_id === user.id
+  const { saveOrPrompt, prompt } = useSavePrompt()
+  const owned = Boolean(user) && path.owner_id === user.id
   const locked = Boolean(path.price) && !path.purchased && !owned
   const buyTo = `/premium?path=${path.id}`
   const steps = path.lessons.filter((lesson) => !lesson.unavailable)
@@ -178,10 +180,10 @@ function PathPage({ path, onSaved }) {
         </button>
       ) : (
         <>
-          <button type="button" aria-label={saved ? 'Unsave path' : 'Save path'} aria-pressed={saved} disabled={saving} onClick={save} className={coverButton}>
+          <button type="button" aria-label={saved ? 'Unsave path' : 'Save path'} aria-pressed={saved} disabled={saving} onClick={() => saveOrPrompt(save)} className={coverButton}>
             <img src={saved ? iconSaveFilled : iconSave} alt="" width="24" height="24" className="block max-w-none" />
           </button>
-          <button type="button" aria-label="Fork path to your paths" disabled={forking} onClick={fork} className={coverButton}>
+          <button type="button" aria-label="Fork path to your paths" disabled={forking} onClick={() => saveOrPrompt(fork)} className={coverButton}>
             <img src={iconFork} alt="" width="24" height="24" className="block max-w-none" />
           </button>
         </>
@@ -270,6 +272,12 @@ function PathPage({ path, onSaved }) {
     </Link>
   )
 
+  const signInButton = (
+    <Link to="/sign-in" state={{ from: location.pathname + location.search }} className={`${mainButton} !bg-ink !text-on-brand`}>
+      Sign in to start this path
+    </Link>
+  )
+
   function renderSection(label, showSection) {
     if (label === 'Overview') {
       return (
@@ -318,6 +326,8 @@ function PathPage({ path, onSaved }) {
             <p className="m-0 text-sm leading-[1.4] text-quiet">This path has no steps yet.</p>
           ) : locked ? (
             buyButton
+          ) : !user ? (
+            signInButton
           ) : currentIndex === -1 ? (
             <p className="m-0 text-sm leading-[1.4] text-ink">You completed every step of this path.</p>
           ) : (
@@ -354,6 +364,8 @@ function PathPage({ path, onSaved }) {
           />
           {locked ? (
             buyButton
+          ) : !user ? (
+            signInButton
           ) : (
             <button
               type="button"
@@ -403,6 +415,7 @@ function PathPage({ path, onSaved }) {
         ) : null}
       </div>
       <PathSections render={renderSection} initial={startsOnStep ? 1 : 0} />
+      {prompt}
       {notice}
     </PathShell>
   )

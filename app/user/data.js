@@ -8,6 +8,7 @@ async function result(query) { // disable eslint rule for the function to return
 
 async function withProgress(userId, lessons) {
   if (!lessons.length) return []
+  if (!userId) return lessons.map(lesson => ({ ...lesson, completed: false }))
   const progress = await result(supabase.from('lesson_progress').select('lesson_id').eq('user_id', userId).in('lesson_id', [...new Set(lessons.map(lesson => lesson.id))]))
   const completed = new Set(progress.map(row => row.lesson_id))
   return lessons.map(lesson => ({ ...lesson, completed: completed.has(lesson.id) }))
@@ -34,7 +35,7 @@ async function pathCounts(ids) {
 async function authorNames(ownerIds) {
   const ids = [...new Set(ownerIds)]
   if (!ids.length) return new Map()
-  const rows = await result(supabase.from('profiles').select('id, full_name, user_name').in('id', ids))
+  const rows = await result(supabase.from('profiles').select('id, full_name, user_name').in('id', ids)).catch(() => [])
   return new Map(rows.map(row => [row.id, row.full_name || row.user_name || 'a Pathify member']))
 }
 
@@ -150,10 +151,10 @@ export function setLessonCompleted(userId, id, completed) {
 
 /** A path with each step's blocks, its author and counts, and whether the user saved or bought it, for the path page. */
 export async function getPath(userId, id) {
-  const [roadmap, saves, purchases, counts] = await Promise.all([
+  const [roadmap, saved, purchased, counts] = await Promise.all([
     getRoadmap(userId, id),
-    result(supabase.from('saved_roadmaps').select('roadmap_id').eq('user_id', userId).eq('roadmap_id', id)),
-    result(supabase.from('purchased_roadmaps').select('roadmap_id').eq('user_id', userId).eq('roadmap_id', id)),
+    idsFor('saved_roadmaps', userId),
+    idsFor('purchased_roadmaps', userId),
     pathCounts([id]),
   ])
   const ids = roadmap.lessons.filter(lesson => !lesson.unavailable).map(lesson => lesson.id)
@@ -165,8 +166,8 @@ export async function getPath(userId, id) {
   return {
     ...roadmap,
     author: authors.get(roadmap.owner_id) ?? 'a Pathify member',
-    saved: saves.length > 0,
-    purchased: purchases.length > 0,
+    saved: saved.has(id),
+    purchased: purchased.has(id),
     saves: 0, forks: 0, sales: 0,
     ...counts.get(id),
     lessons: roadmap.lessons.map(lesson => ({ ...lesson, blocks: blocks.get(lesson.id) ?? [] })),
