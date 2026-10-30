@@ -1,6 +1,6 @@
 import { Link, NavLink } from 'react-router'
 import Logo from './Logo.jsx'
-import avatar from '../assets/home/avatar.jpg'
+import avatar from '../assets/profile/avatar-omar.jpg'
 import exploreIcon from '../assets/home/explore.svg'
 import homeIcon from '../assets/home/home.svg'
 import plusIcon from '../assets/home/plus.svg'
