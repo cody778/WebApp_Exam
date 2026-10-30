@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
 import PathSectionHeader, { pathSections } from '../components/PathSectionHeader.jsx'
+import StepBlockEditor, { blockHasContent, cleanBlocks, textBlock } from '../components/StepBlockEditor.jsx'
 import plusIcon from '../assets/create-path/plus.svg'
 import removeIcon from '../assets/create-path/remove.svg'
+import dragIcon from '../assets/create-path/drag.svg'
 import iconNext from '../assets/public-path/icon-next.svg'
 import stepDot from '../assets/public-path/step-dot.svg'
 import { useAuth } from '../user/AuthProvider.jsx'
@@ -23,7 +25,8 @@ function stepTitle(step, index) {
   return step.title ?? `Step ${index + 1}`
 }
 
-const section = 'flex w-full min-w-full shrink-0 snap-start snap-always flex-col gap-4'
+// Sections carry the page padding so the editor's gutter plus has room inside the scroller.
+const section = 'flex w-full min-w-full shrink-0 snap-start snap-always flex-col gap-4 px-6 lg:px-8'
 const field =
   'm-0 w-full resize-none overflow-hidden border-0 bg-transparent p-0 font-sans outline-none placeholder:text-[#e3e3e3]'
 const removeButton =
@@ -38,16 +41,18 @@ export default function CreateRoadmap() {
   const savedStepIds = useRef(new Set())
   const [id] = useState(() => crypto.randomUUID())
   // A null title is an untouched step; it shows its position as "Step N".
-  const [steps, setSteps] = useState(() => [{ id: crypto.randomUUID(), title: null, content: '' }])
+  const [steps, setSteps] = useState(() => [{ id: crypto.randomUUID(), title: null, blocks: [textBlock()] }])
   const [materials, setMaterials] = useState([])
   const [material, setMaterial] = useState('')
   const [active, setActive] = useState(0)
-  const [stepIndex, setStepIndex] = useState(0)
+  const [openId, setOpenId] = useState(null)
+  const [draggingId, setDraggingId] = useState(null)
   const [confirmingId, setConfirmingId] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const listRef = useRef(null)
 
-  const openStep = steps[Math.min(stepIndex, steps.length - 1)]
+  const openStep = steps.find((step) => step.id === openId) ?? steps[0]
   const openIndex = steps.indexOf(openStep)
 
   // The row is as tall as its tallest section, so match the open one to keep the buttons close.
@@ -88,24 +93,72 @@ export default function CreateRoadmap() {
   }
 
   function addStep() {
-    setSteps((current) => [...current, { id: crypto.randomUUID(), title: null, content: '' }])
+    const step = { id: crypto.randomUUID(), title: null, blocks: [textBlock()] }
+    setSteps((current) => [...current, step])
+    return step
   }
 
-  function editStep(index) {
-    setStepIndex(index)
+  function editStep(stepId) {
+    setOpenId(stepId)
     showSection(1)
+  }
+
+  function moveStep(stepId, to) {
+    setSteps((current) => {
+      const from = current.findIndex((item) => item.id === stepId)
+      if (from === -1 || to < 0 || to >= current.length || from === to) return current
+      const next = [...current]
+      next.splice(to, 0, ...next.splice(from, 1))
+      return next
+    })
+  }
+
+  function startDrag(event, stepId) {
+    if (event.pointerType === 'mouse' && event.button !== 0) return
+    event.preventDefault()
+    setDraggingId(stepId)
+    const onMove = (moveEvent) => {
+      const items = [...listRef.current.children]
+      const from = items.findIndex((item) => item.dataset.stepId === stepId)
+      let to = from
+      items.forEach((item, index) => {
+        const box = item.getBoundingClientRect()
+        const middle = box.top + box.height / 2
+        if (index < from && moveEvent.clientY < middle) to = Math.min(to, index)
+        if (index > from && moveEvent.clientY > middle) to = Math.max(to, index)
+      })
+      moveStep(stepId, to)
+    }
+    const onEnd = () => {
+      setDraggingId(null)
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onEnd)
+      window.removeEventListener('pointercancel', onEnd)
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onEnd)
+    window.addEventListener('pointercancel', onEnd)
+  }
+
+  function onHandleKeyDown(event, stepId, index) {
+    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return
+    event.preventDefault()
+    moveStep(stepId, index + (event.key === 'ArrowUp' ? -1 : 1))
+    requestAnimationFrame(() => event.target.focus())
   }
 
   function removeStep(step) {
     if (steps.length <= 1) return
-    const hasContent = step.title?.trim() || step.content.trim()
+    const hasContent = step.title?.trim() || step.blocks.some(blockHasContent)
     if (hasContent && confirmingId !== step.id) {
       setConfirmingId(step.id)
       return
     }
-    const removedIndex = steps.indexOf(step)
+    if (step.id === openStep.id) {
+      const index = steps.indexOf(step)
+      setOpenId((steps[index + 1] ?? steps[index - 1]).id)
+    }
     setSteps((current) => current.filter((item) => item.id !== step.id))
-    setStepIndex((current) => (current > removedIndex || current === steps.length - 1 ? Math.max(0, current - 1) : current))
     setConfirmingId(null)
   }
 
@@ -136,9 +189,7 @@ export default function CreateRoadmap() {
       for (const [index, step] of steps.entries()) {
         const name = stepTitle(step, index).trim()
         if (!name || savedStepIds.current.has(step.id)) continue
-        await saveLesson(step.id, roadmap.id, name, [
-          { id: crypto.randomUUID(), type: 'paragraph', content: { text: step.content.trim() } },
-        ])
+        await saveLesson(step.id, roadmap.id, name, cleanBlocks(step.blocks))
         savedStepIds.current.add(step.id)
       }
       navigate(`/my-path/${roadmap.id}`)
@@ -181,7 +232,7 @@ export default function CreateRoadmap() {
           <div
             ref={scrollerRef}
             onScroll={onScroll}
-            className="flex min-w-0 snap-x snap-mandatory items-start overflow-x-auto overflow-y-hidden overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="-mx-6 flex min-w-0 snap-x snap-mandatory items-start overflow-x-auto lg:-mx-8 overflow-y-hidden overscroll-x-contain [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             <section className={section} aria-label="Overview" inert={active !== 0}>
               <PathSectionHeader active="Overview" onSelect={showSection} />
@@ -195,11 +246,18 @@ export default function CreateRoadmap() {
                 className={`${field} text-sm leading-[1.4] font-normal text-quiet`}
               />
               <p className="m-0 text-sm leading-[1.4] font-normal text-quiet">{steps.length} steps</p>
-              <ol className="m-0 flex list-none flex-col gap-4 p-0 py-2">
+              <ol ref={listRef} className="m-0 flex list-none flex-col gap-4 p-0 py-2">
                 {steps.map((step, index) => (
-                  <li key={step.id} className="group flex flex-col gap-2">
+                  <li
+                    key={step.id}
+                    data-step-id={step.id}
+                    className={`group relative flex flex-col gap-2 rounded-lg ${draggingId === step.id ? 'z-20 bg-white shadow-[0_2px_12px_rgba(30,30,30,0.15)]' : ''}`}
+                  >
+                    {index < steps.length - 1 && (
+                      <span aria-hidden="true" className="absolute top-3 -bottom-7 left-[3px] w-0.5 bg-brand" />
+                    )}
                     <div className="flex items-center gap-2">
-                      <img src={stepDot} alt="" width="8" height="8" className="block max-w-none shrink-0" />
+                      <img src={stepDot} alt="" width="8" height="8" className="relative z-10 block max-w-none shrink-0" />
                       <input
                         value={stepTitle(step, index)}
                         aria-label={`Step ${index + 1}`}
@@ -209,15 +267,27 @@ export default function CreateRoadmap() {
                       />
                       <button
                         type="button"
-                        onClick={() => editStep(index)}
+                        onClick={() => editStep(step.id)}
                         className="!m-0 shrink-0 cursor-pointer rounded border-0 bg-transparent !px-1 !py-0 font-sans text-sm leading-[1.4] text-quiet underline opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100"
                       >
                         Edit
                       </button>
                       {steps.length > 1 && (
-                        <button type="button" aria-label={`Remove step ${index + 1}`} onClick={() => removeStep(step)} className={removeButton}>
-                          <img src={removeIcon} alt="" width="12" height="12" className="block max-w-none" />
-                        </button>
+                        <>
+                          <button
+                            type="button"
+                            aria-label={`Move step ${index + 1}`}
+                            title="Drag to reorder, or use the arrow keys"
+                            onPointerDown={(event) => startDrag(event, step.id)}
+                            onKeyDown={(event) => onHandleKeyDown(event, step.id, index)}
+                            className={`${removeButton} touch-none !cursor-grab hover:!bg-black/5 active:!cursor-grabbing ${draggingId === step.id ? '!opacity-100' : ''}`}
+                          >
+                            <img src={dragIcon} alt="" width="10" height="16" className="pointer-events-none block max-w-none" />
+                          </button>
+                          <button type="button" aria-label={`Remove step ${index + 1}`} onClick={() => removeStep(step)} className={removeButton}>
+                            <img src={removeIcon} alt="" width="12" height="12" className="block max-w-none" />
+                          </button>
+                        </>
                       )}
                     </div>
                     {confirmingId === step.id && (
@@ -277,22 +347,17 @@ export default function CreateRoadmap() {
                   ))}
                 </div>
               </div>
-              <textarea
+              <StepBlockEditor
                 key={openStep.id}
-                value={openStep.content}
-                rows={6}
-                maxLength={20000}
-                placeholder="Describe this step"
-                aria-label={`Step ${openIndex + 1} content`}
-                onChange={(event) => updateStep(openStep.id, { content: event.target.value })}
-                onInput={grow}
-                className={`${field} min-h-32 text-sm leading-[1.4] font-normal text-ink`}
+                blocks={openStep.blocks}
+                label={`Step ${openIndex + 1} content`}
+                onChange={(blocks) => updateStep(openStep.id, { blocks })}
               />
               <div className="flex min-h-[27px] items-center justify-between gap-4">
                 {openIndex > 0 ? (
                   <button
                     type="button"
-                    onClick={() => setStepIndex(openIndex - 1)}
+                    onClick={() => setOpenId(steps[openIndex - 1].id)}
                     className="!m-0 flex min-w-0 cursor-pointer items-center gap-[9px] border-0 bg-transparent !p-0 text-left text-sm leading-[1.4]"
                   >
                     <img src={iconNext} alt="" width="5" height="16" className="block max-w-none shrink-0" />
@@ -307,7 +372,7 @@ export default function CreateRoadmap() {
                 {openIndex < steps.length - 1 ? (
                   <button
                     type="button"
-                    onClick={() => setStepIndex(openIndex + 1)}
+                    onClick={() => setOpenId(steps[openIndex + 1].id)}
                     className="!m-0 flex min-w-0 cursor-pointer items-center gap-[9px] border-0 bg-transparent !p-0 text-right text-sm leading-[1.4]"
                   >
                     <span className="min-w-0">
@@ -319,10 +384,7 @@ export default function CreateRoadmap() {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => {
-                      addStep()
-                      setStepIndex(steps.length)
-                    }}
+                    onClick={() => setOpenId(addStep().id)}
                     className="!m-0 flex cursor-pointer items-center gap-2 border-0 bg-transparent !p-0 text-sm leading-[1.4] text-ink"
                   >
                     <img src={plusIcon} alt="" width="11.3333" height="11.3333" className="block max-w-none" />
