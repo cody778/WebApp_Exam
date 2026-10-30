@@ -65,6 +65,7 @@ export default function AppNav({ notification = null }) {
             {notification}
             <NavLink
               to="/explore"
+              data-tour="explore"
               className={({ isActive }) =>
                 `${chip} !px-2.5 sm:!px-4 ${isActive ? `${selectedChip} ${lightIcon}` : restingChip}`
               }
@@ -74,6 +75,7 @@ export default function AppNav({ notification = null }) {
             </NavLink>
             <NavLink
               to="/create-roadmap"
+              data-tour="new-path"
               className={({ isActive }) =>
                 `${chip} !px-2.5 !text-on-brand sm:!px-4 ${isActive ? '!bg-accent' : '!bg-ink'}`
               }

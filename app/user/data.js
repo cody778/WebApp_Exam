@@ -174,6 +174,11 @@ export async function getPath(userId, id) {
   }
 }
 
+/** Marks the first-login tour as done on the account, so it does not show again on any device. */
+export function completeOnboarding() {
+  return result(supabase.auth.updateUser({ data: { onboarding_completed: true } }))
+}
+
 export function setPathPublished(id, published) {
   return result(supabase.from('roadmaps').update({ is_published: published }).eq('id', id))
 }

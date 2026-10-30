@@ -1,6 +1,7 @@
 ﻿import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router'
 import type { Route } from './+types/root'
 import { AuthProvider } from './user/AuthProvider.jsx'
+import Onboarding from './components/Onboarding.jsx'
 import './index.css'
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -32,7 +33,7 @@ export function HydrateFallback() {
 }
 
 export default function App() {
-  return <AuthProvider><main className="mx-auto my-24 max-w-160 p-6 has-[.landing-page,.explore-page,.profile-page,.premium-page,.saved-path,.sashiko-path,.register-page,.sign-in-page,.app-frame]:m-0 has-[.landing-page,.explore-page,.profile-page,.premium-page,.saved-path,.sashiko-path,.register-page,.sign-in-page,.app-frame]:max-w-none has-[.landing-page,.explore-page,.profile-page,.premium-page,.saved-path,.sashiko-path,.register-page,.sign-in-page,.app-frame]:p-0"><Outlet /></main></AuthProvider>
+  return <AuthProvider><main className="mx-auto my-24 max-w-160 p-6 has-[.landing-page,.explore-page,.profile-page,.premium-page,.saved-path,.sashiko-path,.register-page,.sign-in-page,.app-frame]:m-0 has-[.landing-page,.explore-page,.profile-page,.premium-page,.saved-path,.sashiko-path,.register-page,.sign-in-page,.app-frame]:max-w-none has-[.landing-page,.explore-page,.profile-page,.premium-page,.saved-path,.sashiko-path,.register-page,.sign-in-page,.app-frame]:p-0"><Outlet /></main><Onboarding /></AuthProvider>
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

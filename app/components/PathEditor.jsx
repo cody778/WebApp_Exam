@@ -235,6 +235,7 @@ export default function PathEditor({ initial, author, submitLabel, onSubmit, sec
           </ol>
           <button
             type="button"
+            data-tour="add-step"
             onClick={addStep}
             className="m-0 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-0 bg-[#b2b2b2] px-4 py-3 font-sans text-base leading-none font-normal text-ink"
           >
@@ -258,12 +259,14 @@ export default function PathEditor({ initial, author, submitLabel, onSubmit, sec
             className="m-0 w-full border-0 bg-transparent p-0 font-sans text-2xl leading-[1.2] font-semibold tracking-[-0.48px] text-ink outline-none"
           />
           <StepProgress count={steps.length} index={openIndex} filled={(index) => index <= openIndex} />
-          <StepBlockEditor
-            key={openStep.id}
-            blocks={openStep.blocks}
-            label={`Step ${openIndex + 1} content`}
-            onChange={(blocks) => updateStep(openStep.id, { blocks })}
-          />
+          <div data-tour="step-content" className="flex flex-col">
+            <StepBlockEditor
+              key={openStep.id}
+              blocks={openStep.blocks}
+              label={`Step ${openIndex + 1} content`}
+              onChange={(blocks) => updateStep(openStep.id, { blocks })}
+            />
+          </div>
           <StepNav
             previous={openIndex > 0 ? { title: stepTitle(steps[openIndex - 1], openIndex - 1), onClick: () => setOpenId(steps[openIndex - 1].id) } : null}
             next={openIndex < steps.length - 1 ? { title: stepTitle(steps[openIndex + 1], openIndex + 1), onClick: () => setOpenId(steps[openIndex + 1].id) } : null}
@@ -342,6 +345,7 @@ export default function PathEditor({ initial, author, submitLabel, onSubmit, sec
         disabled={busy}
         placeholder="New path"
         aria-label="Path title"
+        data-tour="path-title"
         onChange={(event) => setTitle(event.target.value)}
         className="!flex-none text-[36px] leading-[1.15] font-bold tracking-[-0.72px] placeholder:!text-[#e3e3e3]"
       />
@@ -353,6 +357,7 @@ export default function PathEditor({ initial, author, submitLabel, onSubmit, sec
         <div className="mt-auto flex flex-col gap-3 pt-4 lg:flex-row-reverse">
           <button
             type="submit"
+            data-tour="save-new-path"
             className="m-0 flex h-12 w-full cursor-pointer items-center justify-center rounded-lg border-0 bg-brand px-4 py-0 font-sans text-base leading-none font-normal text-on-brand focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent disabled:cursor-wait disabled:opacity-70 lg:flex-1"
           >
             {busy ? 'Saving...' : submitLabel}

@@ -180,10 +180,10 @@ function PathPage({ path, onSaved }) {
         </button>
       ) : (
         <>
-          <button type="button" aria-label={saved ? 'Unsave path' : 'Save path'} aria-pressed={saved} disabled={saving} onClick={() => saveOrPrompt(save)} className={coverButton}>
+          <button type="button" data-tour="save-path" aria-label={saved ? 'Unsave path' : 'Save path'} aria-pressed={saved} disabled={saving} onClick={() => saveOrPrompt(save)} className={coverButton}>
             <img src={saved ? iconSaveFilled : iconSave} alt="" width="24" height="24" className="block max-w-none" />
           </button>
-          <button type="button" aria-label="Fork path to your paths" disabled={forking} onClick={() => saveOrPrompt(fork)} className={coverButton}>
+          <button type="button" data-tour="fork-path" aria-label="Fork path to your paths" disabled={forking} onClick={() => saveOrPrompt(fork)} className={coverButton}>
             <img src={iconFork} alt="" width="24" height="24" className="block max-w-none" />
           </button>
         </>

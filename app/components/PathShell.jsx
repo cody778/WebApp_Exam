@@ -29,7 +29,7 @@ export default function PathShell({ crumb, current, cover, coverActions, headerA
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-6 py-4 pb-12 lg:max-w-6xl lg:px-8">
         <div className="flex min-h-5 items-center justify-between gap-4">
           <p className="m-0 min-w-0 truncate text-[13px] leading-normal font-normal text-quiet">
-            <Link to={crumb.to} className="!m-0 !inline !border-0 !bg-transparent !p-0 !text-[13px] !leading-normal !font-normal !text-quiet !underline">
+            <Link to={crumb.to} data-tour="crumb" className="!m-0 !inline !border-0 !bg-transparent !p-0 !text-[13px] !leading-normal !font-normal !text-quiet !underline">
               {crumb.label}
             </Link>
             <span> › {current}</span>
