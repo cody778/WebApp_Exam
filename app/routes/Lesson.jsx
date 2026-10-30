@@ -33,14 +33,21 @@ export default function Lesson() { // displays lesson and allows user to mark as
   if (roadmapId && !data.roadmap_lessons.some(link => link.roadmap_id === roadmapId)) return <Navigate to="/404" replace /> // checks if lesson is part of the roadmap
 
   return (
-    <>
-      <h1>{data.title}</h1>
-      <p>{data.completed ? 'Completed' : 'To do'}</p>
+    <section className="flex flex-col gap-6 py-6 font-sans text-ink">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="m-0 text-sm text-quiet">Lesson</p>
+          <h1 className="mt-1 mb-0 text-page-title">{data.title}</h1>
+        </div>
+        <span className={`w-fit rounded-full px-3 py-1 text-xs ${data.completed ? 'bg-accent text-on-brand' : 'bg-accent-muted text-ink'}`}>{data.completed ? 'Completed' : 'To do'}</span>
+      </div>
       <BlockEditor blocks={data.blocks} readOnly />
-      <button className="min-w-0 p-3 [font:inherit] cursor-pointer disabled:cursor-wait" type="button" disabled={busy} onClick={toggleCompleted}>{busy ? 'Saving...' : data.completed ? 'Mark as incomplete' : 'Mark as completed'}</button>
-      {message && <p className="text-[#9e2020]" role="alert">{message}</p>}
-      {data.owner_id === user.id && <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={`/edit-lesson/${data.id}${roadmapId ? `?path=${roadmapId}` : ''}`}>Edit lesson</Link>}
-      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={roadmapId ? `/my-path/${roadmapId}` : '/browse-lessons'}>{roadmapId ? 'Back to path' : 'Back to lessons'}</Link>
-    </>
+      <button className="m-0 h-11 min-w-0 cursor-pointer rounded-lg border-0 bg-brand px-5 py-0 text-sm text-on-brand disabled:cursor-wait disabled:opacity-60" type="button" disabled={busy} onClick={toggleCompleted}>{busy ? 'Saving...' : data.completed ? 'Mark as incomplete' : 'Mark as completed'}</button>
+      {message && <p className="m-0 rounded-lg border border-[#9e2020]/25 bg-[#9e2020]/5 p-3 text-sm text-[#9e2020]" role="alert">{message}</p>}
+      <div className="flex flex-col gap-3 sm:flex-row">
+        {data.owner_id === user.id && <Link className="m-0 inline-flex h-11 items-center justify-center rounded-lg border border-accent bg-white px-5 text-sm text-accent no-underline" to={`/edit-lesson/${data.id}${roadmapId ? `?path=${roadmapId}` : ''}`}>Edit lesson</Link>}
+        <Link className="m-0 inline-flex h-11 items-center justify-center rounded-lg border border-accent-muted bg-white px-5 text-sm text-ink no-underline" to={roadmapId ? `/my-path/${roadmapId}` : '/browse-lessons'}>{roadmapId ? 'Back to path' : 'Back to lessons'}</Link>
+      </div>
+    </section>
   )
 }

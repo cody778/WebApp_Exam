@@ -12,12 +12,12 @@ import { completeOnboarding } from '../user/data.js'
  */
 const tour = [
   { target: 'new-path', text: 'Click here to create your first learning path', waitForClick: true, resume: '/home' },
-  { target: 'path-title', text: 'Click here to type your path name', resume: '/create-roadmap' },
-  { target: 'add-step', text: 'Click here to add more steps', resume: '/create-roadmap' },
-  { target: 'path-sections', text: 'Slide to the sides to see more', ignoreClicks: true, resume: '/create-roadmap' },
-  { target: 'step-content', text: 'Click here to add content to this step', resume: '/create-roadmap' },
-  { target: 'save-new-path', text: 'Click here to save your path', waitForClick: true, ignoreClicks: true, doneAt: '/my-path/', resume: '/create-roadmap' },
-  { target: 'crumb', text: 'Click here to return to your homepage', waitForClick: true, resume: '/create-roadmap' },
+  { target: 'path-title', text: 'Click here to type your path name', resume: '/create-path' },
+  { target: 'add-step', text: 'Click here to add more steps', resume: '/create-path' },
+  { target: 'path-sections', text: 'Slide to the sides to see more', ignoreClicks: true, resume: '/create-path' },
+  { target: 'step-content', text: 'Click here to add content to this step', resume: '/create-path' },
+  { target: 'save-new-path', text: 'Click here to save your path', waitForClick: true, ignoreClicks: true, doneAt: '/my-path/', resume: '/create-path' },
+  { target: 'crumb', text: 'Click here to return to your homepage', waitForClick: true, resume: '/create-path' },
   { target: 'explore', text: 'Click here to explore public paths', waitForClick: true, resume: '/home' },
   { target: 'explore-card', text: 'Click here to see this path', waitForClick: true, clickOn: 'a', resume: '/explore' },
   { target: 'save-path', text: 'Saving a path lets you open it from your homepage and follow its steps', side: 'left', resume: 'path' },

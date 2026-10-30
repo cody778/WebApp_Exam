@@ -13,7 +13,7 @@ export default function LessonTimeline({ roadmapId, lessons }) {
         {lessons.map(lesson => (
           <li key={lesson.id}>
             {lesson.unavailable ? 'Lesson unavailable' : <>
-              <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={`/my-path/${roadmapId}/lesson/${lesson.id}`}>{lesson.title}</Link>
+              <Link className="m-0 text-sm font-medium text-ink no-underline hover:text-accent" to={`/my-path/${roadmapId}/lesson/${lesson.id}`}>{lesson.title}</Link>
               {lesson.completed ? 'Completed' : 'To do'}
             </>}
           </li>

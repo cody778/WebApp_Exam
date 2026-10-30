@@ -135,103 +135,19 @@
   line-height: var(--leading-heading);
 }
 
-/* Older screens still rely on these element styles. They sit under utilities so the landing page can override them. */
-@layer legacy {
-  :root {
-    font-family: system-ui, sans-serif;
-    color: #213547;
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
   }
 
-  body {
-    margin: 0;
-  }
-
-  main {
-    max-width: 40rem;
-    margin: 6rem auto;
-    padding: 1.5rem;
-  }
-
-  a {
-    display: inline-block;
-    margin: 0.25rem;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid currentColor;
-    border-radius: 0.25rem;
-    color: inherit;
-    text-decoration: none;
-  }
-
-  nav {
-    margin-top: 2rem;
-  }
-
-  button {
-    min-width: 0;
-    padding: 0.75rem;
+  button,
+  input,
+  select,
+  textarea {
     font: inherit;
   }
-
-  button {
-    cursor: pointer;
-  }
-
-  button:disabled {
-    cursor: wait;
-  }
-
-  [role="alert"] {
-    color: #9e2020;
-  }
-}
-
-/* These frames are full-bleed. Drop the shared page column only on those screens. */
-main:has(.app-frame),
-main:has(.landing-page),
-main:has(.explore-page),
-main:has(.profile-page),
-main:has(.account-page),
-main:has(.appearance-page),
-main:has(.payment-methods-page),
-main:has(.commissions-page),
-main:has(.premium-page),
-main:has(.saved-path),
-main:has(.sashiko-path),
-main:has(.register-page),
-main:has(.sign-in-page) {
-  max-width: none;
-  margin: 0;
-  padding: 0;
-}
-
-/* Tailwind spacing assumes border-box. Keep that scoped here so other screens stay as they are. */
-.landing-page,
-.landing-page *,
-.explore-page,
-.explore-page *,
-.profile-page,
-.profile-page *,
-.account-page,
-.account-page *,
-.appearance-page,
-.appearance-page *,
-.payment-methods-page,
-.payment-methods-page *,
-.commissions-page,
-.commissions-page *,
-.premium-page,
-.premium-page *,
-.saved-path,
-.saved-path *,
-.sashiko-path,
-.sashiko-path *,
-.public-path,
-.public-path *,
-.register-page,
-.register-page *,
-.sign-in-page,
-.sign-in-page * {
-  box-sizing: border-box;
 }
 
 /* Paper: fine grain from SVG noise, faint fibres, and a soft vignette over the warm base colour. */

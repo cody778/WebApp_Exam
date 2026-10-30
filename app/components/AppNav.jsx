@@ -76,7 +76,7 @@ export default function AppNav({ notification = null }) {
               Explore
             </NavLink>
             <NavLink
-              to="/create-roadmap"
+              to="/create-path"
               data-tour="new-path"
               className={({ isActive }) =>
                 `${chip} !px-2.5 !text-on-brand sm:!px-4 ${isActive ? '!bg-accent' : '!bg-ink'}`
