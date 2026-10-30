@@ -45,7 +45,7 @@ export default function Appearance() {
   }
 
   return (
-    <div className="appearance-page mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pt-0 pb-14 font-sans text-ink lg:max-w-6xl lg:px-8">
+    <div className="appearance-page mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pt-0 pb-14 font-sans text-ink lg:max-w-2xl lg:px-8">
       {authPending ? <header className="flex h-16 items-center" aria-busy="true" /> : <AppNav />}
 
       <h1 className="font-display text-xl leading-heading font-medium tracking-heading" style={{ margin: '2rem 0 0' }}>
@@ -56,95 +56,93 @@ export default function Appearance() {
         <span className="underline">Appearance</span>
       </h1>
 
-      <div className="flex flex-col lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-12">
-        <section className="mt-4 flex flex-col lg:col-start-1 lg:row-start-1" aria-labelledby="themes">
-          <h2 id="themes" className="m-0 font-sans text-[22px] leading-body font-normal">Themes</h2>
-          <div className="mt-2" style={themeGrid}>
-            {themes.map((item) => {
-              const selected = theme === item.id
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  aria-pressed={selected}
-                  onClick={() => setTheme(item.id)}
-                  className={`!m-0 flex !h-[51px] !items-center !justify-between !rounded-2xl !border !border-black !px-2 !py-0 ${item.chip}`}
-                >
-                  <span className="font-sans text-sm leading-body font-normal">{item.label}</span>
-                  {selected ? <img src={iconCheck} alt="" width="24" height="24" className="block max-w-none shrink-0" /> : null}
-                </button>
-              )
-            })}
-          </div>
-        </section>
-
-        <section className="mt-5 flex flex-col lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-4" aria-labelledby="typography">
-          <h2 id="typography" className="m-0 font-sans text-[22px] leading-body font-normal">Typography</h2>
-          <div className="mt-1 items-center border-t border-black px-2 py-4" style={typeGrid}>
-            <p className="m-0 font-sans text-[22px] leading-body font-normal">Titles</p>
-            {titleFonts.map((item) => (
-              <FontChoice
-                key={item.id}
-                label={item.label}
-                font={item.font}
-                selected={titleFont === item.id}
-                onClick={() => setTitleFont(item.id)}
-              />
-            ))}
-          </div>
-          <div className="items-center border-t border-black px-2 py-4" style={typeGrid}>
-            <p className="m-0 font-sans text-[22px] leading-body font-normal">Body Text</p>
-            {bodyFonts.map((item) => (
-              <FontChoice
-                key={item.id}
-                label={item.label}
-                font={item.font}
-                family={item.family}
-                selected={bodyFont === item.id}
-                onClick={() => setBodyFont(item.id)}
-              />
-            ))}
-          </div>
-        </section>
-
-        <section className="border-t border-black px-2 py-4 lg:col-start-1 lg:row-start-2 lg:mt-5" aria-labelledby="line-spacing">
-          <h2 id="line-spacing" className="m-0 font-sans text-[22px] leading-body font-normal" style={{ width: 125 }}>Line Spacing</h2>
-          <div className="mx-auto mt-4" style={{ position: 'relative', width: 284, height: 44.1145 }}>
-            <img src={spacingBar} alt="" width="284" height="44.1145" className="block max-w-none" />
-            {spacing !== 2 ? (
-              <>
-                <span className="pointer-events-none absolute rounded-full bg-ink" style={dotStyle(spacingStops[2])} />
-                <span className="pointer-events-none absolute rounded-full" style={{ ...dotStyle(spacingStops[spacing]), background: '#0088ff' }} />
-              </>
-            ) : null}
-            <button
-              type="button"
-              aria-label="Decrease line spacing"
-              onClick={() => setSpacing((current) => Math.max(0, current - 1))}
-              className="!m-0 !border-0 !bg-transparent !p-0"
-              style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: 24 }}
-            />
-            <button
-              type="button"
-              aria-label="Increase line spacing"
-              onClick={() => setSpacing((current) => Math.min(spacingStops.length - 1, current + 1))}
-              className="!m-0 !border-0 !bg-transparent !p-0"
-              style={{ position: 'absolute', top: 0, right: 0, height: '100%', width: 24 }}
-            />
-            {spacingStops.map((stop, index) => (
+      <section className="mt-4 flex flex-col" aria-labelledby="themes">
+        <h2 id="themes" className="m-0 font-sans text-[22px] leading-body font-normal">Themes</h2>
+        <div className="mt-2" style={themeGrid}>
+          {themes.map((item) => {
+            const selected = theme === item.id
+            return (
               <button
-                key={stop}
+                key={item.id}
                 type="button"
-                aria-label={`Line spacing step ${index + 1}`}
-                aria-pressed={spacing === index}
-                onClick={() => setSpacing(index)}
-                className="!m-0 !border-0 !bg-transparent !p-0"
-                style={{ position: 'absolute', left: stop, top: 23.46, width: 24, height: 24, transform: 'translate(-50%, -50%)' }}
-              />
-            ))}
-          </div>
-        </section>
-      </div>
+                aria-pressed={selected}
+                onClick={() => setTheme(item.id)}
+                className={`!m-0 flex !h-[51px] !items-center !justify-between !rounded-2xl !border !border-black !px-2 !py-0 ${item.chip}`}
+              >
+                <span className="font-sans text-sm leading-body font-normal">{item.label}</span>
+                {selected ? <img src={iconCheck} alt="" width="24" height="24" className="block max-w-none shrink-0" /> : null}
+              </button>
+            )
+          })}
+        </div>
+      </section>
+
+      <section className="mt-5 flex flex-col" aria-labelledby="typography">
+        <h2 id="typography" className="m-0 font-sans text-[22px] leading-body font-normal">Typography</h2>
+        <div className="mt-1 items-center border-t border-black px-2 py-4" style={typeGrid}>
+          <p className="m-0 font-sans text-[22px] leading-body font-normal">Titles</p>
+          {titleFonts.map((item) => (
+            <FontChoice
+              key={item.id}
+              label={item.label}
+              font={item.font}
+              selected={titleFont === item.id}
+              onClick={() => setTitleFont(item.id)}
+            />
+          ))}
+        </div>
+        <div className="items-center border-t border-black px-2 py-4" style={typeGrid}>
+          <p className="m-0 font-sans text-[22px] leading-body font-normal">Body Text</p>
+          {bodyFonts.map((item) => (
+            <FontChoice
+              key={item.id}
+              label={item.label}
+              font={item.font}
+              family={item.family}
+              selected={bodyFont === item.id}
+              onClick={() => setBodyFont(item.id)}
+            />
+          ))}
+        </div>
+      </section>
+
+      <section className="border-t border-black px-2 py-4" aria-labelledby="line-spacing">
+        <h2 id="line-spacing" className="m-0 font-sans text-[22px] leading-body font-normal" style={{ width: 125 }}>Line Spacing</h2>
+        <div className="mx-auto mt-4" style={{ position: 'relative', width: 284, height: 44.1145 }}>
+          <img src={spacingBar} alt="" width="284" height="44.1145" className="block max-w-none" />
+          {spacing !== 2 ? (
+            <>
+              <span className="pointer-events-none absolute rounded-full bg-ink" style={dotStyle(spacingStops[2])} />
+              <span className="pointer-events-none absolute rounded-full" style={{ ...dotStyle(spacingStops[spacing]), background: '#0088ff' }} />
+            </>
+          ) : null}
+          <button
+            type="button"
+            aria-label="Decrease line spacing"
+            onClick={() => setSpacing((current) => Math.max(0, current - 1))}
+            className="!m-0 !border-0 !bg-transparent !p-0"
+            style={{ position: 'absolute', top: 0, left: 0, height: '100%', width: 24 }}
+          />
+          <button
+            type="button"
+            aria-label="Increase line spacing"
+            onClick={() => setSpacing((current) => Math.min(spacingStops.length - 1, current + 1))}
+            className="!m-0 !border-0 !bg-transparent !p-0"
+            style={{ position: 'absolute', top: 0, right: 0, height: '100%', width: 24 }}
+          />
+          {spacingStops.map((stop, index) => (
+            <button
+              key={stop}
+              type="button"
+              aria-label={`Line spacing step ${index + 1}`}
+              aria-pressed={spacing === index}
+              onClick={() => setSpacing(index)}
+              className="!m-0 !border-0 !bg-transparent !p-0"
+              style={{ position: 'absolute', left: stop, top: 23.46, width: 24, height: 24, transform: 'translate(-50%, -50%)' }}
+            />
+          ))}
+        </div>
+      </section>
     </div>
   )
 }
