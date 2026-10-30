@@ -1,9 +1,7 @@
 import { useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router'
-import editIcon from '../assets/create-path/edit.svg'
 import plusIcon from '../assets/create-path/plus.svg'
-import iconForkCount from '../assets/public-path/icon-fork-count.svg'
-import iconSaveCount from '../assets/public-path/icon-save-count.svg'
+import removeIcon from '../assets/create-path/remove.svg'
 import stepDot from '../assets/public-path/step-dot.svg'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { createRoadmap, saveLesson } from '../user/data.js'
@@ -26,7 +24,9 @@ export default function CreateRoadmap() {
   const titleRef = useRef(null)
   const savedStepIds = useRef(new Set())
   const [id] = useState(() => crypto.randomUUID())
-  const [steps, setSteps] = useState(() => [{ id: crypto.randomUUID(), title: 'Step 1' }])
+  // A null title is an untouched step; it shows its position as "Step N".
+  const [steps, setSteps] = useState(() => [{ id: crypto.randomUUID(), title: null }])
+  const [confirmingId, setConfirmingId] = useState(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
@@ -37,7 +37,17 @@ export default function CreateRoadmap() {
   }
 
   function addStep() {
-    setSteps((current) => [...current, { id: crypto.randomUUID(), title: `Step ${current.length + 1}` }])
+    setSteps((current) => [...current, { id: crypto.randomUUID(), title: null }])
+  }
+
+  function removeStep(step) {
+    if (steps.length <= 1) return
+    if (step.title?.trim() && confirmingId !== step.id) {
+      setConfirmingId(step.id)
+      return
+    }
+    setSteps((current) => current.filter((item) => item.id !== step.id))
+    setConfirmingId(null)
   }
 
   async function submit(event) {
@@ -57,8 +67,8 @@ export default function CreateRoadmap() {
 
     try {
       const roadmap = await createRoadmap(user.id, id, title, description)
-      for (const step of steps) {
-        const stepTitle = step.title.trim()
+      for (const [index, step] of steps.entries()) {
+        const stepTitle = (step.title ?? `Step ${index + 1}`).trim()
         if (!stepTitle || savedStepIds.current.has(step.id)) continue
         await saveLesson(step.id, roadmap.id, stepTitle, [
           { id: crypto.randomUUID(), type: 'paragraph', content: { text: '' } },
@@ -80,22 +90,12 @@ export default function CreateRoadmap() {
     >
       <div className="h-40 shrink-0 bg-[#dad6cd]" />
       <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 px-6 py-4 lg:max-w-6xl lg:px-8">
-        <div className="flex items-center justify-between">
-          <p className="m-0 text-[13px] leading-normal font-normal whitespace-nowrap text-quiet">
-            <Link to="/home" className="m-0 border-0 p-0 text-quiet underline">
-              My paths
-            </Link>
-            <span> › New path</span>
-          </p>
-          <button
-            type="button"
-            aria-label="Edit title"
-            onClick={() => titleRef.current?.focus()}
-            className="m-0 size-5 shrink-0 cursor-pointer border-0 bg-transparent p-0"
-          >
-            <img src={editIcon} alt="" width="20" height="20" className="block max-w-none" />
-          </button>
-        </div>
+        <p className="m-0 text-[13px] leading-normal font-normal whitespace-nowrap text-quiet">
+          <Link to="/home" className="!m-0 !inline !border-0 !bg-transparent !p-0 !text-[13px] !leading-normal !font-normal !text-quiet !underline">
+            My paths
+          </Link>
+          <span> › New path</span>
+        </p>
         <textarea
           ref={titleRef}
           name="title"
@@ -109,19 +109,7 @@ export default function CreateRoadmap() {
           onInput={grow}
           className="m-0 w-full resize-none overflow-hidden border-0 bg-transparent p-0 font-sans text-[36px] leading-[1.15] font-bold tracking-[-0.72px] text-ink outline-none placeholder:text-[#e3e3e3]"
         />
-        <div className="flex items-center justify-between">
-          <p className="m-0 text-[10px] leading-[1.4] font-normal whitespace-nowrap text-quiet">By {authorName(user)}</p>
-          <div className="flex items-center gap-1">
-            <span className="flex items-center gap-0.5">
-              <img src={iconSaveCount} alt="" width="12" height="12" className="block max-w-none" />
-              <span className="text-[10px] leading-[1.4] font-normal whitespace-nowrap text-quiet">0 k</span>
-            </span>
-            <span className="flex items-center gap-0.5">
-              <img src={iconForkCount} alt="" width="12" height="12" className="block max-w-none" />
-              <span className="text-[10px] leading-[1.4] font-normal whitespace-nowrap text-quiet">0</span>
-            </span>
-          </div>
-        </div>
+        <p className="m-0 text-[10px] leading-[1.4] font-normal whitespace-nowrap text-quiet">By {authorName(user)}</p>
         <fieldset className="m-0 flex w-full min-w-0 flex-1 flex-col gap-4 border-0 p-0 pb-12" disabled={busy}>
           <div className="flex items-center gap-2 text-2xl leading-[1.2] text-ink">
             <p className="m-0 min-w-0 flex-1 font-semibold">| Overview</p>
@@ -140,18 +128,50 @@ export default function CreateRoadmap() {
           <p className="m-0 text-sm leading-[1.4] font-normal text-quiet">{steps.length} steps</p>
           <ol className="m-0 flex list-none flex-col gap-4 p-0 py-2">
             {steps.map((step, index) => (
-              <li key={step.id} className="flex items-center gap-2">
-                <img src={stepDot} alt="" width="8" height="8" className="block max-w-none shrink-0" />
-                <input
-                  value={step.title}
-                  aria-label={`Step ${index + 1}`}
-                  maxLength={200}
-                  onChange={(event) => {
-                    const title = event.target.value
-                    setSteps((current) => current.map((item) => (item.id === step.id ? { ...item, title } : item)))
-                  }}
-                  className="m-0 min-w-0 flex-1 border-0 bg-transparent p-0 font-sans text-base leading-[1.4] font-normal text-ink outline-none"
-                />
+              <li key={step.id} className="group flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <img src={stepDot} alt="" width="8" height="8" className="block max-w-none shrink-0" />
+                  <input
+                    value={step.title ?? `Step ${index + 1}`}
+                    aria-label={`Step ${index + 1}`}
+                    maxLength={200}
+                    onChange={(event) => {
+                      const title = event.target.value
+                      setSteps((current) => current.map((item) => (item.id === step.id ? { ...item, title } : item)))
+                    }}
+                    className="m-0 min-w-0 flex-1 border-0 bg-transparent p-0 font-sans text-base leading-[1.4] font-normal text-ink outline-none"
+                  />
+                  {steps.length > 1 && (
+                    <button
+                      type="button"
+                      aria-label={`Remove step ${index + 1}`}
+                      onClick={() => removeStep(step)}
+                      className="!m-0 flex !size-6 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent !p-0 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 hover:bg-[#9e2020]/10 [@media(hover:none)]:opacity-100"
+                    >
+                      <img src={removeIcon} alt="" width="12" height="12" className="block max-w-none" />
+                    </button>
+                  )}
+                </div>
+                {confirmingId === step.id && (
+                  <div role="alertdialog" aria-label="Remove step" className="flex flex-wrap items-center gap-2 rounded-lg bg-[#9e2020]/5 px-3 py-2 text-sm leading-[1.4]">
+                    <p className="m-0 min-w-0 flex-1 text-ink">Remove “{step.title.trim()}”?</p>
+                    <button
+                      type="button"
+                      onClick={() => setConfirmingId(null)}
+                      className="!m-0 cursor-pointer rounded-md border-0 bg-transparent !px-3 !py-1 font-sans text-sm text-ink"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      autoFocus
+                      onClick={() => removeStep(step)}
+                      className="!m-0 cursor-pointer rounded-md border-0 bg-[#9e2020] !px-3 !py-1 font-sans text-sm text-on-brand"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
               </li>
             ))}
           </ol>
