@@ -1,10 +1,11 @@
 import { Link, NavLink } from 'react-router'
 import Logo from './Logo.jsx'
-import avatar from '../assets/home/avatar.jpg'
+import defaultAvatar from '../assets/home/avatar.jpg'
 import exploreIcon from '../assets/home/explore.svg'
 import homeIcon from '../assets/home/home.svg'
 import plusIcon from '../assets/home/plus.svg'
 import { useAuth } from '../user/AuthProvider.jsx'
+import { useAvatarUrl } from '../user/profile.js'
 
 /**
  * First name from the account, then the email name, then a plain fallback.
@@ -33,6 +34,7 @@ const lightIcon = '[&_img]:brightness-0 [&_img]:invert'
 export default function AppNav({ notification = null }) {
   const { user } = useAuth()
   const name = accountLabel(user)
+  const avatar = useAvatarUrl(user?.id) || defaultAvatar
 
   return (
     <>
@@ -65,6 +67,7 @@ export default function AppNav({ notification = null }) {
             {notification}
             <NavLink
               to="/explore"
+              data-tour="explore"
               className={({ isActive }) =>
                 `${chip} !px-2.5 sm:!px-4 ${isActive ? `${selectedChip} ${lightIcon}` : restingChip}`
               }
@@ -74,6 +77,7 @@ export default function AppNav({ notification = null }) {
             </NavLink>
             <NavLink
               to="/create-roadmap"
+              data-tour="new-path"
               className={({ isActive }) =>
                 `${chip} !px-2.5 !text-on-brand sm:!px-4 ${isActive ? '!bg-accent' : '!bg-ink'}`
               }

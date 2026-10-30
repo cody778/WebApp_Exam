@@ -1,7 +1,13 @@
+import { useAuth } from '../user/AuthProvider.jsx'
+import { firstName } from '../user/profile.js'
+
 export default function WelcomeMessage() {
+  const { user } = useAuth()
+  const name = firstName(user)
+
   return (
     <section>
-      <h2>Welcome to Pathify</h2>
+      <h2>{name ? `Welcome to Pathify, ${name}` : 'Welcome to Pathify'}</h2>
       <p>Here you can consolidate and overview everything you want to learn.</p>
     </section>
   )

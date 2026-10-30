@@ -74,6 +74,7 @@ export default function Explore() {
       path.title.toLowerCase().includes(needle) ||
       path.author.toLowerCase().includes(needle),
   )
+  const tourCardId = visible.find((path) => path.owner_id !== userId)?.id
 
   return (
     <div className="explore-page mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 px-4 pt-0 pb-4 font-sans text-ink lg:max-w-6xl lg:px-8">
@@ -113,7 +114,7 @@ export default function Explore() {
           {visible.map((path) => {
             const own = path.owner_id === userId
             return (
-              <li key={path.id}>
+              <li key={path.id} data-tour={path.id === tourCardId ? 'explore-card' : undefined}>
                 <PathCard
                   title={path.title}
                   to={own ? `/my-path/${path.id}` : `/path/${path.id}`}

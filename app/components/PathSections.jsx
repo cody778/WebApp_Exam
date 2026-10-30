@@ -54,7 +54,7 @@ export default function PathSections({ render, initial = 0 }) {
           inert={active !== index}
           className="flex w-full min-w-full shrink-0 snap-start snap-always flex-col gap-4 px-6 lg:px-8"
         >
-          <PathSectionHeader active={label} onSelect={showSection} />
+          <PathSectionHeader active={label} onSelect={showSection} data-tour={index === 0 ? 'path-sections' : undefined} />
           {render(label, showSection)}
         </section>
       ))}

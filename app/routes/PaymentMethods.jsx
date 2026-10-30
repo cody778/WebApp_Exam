@@ -3,12 +3,15 @@ import AppNav from '../components/AppNav.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { supabase } from '../user/client.js'
 import { emmaPayment } from '../user/paymentMethods.js'
+import { firstName } from '../user/profile.js'
 import iconPlus from '../assets/account/icon-plus.svg'
 
 /** Saved payment options opened from the account payment methods row. */
 export default function PaymentMethods() {
   const { user, loading } = useAuth()
   const authPending = Boolean(supabase) && loading && !user
+  const holder = firstName(user) || emmaPayment.holder
+  const paypalEmail = user?.email || emmaPayment.paypal.email
 
   if (supabase && !loading && !user) {
     return <Navigate to="/sign-in" state={{ from: '/payment-methods' }} replace />
@@ -39,7 +42,7 @@ export default function PaymentMethods() {
             <span>{emmaPayment.card.expiry}</span>
             <span>{emmaPayment.card.cvc}</span>
           </p>
-          <p className="m-0 font-sans text-sm leading-body font-normal">{emmaPayment.holder}</p>
+          <p className="m-0 font-sans text-sm leading-body font-normal">{holder}</p>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -47,7 +50,7 @@ export default function PaymentMethods() {
           <p className="m-0 flex items-center gap-3 font-sans text-base leading-body font-normal">
             <span>PayPal:</span>
             <span className="inline-flex items-center rounded-full bg-accent-muted px-3.5 py-1 text-base leading-body text-ink">
-              {emmaPayment.paypal.email}
+              {paypalEmail}
             </span>
           </p>
         </div>

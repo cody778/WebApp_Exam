@@ -7,6 +7,7 @@ import TextField from '../components/TextField.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { buyPath, getPath } from '../user/data.js'
 import { emmaPayment, savePaymentMethod, unlockPremium } from '../user/paymentMethods.js'
+import { firstName } from '../user/profile.js'
 
 const methods = [
   { id: 'card', label: 'Card' },
@@ -17,24 +18,24 @@ const methods = [
 const choiceClass =
   'm-0 inline-flex h-10 min-w-0 shrink-0 disabled:cursor-wait py-3 cursor-pointer items-center rounded-full border-0 px-4 font-sans text-sm whitespace-nowrap'
 
-function detailsFor(method) {
+function detailsFor(method, payer) {
   if (method === 'paypal') {
     return {
       method,
-      holder: emmaPayment.holder,
-      email: emmaPayment.paypal.email,
+      holder: payer.holder,
+      email: payer.email,
     }
   }
   if (method === 'mobilepay') {
     return {
       method,
-      holder: emmaPayment.holder,
+      holder: payer.holder,
       phone: emmaPayment.mobilepay.phone,
     }
   }
   return {
     method: 'card',
-    holder: emmaPayment.holder,
+    holder: payer.holder,
     brand: emmaPayment.card.brand,
     last4: emmaPayment.card.last4,
     expiry: emmaPayment.card.expiry,
@@ -95,6 +96,10 @@ export default function Premium() {
   const [promptOpen, setPromptOpen] = useState(false)
   const [path, setPath] = useState(null)
   const [error, setError] = useState('')
+  const payer = {
+    holder: firstName(user) || emmaPayment.holder,
+    email: user?.email || emmaPayment.paypal.email,
+  }
 
   useEffect(() => {
     if (!pathId || !user) return
@@ -113,7 +118,7 @@ export default function Premium() {
   }
 
   async function finish(save) {
-    if (save) savePaymentMethod(detailsFor(method))
+    if (save) savePaymentMethod(detailsFor(method, payer))
     if (pathId) {
       try {
         await buyPath(user.id, pathId)
@@ -145,7 +150,7 @@ export default function Premium() {
             <p className="m-0 mt-1 font-sans text-sm font-semibold text-ink">€5/month</p>
           </div>
         )}
-        <p className="m-0 font-sans text-sm leading-body text-quiet">Paying as {emmaPayment.holder}</p>
+        <p className="m-0 font-sans text-sm leading-body text-quiet">Paying as {payer.holder}</p>
       </section>
 
       <form
@@ -181,7 +186,7 @@ export default function Premium() {
 
           {method === 'card' ? (
             <>
-              <TextField id="card-name" name="card-name" label="Name on card" value={emmaPayment.holder} readOnly />
+              <TextField id="card-name" name="card-name" label="Name on card" value={payer.holder} readOnly />
               <TextField
                 id="card-number"
                 name="card-number"
@@ -204,7 +209,7 @@ export default function Premium() {
               label="PayPal email"
               type="email"
               autoComplete="off"
-              value={emmaPayment.paypal.email}
+              value={payer.email}
               readOnly
             />
           ) : null}
