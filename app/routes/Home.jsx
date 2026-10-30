@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router'
+import PathFilters from '../components/PathFilters.jsx'
 import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
+import ShortcutCard from '../components/ShortcutCard.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { listRoadmaps } from '../user/data.js'
 import useUserData from '../user/useUserData.js'
 import DataState from '../user/DataState.jsx'
 import { usePremiumUnlocked } from '../user/paymentMethods.js'
 import { toggleSavedTitle, useSavedTitles } from '../user/savedTitles.js'
-import searchIcon from '../assets/explore/search.svg'
 import knitting from '../assets/explore/knitting.png'
 import sewing from '../assets/explore/sewing.png'
 import sashiko from '../assets/profile/sashiko.jpg'
@@ -16,15 +17,6 @@ import iconImage from '../assets/profile/icon-image.svg'
 import iconMic from '../assets/profile/icon-mic.svg'
 import iconArrowUp from '../assets/profile/icon-arrow-up.svg'
 import PremiumBanner from '../components/PremiumBanner.jsx'
-
-const headerButton =
-  'm-0 flex h-8 min-w-0 shrink-0 cursor-pointer disabled:cursor-wait items-center justify-center gap-2 rounded-lg border p-2 font-display text-base leading-none font-medium whitespace-nowrap no-underline'
-
-const filters = [
-  { id: 'all', label: 'All' },
-  { id: 'mine', label: 'My paths' },
-  { id: 'saved', label: 'Saved paths' },
-]
 
 const sampleShortcuts = [
   { title: 'Transfer Your Pattern', path: 'Sashiko', step: 'Step 2/6' },
@@ -79,27 +71,6 @@ function SaveMark({ saved, title, onToggleSave }) {
       </svg>
     </button>
   )
-}
-
-function ShortcutCard({ title, path, step, to }) {
-  const body = (
-    <>
-      <p className="m-0 flex h-11 items-center font-sans text-base leading-[1.4] font-semibold text-quiet"><span className="line-clamp-2">{title}</span></p>
-      <p className="m-0 truncate font-sans text-base leading-[1.4] text-placeholder">{path}</p>
-      <p className="m-0 text-h5 text-placeholder">{step}</p>
-    </>
-  )
-  const className = 'flex h-[102px] w-[140px] shrink-0 snap-start flex-col border border-[#bcbcbc] bg-white p-2 no-underline'
-
-  if (to) {
-    return (
-      <Link to={to} className={`m-1 rounded text-inherit ${className}`}>
-        {body}
-      </Link>
-    )
-  }
-
-  return <article className={className}>{body}</article>
 }
 
 function ProgressCard({ path, saved, onToggleSave }) {
@@ -206,7 +177,7 @@ export default function Home() {
         <h1 id="jump-back" className="m-0 font-display text-[15px] leading-none font-normal">
           Jump back in
         </h1>
-        <div className="flex w-full min-w-0 gap-2.5 overflow-x-auto overscroll-x-contain snap-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-full min-w-0 gap-2 overflow-x-auto overscroll-x-contain snap-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {shortcuts.map((shortcut) => (
             <ShortcutCard
               key={shortcut.id ?? shortcut.title}
@@ -224,41 +195,7 @@ export default function Home() {
       </section>
 
       <section className="flex flex-col gap-4" aria-label="Your paths">
-        <div className="flex w-full min-w-0 items-center gap-2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <div role="radiogroup" aria-label="Path filters" className="flex shrink-0 items-center gap-2">
-            {filters.map((item) => {
-              const selected = filter === item.id
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  onClick={() => setFilter(item.id)}
-                  className={
-                    selected
-                      ? `${headerButton} border-brand bg-accent text-on-brand`
-                      : `${headerButton} border-transparent bg-accent-muted text-ink`
-                  }
-                >
-                  {item.label}
-                </button>
-              )
-            })}
-          </div>
-          <form className="m-0 shrink-0" role="search" onSubmit={(event) => event.preventDefault()}>
-            <label className="m-0 flex h-8 items-center gap-2 rounded-lg border border-surface-muted bg-white px-4">
-              <span className="sr-only">Search paths</span>
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search"
-                className="m-0 w-16 border-0 bg-transparent p-0 font-sans text-base leading-none text-ink outline-none placeholder:text-placeholder"
-              />
-              <img src={searchIcon} alt="" width="16" height="16" className="block shrink-0" />
-            </label>
-          </form>
-        </div>
+        <PathFilters value={filter} onChange={setFilter} query={query} onQuery={setQuery} />
 
         {visible.length === 0 ? (
           <p className="m-0 font-sans text-sm leading-[1.4] text-quiet">
