@@ -82,9 +82,9 @@ export function StepBlock({ block }) {
 
 /**
  * Read-only step content. Neighbouring list items are grouped into one list.
- * @param {{ blocks: Array<{ id: string, type: string, content: object }> }} props
+ * @param {{ blocks: Array<{ id: string, type: string, content: object }>, emptyMessage?: string }} props
  */
-export default function StepBlocks({ blocks }) {
+export default function StepBlocks({ blocks, emptyMessage = 'This step has no content yet.' }) {
   const groups = []
   for (const block of blocks) {
     const list = block.type === 'paragraph' ? block.content.list : null
@@ -94,7 +94,7 @@ export default function StepBlocks({ blocks }) {
   }
 
   if (!blocks.some((block) => (block.content.text ?? block.content.url ?? block.content.rows)?.length)) {
-    return <p className="m-0 text-sm leading-[1.4] text-quiet">This step has no content yet.</p>
+    return <p className="m-0 text-sm leading-[1.4] text-quiet">{emptyMessage}</p>
   }
 
   return (

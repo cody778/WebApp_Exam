@@ -171,9 +171,9 @@ function BlockMenu({ anchor, onChoose, onClose }) {
 /**
  * Notion-style editor for one step. Each line is a block; the plus beside a block opens the block picker.
  * Enter starts a new block, Backspace on an empty block removes it, and "/" on an empty block opens the picker.
- * @param {{ blocks: Array<{ id: string, type: string, content: object }>, onChange: (blocks: object[]) => void, label: string }} props
+ * @param {{ blocks: Array<{ id: string, type: string, content: object }>, onChange: (blocks: object[]) => void, label: string, placeholder?: string }} props
  */
-export default function StepBlockEditor({ blocks, onChange, label }) {
+export default function StepBlockEditor({ blocks, onChange, label, placeholder = 'Describe this step, or press + to add blocks' }) {
   const fields = useRef(new Map())
   const pendingFocus = useRef(null)
   const [menu, setMenu] = useState(null)
@@ -377,7 +377,7 @@ export default function StepBlockEditor({ blocks, onChange, label }) {
                 fieldRef={fieldRef(block.id)}
                 value={block.content.text ?? ''}
                 aria-label={level ? `Heading ${level}` : list ? `${list} item` : 'Text'}
-                placeholder={blocks.length === 1 && index === 0 && !list && !level ? 'Describe this step, or press + to add blocks' : level ? `Heading ${level}` : 'Write something'}
+                placeholder={blocks.length === 1 && index === 0 && !list && !level ? placeholder : level ? `Heading ${level}` : 'Write something'}
                 onChange={(event) => patch(block.id, { text: event.target.value })}
                 onKeyDown={(event) => onTextKeyDown(event, block)}
                 className={`${level ? textStyles[level] : 'text-sm leading-[1.4] font-normal'} ${
