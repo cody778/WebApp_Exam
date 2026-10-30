@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router'
 import AppNav from '../components/AppNav.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
 import { supabase } from '../user/client.js'
 import { usePremiumUnlocked } from '../user/paymentMethods.js'
-import avatar from '../assets/profile/avatar-omar.jpg'
+import { uploadAvatar, useAvatarUrl } from '../user/profile.js'
+import defaultAvatar from '../assets/home/avatar.jpg'
+import iconPlus from '../assets/account/icon-plus.svg'
 import iconMenu from '../assets/account/icon-menu.svg'
 import toggleOn from '../assets/account/toggle-on.svg'
 import toggleOff from '../assets/account/toggle-off.svg'
@@ -34,6 +36,10 @@ export default function Account() {
   const [confirmDelete, setConfirmDelete] = useState(true)
   const fullName = user?.user_metadata?.full_name?.trim() || 'Anna Liu'
   const email = user?.email || 'anna.Liu@pathify.com'
+  const avatar = useAvatarUrl(user?.id) || defaultAvatar
+  const photoInput = useRef(null)
+  const [photoBusy, setPhotoBusy] = useState(false)
+  const [photoError, setPhotoError] = useState('')
 
   if (supabase && !loading && !user) {
     return <Navigate to="/sign-in" state={{ from: '/account' }} replace />
@@ -51,6 +57,21 @@ export default function Account() {
     window.dispatchEvent(new Event('pathify-premium'))
     window.dispatchEvent(new Event('pathify-saved-titles'))
     navigate('/')
+  }
+
+  async function changePhoto(event) {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file || !user) return
+    setPhotoBusy(true)
+    setPhotoError('')
+    try {
+      await uploadAvatar(user.id, file)
+    } catch (uploadError) {
+      setPhotoError(uploadError.message || 'Could not save your photo. Please try again.')
+    } finally {
+      setPhotoBusy(false)
+    }
   }
 
   async function signOff() {
@@ -72,7 +93,30 @@ export default function Account() {
           <div className="flex flex-col gap-4 lg:sticky lg:top-24">
             <div className="flex flex-col gap-4 rounded-2xl border border-accent-muted bg-white p-4">
               <div className="flex items-center gap-3">
-                <img src={avatar} alt="" width="64" height="64" className="size-16 shrink-0 rounded-full object-cover" />
+                {user ? (
+                  <button
+                    type="button"
+                    aria-label="Change profile photo"
+                    aria-busy={photoBusy}
+                    disabled={photoBusy}
+                    onClick={() => photoInput.current?.click()}
+                    className="!relative !m-0 !size-16 shrink-0 !rounded-full !border-0 !bg-transparent !p-0 disabled:cursor-wait"
+                  >
+                    <img
+                      src={avatar}
+                      alt=""
+                      width="64"
+                      height="64"
+                      className={`block size-16 rounded-full object-cover ${photoBusy ? 'opacity-50' : ''}`}
+                    />
+                    <span className="absolute -right-0.5 -bottom-0.5 flex size-6 items-center justify-center rounded-full border border-accent-muted bg-white">
+                      <img src={iconPlus} alt="" width="16" height="16" className="block max-w-none" />
+                    </span>
+                  </button>
+                ) : (
+                  <img src={avatar} alt="" width="64" height="64" className="size-16 shrink-0 rounded-full object-cover" />
+                )}
+                <input ref={photoInput} type="file" accept="image/*" hidden onChange={changePhoto} />
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
                   <p className="m-0 font-display text-body whitespace-nowrap">{fullName}</p>
                   <p className="m-0 font-sans text-sm leading-body font-normal whitespace-nowrap text-quiet">{email}</p>
@@ -81,6 +125,11 @@ export default function Account() {
                   {premium ? 'Premium' : 'Free'}
                 </span>
               </div>
+              {photoError ? (
+                <p role="alert" className="m-0 font-sans text-sm leading-body text-[#9e2020]">
+                  {photoError}
+                </p>
+              ) : null}
               <div className="flex items-center justify-between gap-3">
                 <button type="button" className="!m-0 flex !items-center !gap-2 !border-0 !bg-transparent !p-0 text-left">
                   <img src={iconMenu} alt="" width="32" height="32" className="block max-w-none shrink-0" />
