@@ -267,6 +267,13 @@
   }
 }
 
+/* The signed-in shell owns its width. The older main margin would sit under the fixed bar. */
+main:has(.app-frame) {
+  margin: 0;
+  max-width: none;
+  padding: 0;
+}
+
 /* Paper texture fills the viewport on every page. Cover crops the edges instead of stretching. */
 html,
 body {

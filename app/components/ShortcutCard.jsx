@@ -1,7 +1,7 @@
 import { Link } from 'react-router'
 
 const card =
-  '!m-0 !flex !h-[97px] !w-36 shrink-0 snap-start !flex-col !justify-between !rounded-lg !border !border-accent-muted !bg-white !p-2 !text-inherit !no-underline'
+  '!m-0 !flex !h-[97px] !w-36 shrink-0 snap-start !flex-col !justify-between !rounded-lg !border !border-accent-muted !bg-white !p-2 !text-inherit !no-underline lg:!h-auto lg:min-h-[97px] lg:!w-full lg:shrink lg:snap-align-none'
 
 /**
  * Current lesson in one path, shown in the horizontal Jump back in row.
