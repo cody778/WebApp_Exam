@@ -39,22 +39,26 @@ const quoteArrows = [
   { corner: 'bottom-2 right-2', rotate: '135deg' },
 ]
 
+// Shared type for the story. Desktop keeps one reading column and only steps the sizes up.
+const sectionTitle = 'm-0 text-center font-display text-xl leading-heading font-medium tracking-heading lg:text-[2rem]'
+const storyText = 'm-0 font-sans text-base leading-body lg:text-lg'
+
 /**
- * Our Mission, told from the brand frames and set for a narrow screen.
+ * Our Mission, told from the brand frames. Mobile first, widening to a single centered column on desktop.
  * Reads top to bottom as a story: who we are, the mission, the philosophy, the values, then the Tolkien quote.
  */
 export default function About() {
   return (
-    <div className="landing-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col gap-16 px-4 pt-8 pb-20 font-sans text-ink">
-      <header className="flex flex-col items-center gap-6 text-center">
+    <div className="landing-page box-border [&_*]:box-border mx-auto flex min-h-screen w-full max-w-md flex-col gap-16 px-4 pt-8 pb-20 font-sans text-ink lg:max-w-3xl lg:gap-24 lg:px-8 lg:pt-16 lg:pb-28">
+      <header className="flex flex-col items-center gap-6 text-center lg:gap-8">
         <Link
           to="/"
           className="!m-0 !inline !border-0 !bg-transparent !p-0 font-sans text-sm leading-body text-quiet !underline"
         >
           Back
         </Link>
-        <h1 className="m-0 font-display text-xl leading-heading font-medium tracking-heading">Our Mission</h1>
-        <p className="m-0 max-w-[22rem] font-sans text-base leading-body">
+        <h1 className="m-0 font-display text-xl leading-heading font-medium tracking-heading lg:text-[2.5rem]">Our Mission</h1>
+        <p className={`${storyText} max-w-[22rem] lg:max-w-2xl`}>
           Created by Barbara Borini, Teofil and Omar Caloca, Pathify is dedicated to those serious self-learners.
           The Web App was born from the idea of reuniting all of the learning content from different sources into one source on attractive preset and customizable templates.
         </p>
@@ -62,33 +66,34 @@ export default function About() {
 
       <section className="flex flex-col gap-8" aria-label="Mission">
         {mission.map((paragraph) => (
-          <p key={paragraph} className="m-0 font-sans text-base leading-body">
+          <p key={paragraph} className={storyText}>
             {paragraph}
           </p>
         ))}
       </section>
 
       <section className="flex flex-col gap-8" aria-labelledby="philosophy">
-        <h2 id="philosophy" className="m-0 text-center font-display text-xl leading-heading font-medium tracking-heading">
+        <h2 id="philosophy" className={sectionTitle}>
           Our Philosophy
         </h2>
-        <p className="m-0 text-center font-display text-body">“Let the path guide you far”</p>
+        <p className="m-0 text-center font-display text-body lg:text-xl">“Let the path guide you far”</p>
         {philosophy.map((paragraph) => (
-          <p key={paragraph} className="m-0 font-sans text-base leading-body">
+          <p key={paragraph} className={storyText}>
             {paragraph}
           </p>
         ))}
       </section>
 
-      <section className="flex flex-col gap-6" aria-labelledby="values">
-        <h2 id="values" className="m-0 text-center font-display text-xl leading-heading font-medium tracking-heading">
+      <section className="flex flex-col gap-6 lg:gap-8" aria-labelledby="values">
+        <h2 id="values" className={sectionTitle}>
           Our Values
         </h2>
-        <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0">
+        {/* Two per row on mobile, three per row on desktop, so the six values always fill complete rows. */}
+        <ul className="m-0 grid list-none grid-cols-2 gap-3 p-0 lg:grid-cols-3 lg:gap-4">
           {values.map((value) => (
             <li
               key={value}
-              className="flex min-h-16 items-center justify-center rounded-2xl border border-accent-muted bg-white px-3 py-4 text-center font-display text-sm leading-body tracking-wide"
+              className="flex min-h-16 items-center justify-center rounded-2xl border border-accent-muted bg-white px-3 py-4 text-center font-display text-sm leading-body tracking-wide lg:min-h-20 lg:text-base"
             >
               {value}
             </li>
@@ -96,14 +101,14 @@ export default function About() {
         </ul>
       </section>
 
-      <figure className="relative m-0 rounded-2xl bg-accent-muted px-12 py-14 text-center">
+      <figure className="relative m-0 rounded-2xl bg-accent-muted px-12 py-14 text-center lg:px-20 lg:py-20">
         {quoteArrows.map((arrow) => (
           <span key={arrow.corner} className={`absolute ${arrow.corner}`} style={{ transform: `rotate(${arrow.rotate})` }}>
             <img src={jumpArrow} alt="" width="47" height="38" className="block max-w-none" />
           </span>
         ))}
         <blockquote
-          className="m-0 text-[1.0625rem] leading-[1.7] text-ink"
+          className="m-0 text-[1.0625rem] leading-[1.7] text-ink lg:text-[1.25rem]"
           style={{ fontFamily: 'Bookerly, "Iowan Old Style", Palatino, serif', fontStyle: 'italic' }}
         >
           {poem.map((line, index) => (
@@ -112,7 +117,7 @@ export default function About() {
             </span>
           ))}
         </blockquote>
-        <figcaption className="mt-8 font-display text-base leading-body font-medium">J.R.R. Tolkien</figcaption>
+        <figcaption className="mt-8 font-display text-base leading-body font-medium lg:mt-10 lg:text-lg">J.R.R. Tolkien</figcaption>
       </figure>
     </div>
   )
