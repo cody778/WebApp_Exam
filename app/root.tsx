@@ -18,7 +18,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="relative z-0 m-0 min-h-full overflow-x-clip bg-transparent before:fixed before:inset-0 before:-z-10 before:bg-[#f7f4ee] before:bg-[url('./assets/background.jpg')] before:bg-cover before:bg-center before:bg-no-repeat before:content-['']">
+      <body className="relative z-0 m-0 min-h-full overflow-x-clip bg-transparent paper-background">
         {children}
         <ScrollRestoration />
         <Scripts />
