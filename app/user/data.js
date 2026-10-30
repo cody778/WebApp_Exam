@@ -44,6 +44,18 @@ export function createRoadmap(userId, id, title, description) {
   return result(supabase.from('roadmaps').upsert({ id, owner_id: userId, title: title.trim(), description: description.trim() }, { onConflict: 'id' }).select('id').single())
 }
 
+export function listProjects(userId) {
+  return result(supabase.from('projects').select('id, title, description').eq('owner_id', userId).order('created_at', { ascending: false }))
+}
+
+export function getOwnedProject(userId, id) {
+  return result(supabase.from('projects').select('id, title, description, blocks').eq('owner_id', userId).eq('id', id).single())
+}
+
+export function saveProject(userId, id, { title, description, blocks }) {
+  return result(supabase.from('projects').upsert({ id, owner_id: userId, title: title.trim(), description: description.trim(), blocks }, { onConflict: 'id' }).select('id').single())
+}
+
 export async function listLessons(userId) {
   const lessons = await result(supabase.from('lessons').select('id, title').eq('owner_id', userId).order('created_at', { ascending: false }))
   return withProgress(userId, lessons)

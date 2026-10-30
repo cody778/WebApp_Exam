@@ -4,7 +4,7 @@ import PathFilters from '../components/PathFilters.jsx'
 import { useSavePrompt } from '../components/SaveSignInPrompt.jsx'
 import ShortcutCard from '../components/ShortcutCard.jsx'
 import { useAuth } from '../user/AuthProvider.jsx'
-import { listRoadmaps } from '../user/data.js'
+import { listProjects, listRoadmaps } from '../user/data.js'
 import useUserData from '../user/useUserData.js'
 import DataState from '../user/DataState.jsx'
 import { usePremiumUnlocked } from '../user/paymentMethods.js'
@@ -16,6 +16,8 @@ import embroidery from '../assets/profile/embroidery.jpg'
 import iconImage from '../assets/profile/icon-image.svg'
 import iconMic from '../assets/profile/icon-mic.svg'
 import iconArrowUp from '../assets/profile/icon-arrow-up.svg'
+import plusIcon from '../assets/home/plus.svg'
+import exploreIcon from '../assets/home/explore.svg'
 import PremiumBanner from '../components/PremiumBanner.jsx'
 
 const sampleShortcuts = [
@@ -129,6 +131,7 @@ function pathProgress(path) {
 export default function Home() {
   const { user } = useAuth()
   const { data, error, loading } = useUserData(listRoadmaps)
+  const projects = useUserData(listProjects)
   const [searchParams, setSearchParams] = useSearchParams()
   const requestedFilter = searchParams.get('filter')
   const filter = requestedFilter === 'saved' || requestedFilter === 'mine' ? requestedFilter : 'all'
@@ -218,6 +221,31 @@ export default function Home() {
                 saved={savedTitles.has(path.title)}
                 onToggleSave={() => saveOrPrompt(() => toggleSave(path.title))}
               />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="flex flex-col gap-4" aria-labelledby="home-projects">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 id="home-projects" className="m-0 font-display text-[15px] leading-none font-normal">Your projects</h2>
+          <div className="grid grid-cols-2 gap-2 sm:flex">
+            <Link className="!m-0 !inline-flex !h-10 items-center justify-center gap-2 !rounded-full !border-0 !bg-ink !px-3 !py-0 font-sans text-sm leading-none whitespace-nowrap !text-on-brand !no-underline hover:!bg-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:!px-4" to="/profile/projects/new">
+              <img src={plusIcon} alt="" width="16" height="16" className="hidden shrink-0 sm:block" />
+              Create project
+            </Link>
+            <Link className="!m-0 !inline-flex !h-10 items-center justify-center gap-2 !rounded-full !border-0 !bg-accent-muted !px-3 !py-0 font-sans text-sm leading-none whitespace-nowrap !text-ink !no-underline hover:!bg-surface-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent sm:!px-4" to="/profile/projects">
+              <img src={exploreIcon} alt="" width="16" height="16" className="hidden shrink-0 sm:block" />
+              Browse projects
+            </Link>
+          </div>
+        </div>
+        {projects.loading || projects.error ? <DataState loading={projects.loading} error={projects.error} /> : projects.data.length === 0 ? (
+          <p className="m-0 font-sans text-sm leading-[1.4] text-quiet">No projects yet. Create your first one.</p>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4">
+            {projects.data.map(project => (
+              <ProgressCard key={project.id} path={{ ...project, status: 'My project', to: `/profile/projects/${project.id}` }} />
             ))}
           </div>
         )}

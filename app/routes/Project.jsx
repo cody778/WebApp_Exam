@@ -1,13 +1,30 @@
 import { Link, useParams } from 'react-router'
+import BlockEditor from '../components/BlockEditor.jsx'
+import { getOwnedProject } from '../user/data.js'
+import useUserData from '../user/useUserData.js'
+import DataState from '../user/DataState.jsx'
+
+function ProjectContent({ projectId }) {
+  const { data, loading, error } = useUserData(getOwnedProject, projectId)
+  if (loading || error) return <DataState loading={loading} error={error} />
+
+  return (
+    <>
+      <h1 className="m-0 text-page-title [overflow-wrap:anywhere]">{data.title}</h1>
+      {data.description && <p className="m-0 whitespace-pre-wrap text-quiet [overflow-wrap:anywhere]">{data.description}</p>}
+      <BlockEditor label="Project content" blocks={data.blocks} readOnly />
+      <Link className="m-0 self-start rounded-full border-0 bg-accent px-4 py-2 text-sm text-on-brand no-underline" to={`/profile/projects/${projectId}/edit`}>Edit project</Link>
+    </>
+  )
+}
 
 export default function Project({ isPublic = false }) {
   const { projectId } = useParams()
 
   return (
-    <>
-      <h1>Project</h1>
-      {!isPublic && <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={`/profile/projects/${projectId}/edit`}>Edit project</Link>}
-      <Link className="inline-block m-1 rounded border border-current px-3 py-2 text-inherit no-underline" to={isPublic ? '/profile/projects/public' : '/profile/projects'}>Back to projects</Link>
-    </>
+    <div className="flex flex-col gap-6">
+      {isPublic ? <p className="m-0 text-sm text-quiet">Public projects are not available yet.</p> : <ProjectContent projectId={projectId} />}
+      <Link className="m-0 self-start border-0 p-0 text-sm text-accent underline" to={isPublic ? '/profile/projects/public' : '/profile/projects'}>Back to projects</Link>
+    </div>
   )
 }
