@@ -186,6 +186,7 @@
 }
 
 /* These frames are full-bleed. Drop the shared page column only on those screens. */
+main:has(.app-frame),
 main:has(.landing-page),
 main:has(.explore-page),
 main:has(.profile-page),

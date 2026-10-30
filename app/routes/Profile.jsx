@@ -20,7 +20,6 @@ import PremiumBanner from '../components/PremiumBanner.jsx'
 const shortcuts = [
   { title: 'Transfer Your Pattern', path: 'Sashiko', step: 'Step 2/6' },
   { title: 'Cast on', path: 'Knitting', step: 'Step 1/8', to: '/public-path' },
-  { title: 'Prepare Your Hoop', path: 'Embroidery', step: 'Step 1/12' },
 ]
 
 const paths = [
@@ -210,7 +209,7 @@ export default function Profile() {
           onPointerUp={onJumpPointerEnd}
           onPointerCancel={onJumpPointerEnd}
           onClickCapture={onJumpClickCapture}
-          className="flex w-full min-w-0 cursor-grab gap-2 snap-x overflow-x-auto overscroll-x-contain select-none [-ms-overflow-style:none] [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
+          className="flex w-full min-w-0 cursor-grab justify-start gap-2 overflow-x-auto overscroll-x-contain [overflow-anchor:none] select-none [-ms-overflow-style:none] [scrollbar-width:none] active:cursor-grabbing [&::-webkit-scrollbar]:hidden"
         >
           {shortcuts.map((shortcut) => (
             <ShortcutCard

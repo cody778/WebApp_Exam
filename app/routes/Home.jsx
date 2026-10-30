@@ -23,7 +23,6 @@ import PremiumBanner from '../components/PremiumBanner.jsx'
 const sampleShortcuts = [
   { title: 'Transfer Your Pattern', path: 'Sashiko', step: 'Step 2/6' },
   { title: 'Cast on', path: 'Knitting', step: 'Step 1/8', to: '/public-path' },
-  { title: 'Prepare Your Hoop', path: 'Embroidery', step: 'Step 1/12' },
 ]
 
 const samplePaths = [
@@ -180,7 +179,7 @@ export default function Home() {
         <h1 id="jump-back" className="m-0 font-display text-[15px] leading-none font-normal">
           Jump back in
         </h1>
-        <div className="flex w-full min-w-0 gap-2 overflow-x-auto overscroll-x-contain snap-x [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex w-full min-w-0 justify-start gap-2 overflow-x-auto overscroll-x-contain [overflow-anchor:none] [-ms-overflow-style:none] [scrollbar-width:none] lg:grid lg:grid-cols-[repeat(auto-fit,minmax(16rem,1fr))] lg:overflow-visible [&::-webkit-scrollbar]:hidden">
           {shortcuts.map((shortcut) => (
             <ShortcutCard
               key={shortcut.id ?? shortcut.title}
