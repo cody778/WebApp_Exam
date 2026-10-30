@@ -47,7 +47,6 @@ function subscribe(onChange) {
 }
 
 const TITLES = 'pathify-saved-titles'
-const PATHS = 'pathify-saved-paths'
 
 /** Titles bookmarked on the sample cards. Shared across Explore and Home. */
 export function readSavedTitles(userId) {
@@ -60,13 +59,4 @@ export function toggleSavedTitle(userId, title) {
 
 export function useSavedTitles(userId) {
   return useSyncExternalStore(subscribe, () => readSet(TITLES, userId), () => EMPTY)
-}
-
-/** Ids of other people's paths that the user saved. Kept on this device until saved paths have a table. */
-export function toggleSavedPath(userId, pathId) {
-  toggle(PATHS, userId, pathId)
-}
-
-export function useSavedPaths(userId) {
-  return useSyncExternalStore(subscribe, () => readSet(PATHS, userId), () => EMPTY)
 }

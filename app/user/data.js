@@ -85,13 +85,30 @@ export function setLessonCompleted(userId, id, completed) {
   return result(query)
 }
 
-/** A path with each step's blocks, for the path page. */
+/** A path with each step's blocks, whether the user saved it, and its save and fork counts, for the path page. */
 export async function getPath(userId, id) {
-  const roadmap = await getRoadmap(userId, id)
+  const [roadmap, saves, [stats]] = await Promise.all([
+    getRoadmap(userId, id),
+    result(supabase.from('saved_roadmaps').select('roadmap_id').eq('user_id', userId).eq('roadmap_id', id)),
+    result(supabase.rpc('roadmap_stats', { p_roadmap_id: id })),
+  ])
   const ids = roadmap.lessons.filter(lesson => !lesson.unavailable).map(lesson => lesson.id)
   const rows = ids.length ? await result(supabase.from('lessons').select('id, lesson_blocks(id, type, content, position)').in('id', ids)) : []
   const blocks = new Map(rows.map(row => [row.id, [...row.lesson_blocks].sort((a, b) => a.position - b.position).map(({ id, type, content }) => ({ id, type, content }))]))
-  return { ...roadmap, lessons: roadmap.lessons.map(lesson => ({ ...lesson, blocks: blocks.get(lesson.id) ?? [] })) }
+  return {
+    ...roadmap,
+    saved: saves.length > 0,
+    saves: Number(stats?.saves ?? 0),
+    forks: Number(stats?.forks ?? 0),
+    lessons: roadmap.lessons.map(lesson => ({ ...lesson, blocks: blocks.get(lesson.id) ?? [] })),
+  }
+}
+
+export function setPathSaved(userId, id, saved) {
+  const query = saved
+    ? supabase.from('saved_roadmaps').upsert({ user_id: userId, roadmap_id: id }, { onConflict: 'user_id,roadmap_id', ignoreDuplicates: true })
+    : supabase.from('saved_roadmaps').delete().eq('user_id', userId).eq('roadmap_id', id)
+  return result(query)
 }
 
 /** Saves an edited path: details, every step, removed steps, and the new step order. */
@@ -112,7 +129,7 @@ export async function updatePath(userId, roadmap, { title, description, steps })
 /** Copies a path and its steps to the user's own paths. Returns the new path id. */
 export async function forkPath(userId, path) {
   const id = crypto.randomUUID()
-  await createRoadmap(userId, id, path.title, path.description ?? '')
+  await result(supabase.from('roadmaps').insert({ id, owner_id: userId, title: path.title, description: path.description ?? '', forked_from: path.id }))
   for (const lesson of path.lessons) {
     if (lesson.unavailable) continue
     const blocks = lesson.blocks.length ? lesson.blocks : [{ type: 'paragraph', content: { text: '' } }]

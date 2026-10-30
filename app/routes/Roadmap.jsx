@@ -13,9 +13,10 @@ import iconLock from '../assets/public-path/icon-lock.svg'
 import iconEdit from '../assets/create-path/edit.svg'
 import stepDot from '../assets/public-path/step-dot.svg'
 import { useAuth } from '../user/AuthProvider.jsx'
-import { forkPath, getPath, setLessonCompleted, updatePath } from '../user/data.js'
+import saveCount from '../assets/explore/save-count.svg'
+import forkCount from '../assets/explore/fork-count.svg'
+import { forkPath, getPath, setLessonCompleted, setPathSaved, updatePath } from '../user/data.js'
 import DataState from '../user/DataState.jsx'
-import { toggleSavedPath, useSavedPaths } from '../user/savedTitles.js'
 import useUserData from '../user/useUserData.js'
 
 const coverButton =
@@ -24,6 +25,11 @@ const headerButton =
   '!m-0 flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent !p-0 hover:bg-black/5 focus-visible:outline-2 focus-visible:outline-accent'
 const mainButton =
   '!m-0 flex h-12 w-full cursor-pointer items-center justify-center rounded-lg border-0 !px-4 !py-0 font-sans text-base leading-none font-normal disabled:cursor-wait disabled:opacity-70'
+
+/** 1500 becomes "1.5 k", like the counts on path cards. */
+function formatCount(count) {
+  return count >= 1000 ? `${Number((count / 1000).toFixed(1))} k` : String(count)
+}
 
 /** Path page. Owners can unlock it to edit; other people can save, fork, and share it. */
 export default function Roadmap() {
@@ -48,10 +54,12 @@ function PathPage({ path, onSaved }) {
   const navigate = useNavigate()
   const location = useLocation()
   const owned = path.owner_id === user.id
-  const saved = useSavedPaths(user.id).has(path.id)
   const steps = path.lessons.filter((lesson) => !lesson.unavailable)
 
   const [editing, setEditing] = useState(false)
+  const [saved, setSaved] = useState(path.saved)
+  const [saves, setSaves] = useState(path.saves)
+  const [saving, setSaving] = useState(false)
   const [completed, setCompleted] = useState(() => new Set(steps.filter((step) => step.completed).map((step) => step.id)))
   const [openId, setOpenId] = useState(null)
   const [busyStep, setBusyStep] = useState(null)
@@ -84,13 +92,24 @@ function PathPage({ path, onSaved }) {
     }
   }
 
-  function save() {
-    if (saved) {
-      setConfirmUnsave(true)
-      return
+  async function changeSaved(value) {
+    if (saving) return
+    setSaving(true)
+    try {
+      await setPathSaved(user.id, path.id, value)
+      setSaved(value)
+      setSaves((count) => count + (value ? 1 : -1))
+      setNotice(value ? 'Saved to your paths' : 'Removed from saved paths')
+    } catch {
+      setNotice(value ? 'Could not save this path' : 'Could not unsave this path')
+    } finally {
+      setSaving(false)
     }
-    toggleSavedPath(user.id, path.id)
-    setNotice('Saved to your paths')
+  }
+
+  function save() {
+    if (saved) setConfirmUnsave(true)
+    else changeSaved(true)
   }
 
   async function fork() {
@@ -129,7 +148,7 @@ function PathPage({ path, onSaved }) {
     <>
       {!owned && (
         <>
-          <button type="button" aria-label={saved ? 'Unsave path' : 'Save path'} aria-pressed={saved} onClick={save} className={coverButton}>
+          <button type="button" aria-label={saved ? 'Unsave path' : 'Save path'} aria-pressed={saved} disabled={saving} onClick={save} className={coverButton}>
             <img src={saved ? iconSaveFilled : iconSave} alt="" width="24" height="24" className="block max-w-none" />
           </button>
           <button type="button" aria-label="Fork path to your paths" disabled={forking} onClick={fork} className={coverButton}>
@@ -159,9 +178,8 @@ function PathPage({ path, onSaved }) {
               type="button"
               autoFocus
               onClick={() => {
-                toggleSavedPath(user.id, path.id)
                 setConfirmUnsave(false)
-                setNotice('Removed from saved paths')
+                changeSaved(false)
               }}
               className="!m-0 cursor-pointer rounded-md border-0 bg-[#9e2020] !px-3 !py-1 font-sans text-sm text-on-brand"
             >
@@ -318,7 +336,19 @@ function PathPage({ path, onSaved }) {
   return (
     <PathShell crumb={crumb} current={path.title} coverActions={coverActions} headerAction={headerAction}>
       <h1 className="m-0 text-[36px] leading-[1.15] font-bold tracking-[-0.72px] text-ink [overflow-wrap:anywhere]">{path.title}</h1>
-      {owned && <p className="m-0 text-[10px] leading-[1.4] font-normal whitespace-nowrap text-quiet">By {authorName(user)}</p>}
+      <div className="flex items-center gap-3">
+        {owned && <p className="m-0 text-[10px] leading-[1.4] font-normal whitespace-nowrap text-quiet">By {authorName(user)}</p>}
+        <div className="flex items-center gap-1">
+          <span className="flex items-center gap-0.5" aria-label={`Saved ${saves} ${saves === 1 ? 'time' : 'times'}`}>
+            <img src={saveCount} alt="" width="12" height="12" className="block max-w-none" />
+            <span aria-hidden="true" className="text-[10px] leading-[1.4] whitespace-nowrap text-[#5a5a5a]">{formatCount(saves)}</span>
+          </span>
+          <span className="flex items-center gap-0.5" aria-label={`Forked ${path.forks} ${path.forks === 1 ? 'time' : 'times'}`}>
+            <img src={forkCount} alt="" width="12" height="12" className="block max-w-none" />
+            <span aria-hidden="true" className="text-[10px] leading-[1.4] whitespace-nowrap text-[#5a5a5a]">{formatCount(path.forks)}</span>
+          </span>
+        </div>
+      </div>
       <PathSections render={renderSection} />
       {toast}
     </PathShell>
